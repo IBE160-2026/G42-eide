@@ -33,7 +33,9 @@ A brief, non-exhaustive look at public product pages (sources and per-source con
 
 ## Who this serves
 
-The primary — and for this version, only — user is the developer, testing against their own real course PDFs. A wider student audience is a plausible future direction (see Beyond MVP) but is explicitly not a design target for this version: this version doesn't attempt to generalize across subjects, note formats, or non-native-English material beyond what naturally works for this initial use case.
+The primary user is a student preparing for a written exam in a lecture-heavy subject — for example, a course taught through weekly slide decks rather than a single textbook. A realistic scenario: with several lectures' worth of material to revisit before the exam and limited time, the student uploads one lecture at a time and gets back a summary, flashcards, a quiz, and key concepts with page references — a faster first pass than re-reading the full deck cold.
+
+For this version, the developer is the only person who actually uses the app, testing it against their own real lecture material from this same kind of course. That's a deliberate stand-in for the persona above, not a claim of broader validation: the app is built and tested against this one concrete situation, not against other subjects, note formats, or users beyond the developer. A wider student audience remains a plausible future direction (see Beyond MVP), not a design target for this version.
 
 ## Key design decisions
 
@@ -60,6 +62,7 @@ The assignment specifically calls out several open design decisions. Positions t
 - Chunking or any handling of documents larger than a single lecture's worth of material
 - Structured handling of tables and figures
 - Saving, editing, or exporting flashcards; spaced-repetition scheduling
+- Interactive quiz-taking (answering Quiz questions in the app) and automatic scoring — a planned Phase 2 feature, not in MVP
 - User accounts, sharing, or any multi-user functionality
 - Fine-grained citation (quoting exact source text) beyond page number
 - Any buying or selling functionality (not applicable to this project)
@@ -68,8 +71,18 @@ The assignment specifically calls out several open design decisions. Positions t
 
 Two lenses, both need to hold:
 
-- **Course/grading lens:** the project demonstrates a sound, well-documented development process — appropriate use of AI-assisted programming, testing and QA practice, and clear documentation — rather than feature completeness or polish.
-- **Personal lens:** the student can upload one of their own real lecture PDFs and reliably get a useful summary, a small flashcard set, key concepts, and a quiz with page references, without the app crashing — and can explain the main design and implementation decisions behind how it works.
+- **Course/grading lens:** the project's Git history, planning documents, and test suite show a traceable path from brief → PRD → architecture → working code, not just a finished demo. A reviewer can run the app from the README and see the process that produced it.
+
+- **Functional lens (testable):** for a reasonably-sized lecture document (this brief's own definition — roughly one lecture's worth of slides or notes):
+  - **Sufficiency and honesty.** The Document must contain enough real content to genuinely support the counts below, and the LLM is instructed to work only from the Document's actual content — it must never deliberately invent facts, definitions, or questions just to reach a minimum count. The app makes a best-effort attempt to detect when source material is too thin to support genuine results and reports this clearly (e.g., "not enough material in this document to generate a full set") rather than returning a complete-looking but fabricated result. This detection is a safeguard, not a guarantee — it may not catch every inadequate document — but fabrication to hit a count is never acceptable regardless of whether thinness was detected.
+  - **Minimum counts.** When the Document does contain enough material — the normal case for a reasonably-sized lecture document — a single Generation Pass returns at least 5 flashcards, at least 5 quiz questions with answers, and at least 5 key concepts, together, not as a partial result.
+  - **Page references (PDF).** The document's real page markers are preserved during text extraction and carried through to the AI, so each page reference it returns must match one of those real, preserved markers — not an invented or out-of-range number. Matching a real marker is checked automatically; genuinely confirming that the cited page supports the item's content is checked manually against the source document during testing, not claimed as something automated validation alone guarantees. The summary may reference a page or page range where that's practical, or omit it where the summary spans the whole document too broadly for one page number to mean anything.
+  - **Page references (plain text).** No page reference is attached to any item — the field is omitted entirely, never filled with a guessed, default, or placeholder value.
+  - **Oversized documents.** A Document larger than the system's defined size limit is rejected with a message that names the problem and asks for a smaller file — not a crash or a silent failure.
+  - **Unreadable documents.** An unsupported file type, or a Document with no extractable text (e.g. a scanned, image-only PDF), is rejected with a specific message before any LLM call is attempted.
+  - **Generation failures.** If the LLM call fails, times out, or returns an incomplete/malformed response, the student sees a clear failure state — never a partial or fabricated set of results.
+
+- **Explainability:** the developer can walk a reviewer through the main design and implementation decisions behind the pipeline (why zero persistence, why one LLM call, how page references work, how source-sufficiency is checked) without notes.
 
 ## Constraints & risks
 
@@ -80,4 +93,4 @@ Two lenses, both need to hold:
 
 ## Beyond MVP
 
-If time and interest remain after the MVP is solid, the most natural next steps are supporting more than one document per session, saving or exporting generated flashcards, and generalizing beyond this initial use case toward other students. None of this is a commitment — the project's success is defined by the MVP above, not by how far past it the project gets.
+If time and interest remain after the MVP is solid, the most natural next steps are supporting more than one document per session, turning the Quiz into something the student can answer interactively and get scored on, saving or exporting generated flashcards, and generalizing beyond this initial use case toward other students. None of this is a commitment — the project's success is defined by the MVP above, not by how far past it the project gets.
