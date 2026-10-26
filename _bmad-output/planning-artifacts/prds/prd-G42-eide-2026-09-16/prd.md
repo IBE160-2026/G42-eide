@@ -2,7 +2,7 @@
 title: AI Study Buddy — PRD
 status: final
 created: 2026-09-16
-updated: 2026-09-16
+updated: 2026-10-26
 ---
 
 # PRD: AI Study Buddy
@@ -25,7 +25,7 @@ This is a solo capstone project for IBE160 at Høgskolen i Molde, built by a fir
 
 ### 2.2 Non-Users (v1)
 - The broader student population — v1 is built and tested against one concrete persona and situation (a student preparing for an exam in a lecture-heavy subject, reviewing one lecture at a time), with the developer as the only person actually testing it, standing in for that persona rather than validating across other subjects, note formats, or users.
-- Non-native-English course material beyond whatever happens to work incidentally.
+- Course material in languages other than Norwegian (Bokmål) and English, beyond whatever happens to work incidentally. Norwegian and English source material is in scope.
 - Anyone needing multi-document or full-course-level study support in one session.
 
 ### 2.3 Key User Journeys
@@ -63,14 +63,16 @@ The student can upload one Document (PDF or plain text). Realizes UJ-1.
 - System rejects oversized Documents with a clear message asking for a smaller file. [ASSUMPTION: exact size threshold not yet defined — see Open Questions.]
 - System validates the file's actual content (its signature), not just its extension, before accepting an upload.
 - Plain-text Documents are checked for a supported text encoding (UTF-8); unsupported or undetectable encoding is rejected with a message rather than processed as garbled text.
+- Norwegian characters (æ, ø, å) are extracted correctly from PDF and UTF-8 plain-text Documents.
 
 #### FR-2: Set Generation Inputs
 The student can optionally set course code/subject, detail level, and output language before a Generation Pass.
 
 **Consequences (testable):**
 - Course code/subject is optional and stays blank when unset — no default value is substituted.
-- Detail level defaults to Standard when left unset.
-- Output language defaults to English when left unset; another supported language can be selected when available.
+- Detail level is one of Brief, Standard or Detailed, and defaults to Standard when left unset.
+- Output language is Norwegian (Bokmål) or English, and defaults to Norwegian (Bokmål) when left unset.
+- The selected output language applies to all four Result types, whatever the language of the source Document (for example, a Norwegian Document can produce English Results).
 - An invalid or unsupported value for detail level or output language is rejected or falls back to its default, rather than passed through unvalidated.
 - Free-text input (course code/subject) is sanitized and delimited before inclusion in the LLM prompt, so it cannot override the source-constrained instruction in FR-3.
 
@@ -86,6 +88,7 @@ The system runs one Generation Pass per submitted Document, producing a Summary,
 - Only one Generation Pass may run at a time per session; the generate action is disabled while a pass is in flight, preventing concurrent or duplicate calls.
 - When the Document contains enough genuine material (the normal case for a reasonably-sized lecture document), a Generation Pass produces at least 5 flashcards, at least 5 quiz questions with answers, and at least 5 key concepts, together with the Summary.
 - The LLM must never invent flashcards, quiz questions, or key concepts just to reach these minimums; see FR-7 for how a Document with too little genuine content is handled instead.
+- Subject-specific terminology from the Document is preserved. When the output language differs from the Document's language, the original technical term is shown in brackets the first time it appears (for example, "safety stock (sikkerhetslager)"); important terms are not force-translated inaccurately.
 
 **Out of Scope:**
 - Chunking or multiple LLM calls for oversized Documents — out of scope per FR-1's size rejection.
@@ -99,6 +102,7 @@ The system attaches a Page Reference to generated items where practical, per the
 - The LLM is instructed to cite only page numbers from the markers it was given, not to infer or guess a page number independently.
 - Every Page Reference attached to a Flashcard, Quiz item, or Key Concept is validated against the set of real markers supplied for that Generation Pass; a citation that isn't one of those markers is rejected rather than shown. This check confirms the citation is a real, preserved page marker — it does not by itself prove the citation is the single best or most precise page for that content; that is verified manually against the source PDF during testing, not claimed as an automated guarantee.
 - No Page Reference is fabricated for plain-text Documents lacking page information — omitted, not guessed.
+- Page References work the same way whatever the language of the Document or of the Results.
 
 ### 4.3 Results Display
 **Description:** Results are shown in-browser immediately after a successful Generation Pass, alongside a Verification Notice. Realizes UJ-1, including its "results may be imperfect" edge case.
@@ -156,7 +160,7 @@ When a Generation Pass does not complete successfully, the system shows the stud
 ## 7. Success metrics
 
 **Primary**
-- **SM-1**: Functional completion bar — for a reasonably-sized lecture Document with genuine content, a Generation Pass produces a Summary together with at least 5 Flashcards, 5 Quiz questions with answers, and 5 Key Concepts; every PDF Page Reference matches a real, preserved page marker (plain-text Documents carry none, never guessed); a Document that is oversized, unsupported, or has no extractable text is rejected with a specific message before any LLM call; a failed or malformed LLM response shows a clear failure state instead of partial or fabricated Results; and a Document with too little genuine content is reported as insufficient rather than padded. Automated checks validate page references against the real markers supplied to the LLM — they do not themselves confirm an item's full semantic accuracy, which is checked manually against the source Document. Validates FR-1, FR-2, FR-3, FR-4, FR-5, FR-7.
+- **SM-1**: Functional completion bar — for a reasonably-sized lecture Document with genuine content, a Generation Pass produces a Summary together with at least 5 Flashcards, 5 Quiz questions with answers, and 5 Key Concepts; every PDF Page Reference matches a real, preserved page marker (plain-text Documents carry none, never guessed); a Document that is oversized, unsupported, or has no extractable text is rejected with a specific message before any LLM call; a failed or malformed LLM response shows a clear failure state instead of partial or fabricated Results; and a Document with too little genuine content is reported as insufficient rather than padded. Automated checks validate page references against the real markers supplied to the LLM — they do not themselves confirm an item's full semantic accuracy, which is checked manually against the source Document. Validation includes at least one Norwegian-language Document, run with both output languages, with terminology and Page References checked manually. Validates FR-1, FR-2, FR-3, FR-4, FR-5, FR-7.
 - **SM-2**: Explainability — the developer can explain the main design and implementation decisions behind the pipeline to a reviewer (self-assessed, not automated). Validates FR-3, FR-4, and the process discipline in Constraints & Guardrails.
 - **SM-3**: Documented process — the project's Git history, tests, and documentation stand as evidence of a traceable, reviewable development process, not just a working demo. This describes what the project produces, not a confirmed grading criterion.
 
@@ -178,6 +182,7 @@ When a Generation Pass does not complete successfully, the system shows the stud
 - The LLM is instructed to base output only on the uploaded Document (source-constrained prompting) — this mitigates hallucination risk — it doesn't eliminate it.
 - No automated verification logic (for example, cross-checking generated answers against the source text) is built for MVP; the Verification Notice (FR-6) is the sole mitigation surfaced to the student.
 - Residual hallucination risk is accepted as a known limitation for this version.
+- Generating Results in a different language from the Document adds a small risk of mistranslated terms; this is checked manually during testing, and the Verification Notice still applies.
 
 ### Process
 - Git is required by the course for version control: project work is kept in the assigned repository and pushed to GitHub. Confirmed course requirement.
@@ -186,12 +191,19 @@ When a Generation Pass does not complete successfully, the system shows the stud
 
 ## 9. Open questions
 
+All five questions were answered by the Architecture workflow on 2026-10-26. The original questions are kept below for traceability; each answer points to the binding decision in `_bmad-output/planning-artifacts/architecture/architecture-G42-eide-2026-10-26/ARCHITECTURE-SPINE.md`.
+
 1. What is the exact Document size threshold before an upload is rejected as oversized? (FR-1)
+   - **Answered (AD-14):** provisional limits of 10 MB, 80 PDF pages, 200,000 extracted characters and a 60,000 input-token ceiling, checked in a fixed order; to be revisited after testing real lecture PDFs.
 2. Which cloud LLM provider and pricing tier will be used — what free/low-cost tier is actually available and sufficient for development and testing? (Cost)
+   - **Answered (AD-5, AD-15):** Anthropic Claude API, model `claude-haiku-5-5`, lowest-cost practical paid tier with prepaid credits and auto-reload off (total project budget USD 5–10). The free Gemini tier was rejected because its terms allow inputs to be used for training; Gemini paid tier is a possible fallback after re-checking its terms.
 3. Final tech stack (frontend and backend framework, local run setup) — deferred to the Architecture workflow; course-taught technologies noted in `addendum.md` for it to weigh.
+   - **Answered (Stack, AD-3, AD-22):** Next.js frontend and FastAPI backend, Python 3.13 and Node 22 LTS, running locally only (backend on 127.0.0.1:8000, frontend on localhost:3000), with a README quickstart in demo mode.
 4. How does a solo Git workflow (branching, commit cadence) map onto the course's version-control expectations? (Process)
+   - **Answered (AD-21):** one short-lived branch per story, then a Pull Request, self-review and merge into `main`, with automatic tests on every Pull Request; every commit, push and merge needs the developer's explicit approval.
 5. Page-level citation (FR-4) now has a chosen direction — preserve real page markers through extraction and validate LLM citations against them — but the implementation mechanics (exact chunk-to-page-ID mapping, how markers survive chunking of longer documents) are still deferred to the Architecture workflow. Flagged in `addendum.md`'s "Open for architecture" list since Page References is an MVP must-have.
+   - **Answered (AD-8, AD-10):** no chunking; one PDF page is one citation unit. Each page with text is wrapped in a page marker, and invalid citations are removed. An item left with no valid page makes the whole pass invalid.
 
 ## 10. Assumptions index
 
-- Inline assumption from §4.1 FR-1 — exact Document size threshold not yet defined; treated as an implementation detail to resolve during Architecture or implementation, not a blocking PRD decision.
+- Inline assumption from §4.1 FR-1 — exact Document size threshold not yet defined; treated as an implementation detail to resolve during Architecture or implementation, not a blocking PRD decision. **Resolved by AD-14** (see §9, question 1).
