@@ -1,8 +1,9 @@
 ---
 title: AI Study Buddy — Architecture Explained
 audience: course reviewer / examiner (IBE160)
-status: draft
+status: final
 created: 2026-10-26
+updated: 2026-10-26
 companion_of: ARCHITECTURE-SPINE.md
 ---
 
@@ -12,7 +13,7 @@ This is a short, readable tour of how AI Study Buddy is designed and why. The bi
 
 ## What the app does
 
-A student uploads one lecture PDF or text file, in Norwegian (Bokmål) or English. The app sends the extracted text to an AI model once and returns a **Summary, at least 5 Flashcards, a Quiz of at least 5 questions and at least 5 Key Concepts**, each with a page reference back to the PDF. It runs only on the student's own laptop. It has no accounts and stores nothing.
+A student uploads one lecture PDF or text file, in Norwegian (Bokmål) or English. The app sends the extracted text to an AI model once and returns a **Summary, at least 5 Flashcards, a Quiz of at least 5 questions and at least 5 Key Concepts**, with page references back to the PDF (Flashcards, Quiz items and Key Concepts always; the Summary where useful; none for plain-text files, which have no pages). It runs only on the student's own laptop. It has no accounts and stores nothing.
 
 ## The big picture
 
@@ -61,6 +62,8 @@ AI output can be incomplete, wrongly shaped, padded or wrongly cited. The struct
 
 **What this can't prove:** that a cited page truly *supports* the item. That's checked by hand during testing, using a citation-quality table (supports / partly / doesn't).
 
+**Verification Notice:** whenever Results are shown, real or demo, a visible notice reminds the student that the content is AI-generated and should be checked against the document. It is never hidden in a tooltip or footer.
+
 ## Page references, step by step
 
 ```text
@@ -77,6 +80,7 @@ Page numbers are the **PDF viewer's page positions**, shown as "PDF page 3", so 
 - **Output language:** the student chooses Norwegian Bokmål (the default, because the developer's own lecture notes are mostly Norwegian) or English. All four Result types are written in that language, whatever language the document is in.
 - **Terminology:** subject-specific terms are kept. When the output language differs from the document's, the original term appears in brackets the first time it is used, for example "safety stock (sikkerhetslager)", so students keep the exact words used in their course. Terms are never force-translated inaccurately.
 - **Page references** work the same way in both languages.
+- **Interface language** (buttons, notices, messages) is decided in the UX design step.
 - **Quality check:** Anthropic describes its models as multilingual, but Norwegian quality is checked by hand. At least one Norwegian document is run in both output languages, with terminology and page references reviewed.
 
 ## Demo mode
