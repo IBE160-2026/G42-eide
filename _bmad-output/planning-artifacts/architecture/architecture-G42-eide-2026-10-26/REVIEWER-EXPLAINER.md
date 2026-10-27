@@ -3,7 +3,7 @@ title: AI Study Buddy — Architecture Explained
 audience: course reviewer / examiner (IBE160)
 status: final
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-10-27
 companion_of: ARCHITECTURE-SPINE.md
 ---
 
@@ -128,7 +128,7 @@ This is also how a reviewer can run the app from the README without a key.
 - **BMAD planning:** product brief → PRD → this architecture, all kept in Git.
 - **Per story:** short branch → Pull Request → tests and review → merge. Nothing is committed, pushed or merged without the developer's approval.
 - **Automatic tests** run on every Pull Request through GitHub Actions, without any API key.
-- **AI-session evidence** (useful prompts and session notes) is kept in `docs/ai-sessions/`.
+- **AI-session evidence:** each working session is summarised in `.logs/` using the course-provided `sesjonslogg` skill (task, plan, result, open items). These are retrospective summaries rather than exact prompt transcripts, unless a log says otherwise.
 
 ## Known limitations (by design)
 
