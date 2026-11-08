@@ -2,7 +2,7 @@
 title: AI Study Buddy — PRD
 status: final
 created: 2026-09-16
-updated: 2026-10-26
+updated: 2026-11-08
 ---
 
 # PRD: AI Study Buddy
@@ -43,7 +43,7 @@ Single-user, single-workflow product — the lighter form fits; the JTBD above a
 - **Results** — the collective output of a Generation Pass: a Summary, a Flashcard Set, a Quiz, and a Key Concepts list.
 - **Summary** — the generated condensed overview of the Document's content.
 - **Flashcard Set** — the small set of generated flashcards, each pairing a term or prompt with an answer.
-- **Quiz** — the generated set of questions with answers. In v1, the Quiz is display-only: questions and their answers are shown together, not answered interactively. Interactive answering and automatic scoring is a planned Phase 2 feature (see §6.2 Out of Scope for MVP).
+- **Quiz** — the generated set of questions with answers. In v1, the Quiz is display-only: each question is shown with its answer available through a reveal action, and the student does not type or select answers; nothing is scored or saved. Interactive answering and automatic scoring is a planned Phase 2 feature (see §6.2 Out of Scope for MVP).
 - **Key Concepts** — the generated list of terms/ideas the Document treats as most important.
 - **Page Reference** — a page-number citation attached to a Summary, Flashcard, Quiz item, or Key Concept, pointing back to where in the Document it was drawn from. Inclusion or omission policy: see FR-4.
 - **Generation Inputs** — the optional fields the student can set before a Generation Pass: course code/subject, detail level, output language.
@@ -60,7 +60,7 @@ The student can upload one Document (PDF or plain text). Realizes UJ-1.
 **Consequences (testable):**
 - System accepts PDF and plain-text file types.
 - System rejects unsupported file types with a clear message naming the problem.
-- System rejects oversized Documents with a clear message asking for a smaller file. [ASSUMPTION: exact size threshold not yet defined — see Open Questions.]
+- System rejects oversized Documents with a clear message asking for a smaller file. (Thresholds are defined in architecture AD-14; the upload limit is 10 MB in the binary convention, i.e. 10,485,760 bytes.)
 - System validates the file's actual content (its signature), not just its extension, before accepting an upload.
 - Plain-text Documents are checked for a supported text encoding (UTF-8); unsupported or undetectable encoding is rejected with a message rather than processed as garbled text.
 - Norwegian characters (æ, ø, å) are extracted correctly from PDF and UTF-8 plain-text Documents.
@@ -194,7 +194,7 @@ When a Generation Pass does not complete successfully, the system shows the stud
 All five questions were answered by the Architecture workflow on 2026-10-26. The original questions are kept below for traceability; each answer points to the binding decision in `_bmad-output/planning-artifacts/architecture/architecture-G42-eide-2026-10-26/ARCHITECTURE-SPINE.md`.
 
 1. What is the exact Document size threshold before an upload is rejected as oversized? (FR-1)
-   - **Answered (AD-14):** provisional limits of 10 MB, 80 PDF pages, 200,000 extracted characters and a 60,000 input-token ceiling, checked in a fixed order; to be revisited after testing real lecture PDFs.
+   - **Answered (AD-14):** provisional limits of 10 MB (binary convention: 10,485,760 bytes), 80 PDF pages, 200,000 extracted characters and a 60,000 input-token ceiling, checked in a fixed order; to be revisited after testing real lecture PDFs.
 2. Which cloud LLM provider and pricing tier will be used — what free/low-cost tier is actually available and sufficient for development and testing? (Cost)
    - **Answered (AD-5, AD-15):** Anthropic Claude API, model `claude-haiku-5-5`, lowest-cost practical paid tier with prepaid credits and auto-reload off (total project budget USD 5–10). The free Gemini tier was rejected because its terms allow inputs to be used for training; Gemini paid tier is a possible fallback after re-checking its terms.
 3. Final tech stack (frontend and backend framework, local run setup) — deferred to the Architecture workflow; course-taught technologies noted in `addendum.md` for it to weigh.
