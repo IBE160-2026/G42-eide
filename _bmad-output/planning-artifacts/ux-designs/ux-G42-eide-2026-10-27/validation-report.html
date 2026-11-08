@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UX Design Validation: AI Study Buddy</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.88em;
+    background: rgba(120, 113, 108, 0.12);
+    padding: 1px 4px;
+    border-radius: 3px;
+    overflow-wrap: anywhere;
+  }
+  .badge-both { background: rgba(28, 25, 23, 0.08); color: var(--text); }
+  .counts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .counts .badge { font-size: 12px; padding: 5px 10px; }
+  .xref { font-size: 13.5px; color: var(--muted); border-left: 2px solid var(--border); padding-left: 10px; margin-top: 8px; }
+  .decisions { border-left: 3px solid var(--sev-high); }
+  .decisions ol { margin: 0; padding-left: 22px; }
+  .decisions li { margin-bottom: 8px; }
+  @media (max-width: 600px) {
+    .container { padding: 20px 16px 48px; }
+    section summary { padding: 12px 14px; }
+    .dim-body, .findings-list { padding-left: 14px; padding-right: 14px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>AI Study Buddy — UX Design Validation Report</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/DESIGN.md<br>_bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/EXPERIENCE.md</div>
+      </div>
+    </header>
+
+    <div class="synthesis">
+      <p>The spine pair is a strong, extractable contract. UJ-1 is fully realised as Key Flow 1. Every colour token has a hex value, every <code>{token}</code> reference in DESIGN.md resolves, all contrast ratios recompute exactly, and every approved Norwegian UI string from the memlog appears character-for-character in EXPERIENCE.md. Three high-severity gaps remain before a story-dev agent can build without guessing: (1) an uncommitted wording decision for unknown error codes that contradicts the disabled Generer rule, (2) no disabled visual for secondary buttons although Forrige/Neste are disabled at the deck ends, and (3) no focus rule for when the focused control becomes disabled. The medium findings are mostly unresolved visual details (control typography, paddings, icons, unmocked surfaces) that the spines already list honestly as Open Questions.</p>
+      <p>The accessibility reviewer (WCAG 2.2 AA and the WAI-ARIA APG as targets) shifts the picture. It raises gap (3) to <strong>Critical</strong>: Generer, Vis eksempel, Neste/Forrige at the deck ends and Prøv igjen all become <code>disabled</code> while focused, so focus drops to <code>&lt;body&gt;</code> and the promise that results are "the next <code>Tab</code>" away is not reliable. Both reviewers flagged this independently, and it is merged here into one finding. It also raises the rubric's low double-announcement note to High as part of underspecified live regions, and adds four High findings the rubric did not cover: an incomplete tabs pattern, revealed answers placed before their button in reading order, silent flashcard navigation, and a 200% zoom target that is weaker than the 320 CSS px Reflow criterion. So the spines are extractable, but a developer following them exactly would still ship keyboard and screen-reader bugs. After merging duplicates across reviewers: <strong>1 critical, 7 high, 19 medium, 20 low</strong>.</p>
+    </div>
+
+    <div class="counts" aria-label="Findings by severity after merging duplicates">
+      <span class="badge badge-sev-critical">Critical 1</span>
+      <span class="badge badge-sev-high">High 7</span>
+      <span class="badge badge-sev-medium">Medium 19</span>
+      <span class="badge badge-sev-low">Low 20</span>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card">
+        <div class="dim-name">Flow coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Token completeness</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Component coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">State coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Visual reference coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Bloat & overspecification</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Inheritance discipline</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Shape fit</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+    </div>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Flow coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Checked every UJ in the PRD (only UJ-1, with its two edge cases) and FR-1…FR-7 against Key Flows. Key Flow 1 names a protagonist (Odeibea), has 10 numbered steps, a stated CLIMAX and failure paths mapped to every AD-11 code. Key Flow 2 (demo) has a protagonist ("the examiner"), 6 steps, a climax and failure paths. Both UJ-1 edge cases are covered.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Demo climax depends on an unapproved architecture amendment</h3>
+              <span class="finding-location">EXPERIENCE.md Key Flow 2 step 5; Component Patterns → Page link; Open Questions 2</span>
+            </header>
+            <div class="finding-note">Key Flow 2's climax ("working PDF page references") depends on pending architecture amendment (2). The spine says the demo page-link mechanism is undecided until approved, and no fallback is committed if the amendment is rejected.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Commit a fallback now, e.g. "If no sample-PDF endpoint exists, demo page references are shown as plain <code>PDF-side N</code> labels without a link." The demo climax then holds either way.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Key Flow 1 has no TXT variant</h3>
+              <span class="finding-location">EXPERIENCE.md Key Flows → Key Flow 1</span>
+            </header>
+            <div class="finding-note">Key Flow 1 walks only a PDF. A plain-text Document (supported by FR-1) has no page references, so step 9 ("Verify") cannot happen as written.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add one line: "With a TXT file, results have no page links; verification is against the open text file."</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Failure-path list omits two entries</h3>
+              <span class="finding-location">EXPERIENCE.md Key Flow 1 → Failure paths</span>
+            </header>
+            <div class="finding-note">"Network failure during generation" and the browser pre-check failure (type/size before upload) appear elsewhere but not in the flow's failure list.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add both, pointing to the error table and the Browser pre-check row.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Token completeness</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>All 24 colour tokens have hex values (no critical misses). All 52 <code>{path}</code> references in DESIGN.md and all 5 in EXPERIENCE.md resolve. Every stated WCAG ratio recomputes exactly — confirmed independently by both reviewers. <code>border-subtle</code> (1.43:1) is correctly restricted to decorative use.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">No committed typography for controls</h3>
+              <span class="finding-location">DESIGN.md Open Questions 1; YAML components</span>
+            </header>
+            <div class="finding-note"><code>button-primary</code>, <code>button-secondary</code>, <code>result-tab</code>, settings-field values, the quiz question heading and the demo results heading have no <code>typography</code> token. Mapping controls to <code>{typography.ui}</code> 17px is marked [ASSUMPTION], and the mockup uses off-scale 16/18/22px.</div>
+            <div class="finding-fix"><strong>Fix:</strong> The user picks the scale step for each; add <code>typography:</code> to each of those component tokens.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Component paddings mostly untokenised</h3>
+              <span class="finding-location">DESIGN.md Open Questions 2; YAML components</span>
+            </header>
+            <div class="finding-note">Only <code>upload-bar</code> has <code>padding</code>. Notice, flashcard card, quiz card, error state, dialog and page side padding are missing; mockup values are off-scale.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Snap each to a <code>{spacing.N}</code> step and add a <code>padding</code> entry to each component token.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Notice line-height override not tokenised</h3>
+              <span class="finding-location">DESIGN.md Typography table, row Small; YAML notice-info / notice-warning / demo-banner</span>
+            </header>
+            <div class="finding-note">Notices use <code>{typography.small}</code> (line-height 1.35), but the Typography table says "1.45 in notices per mockup". Token and prose disagree.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Either add a <code>notice</code> typography token (15/400/1.45) and reference it, or drop the 1.45 note.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Contrast table omits focus-on-tint pairs; pair count wrong</h3>
+              <span class="finding-location">DESIGN.md Colors</span>
+            </header>
+            <div class="finding-note">Focus ring on notice/error/demo tints is not listed (recomputed: 6.53 / 6.77 / 6.48 / 6.40, all pass). The intro says "27 checked pairs" but the table lists about 22.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add one row "focus on notice/error/demo tints ≥ 6.40:1" and make the pair count match the table.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title"><code>spacing</code> group holds non-spacing values</h3>
+              <span class="finding-location">DESIGN.md YAML spacing</span>
+            </header>
+            <div class="finding-note">Border widths, the focus ring and <code>measure-answer: 65ch</code> sit under <code>spacing</code>. Consumers can still resolve them; cosmetic.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Optional: move them to a <code>border</code> / <code>size</code> group if the token pipeline allows it.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Component coverage</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>All 22 YAML component names, every component named in DESIGN.md prose and every EXPERIENCE.md Component Patterns row were cross-matched. Most have real rules on both sides. <code>app-header</code> and <code>focus-ring</code> lacking behavioural rows is acceptable.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">No disabled visual for secondary buttons</h3>
+              <span class="finding-location">DESIGN.md YAML components; Components → Button — secondary; EXPERIENCE.md Flashcard row</span>
+            </header>
+            <div class="finding-note"><code>Forrige</code> (first card) and <code>Neste</code> (last card) are secondary buttons that become disabled, but only <code>button-primary-disabled</code> exists. If the Critical focus fix uses <code>aria-disabled</code>, this style must match <code>[aria-disabled="true"]</code> too.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add <code>button-secondary-disabled</code> (e.g. <code>{colors.disabled-fg}</code> text, dashed <code>{colors.disabled-border}</code>, <code>{colors.surface}</code> or <code>{colors.disabled-bg}</code> fill) and reference it in the Button — secondary bullet.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Several behavioural components have no visual spec</h3>
+              <span class="finding-location">EXPERIENCE.md Component Patterns (Browser pre-check, Sammendrag panel, Nøkkelbegreper panel); DESIGN.md Open Questions 4</span>
+            </header>
+            <div class="finding-note">Missing: the Browser pre-check inline message (colour, icon, position), the demo fixed-settings note, the Sammendrag and Nøkkelbegreper panels, the S0 Checking and S1 Empty guidance blocks, and S0x "server not reachable".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add one DESIGN Components bullet each, mostly by reuse: pre-check message = <code>error-fg</code> text + error icon under the chip; S0x uses <code>error-state</code>; fixed-settings note = <code>notice-info</code>; Nøkkelbegreper = term in body 600, explanation in body, page links in a <code>page-link</code> row.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Icons are load-bearing but undefined</h3>
+              <span class="finding-location">DESIGN.md Components; EXPERIENCE.md AF-10</span>
+            </header>
+            <div class="finding-note">AF-10 makes an icon mandatory on every notice, error and the DEMO banner; the file chip uses file / lock / ✕ icons. No icon source, set or shapes are committed.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Name the source (e.g. inline SVGs from the refined mockup, or a named open-licence set), list the icon per surface, and state <code>aria-hidden="true"</code> on decorative icons.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">No rendering rule for multi-paragraph plain text</h3>
+              <span class="finding-location">EXPERIENCE.md Component Patterns → Sammendrag panel</span>
+            </header>
+            <div class="finding-note">AD-18 requires plain-text rendering, but nothing says whether newlines in AI text are preserved. A long Summary would collapse into one block.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Commit "line breaks in AI text are preserved (<code>white-space: pre-line</code>); no Markdown interpretation".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">No hover or pressed states</h3>
+              <span class="finding-location">DESIGN.md Components</span>
+            </header>
+            <div class="finding-note">Buttons, tabs and page links have no hover/pressed styling specified.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One line: either a hover rule (underline for links, darker primary fill) or "no hover styling beyond the cursor".</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>State coverage</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Every IA region was checked against S0, S0x, S1–S5 in both modes, plus loading, empty, focus, error, offline, leave/reload and the six S5 error groups. Coverage is unusually thorough: the error table covers all 17 AD-11 codes plus frontend failures, each mapped to a group with a Generer rule.</p>
+            <p class="xref">Four State findings were raised independently by the accessibility reviewer and are merged into that section (marked "raised by both"): focus lost when a focused control becomes disabled (→ C-1, Critical), pre-check messages not announced (→ M-1), heading structure not committed (→ M-5), and the double-announced error headline (→ H-1).</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Unknown-code text contradicts disabled Generer</h3>
+              <span class="finding-location">EXPERIENCE.md error table, last row; S5 groups → Reload required; Open Questions 5</span>
+            </header>
+            <div class="finding-note">The fallback action text <code>Prøv igjen.</code> tells the user to retry, but the Reload-required group keeps Generer disabled and says to reload. The spine flags this but ships both.</div>
+            <div class="finding-fix"><strong>Fix:</strong> User picks the wording, e.g. <code>Noe gikk galt</code> / <code>Last inn siden på nytt, og prøv igjen.</code> (mirrors <code>invalid_request</code>). Log it in the memlog and update the table. See Needs user decision.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Exit from S5 unspecified</h3>
+              <span class="finding-location">EXPERIENCE.md State Patterns → S5; S5 groups</span>
+            </header>
+            <div class="finding-note">When the user replaces the file or changes a setting after an error, the spine doesn't say whether the error clears and the page returns to S2/S1, or stays until the next Generer.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Commit e.g. "choosing a new file clears the error state and returns to S2; changing settings alone keeps the error visible".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Hard-coded limits inside "exact text"</h3>
+              <span class="finding-location">EXPERIENCE.md Voice and Tone; Screens and controls table; error table</span>
+            </header>
+            <div class="finding-note">Voice and Tone says limits come from <code>/api/status</code>, but the exact strings contain the literals <code>10 MB</code> and <code>80 sider</code> (S1 text, pre-check size text, <code>file_too_large</code>) with no placeholder marking or formatting rule. A copy-paste implementation will hard-code them.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Mark the variable parts, e.g. <code>maks {max_mb} MB</code> / <code>mer enn {max_pdf_pages} sider</code> (in a placeholder syntax that does not collide with token references — see Mechanical notes), and state the conversion (<code>max_upload_bytes / 1 048 576</code>, decimal comma, no trailing <code>,0</code>). See Needs user decision.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">S0x content while the mode is still unknown</h3>
+              <span class="finding-location">EXPERIENCE.md Demo mode variants, row S0/S0x</span>
+            </header>
+            <div class="finding-note">Not stated whether the external-AI notice, DEMO banner and upload bar are shown before <code>/api/status</code> answers (already marked [ASSUMPTION]).</div>
+            <div class="finding-fix"><strong>Fix:</strong> "S0/S0x show the header and the status message only; no notices, no upload bar."</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Demo fixed-settings note visibility in demo S4</h3>
+              <span class="finding-location">EXPERIENCE.md Notices table (Demo S1); Demo S4 row</span>
+            </header>
+            <div class="finding-note">Not specified whether the note stays visible in demo S4 (locked bar) or only in demo S1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> State it.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Visual reference coverage</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p><code>mockups/</code> and <code>wireframes/</code> do not exist; <code>imports/</code> is empty; <code>.working/</code> holds 6 HTML files, all named in DESIGN.md Brand &amp; Style — no orphans. The spines-win rule is stated. Mockup strings match approved copy except where noted.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Approved visual reference not promoted to <code>mockups/</code></h3>
+              <span class="finding-location">DESIGN.md intro; EXPERIENCE.md Foundation → Visual reference</span>
+            </header>
+            <div class="finding-note">Both spines link the build reference into <code>.working/</code> (a draft folder), contrary to the finalize step "Promote <code>.working/</code> keepers to <code>mockups/</code>".</div>
+            <div class="finding-fix"><strong>Fix:</strong> At finalize, copy <code>direction-refined-rolig.html</code> to <code>mockups/</code> and update both links. Keep unchosen directions in <code>.working/</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Spines-win rule stated twice</h3>
+              <span class="finding-location">DESIGN.md intro; EXPERIENCE.md Foundation</span>
+            </header>
+            <div class="finding-note">The rule should be stated once.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Keep the full statement in one spine and point to it from the other.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Mockup ↔ spine drift not listed</h3>
+              <span class="finding-location">DESIGN.md Open Questions 5</span>
+            </header>
+            <div class="finding-note">Mockup labels are <code>◀ Forrige</code> / <code>Neste ▶</code> (spine: <code>Forrige</code> / <code>Neste</code>), and it uses region labels <code>Opplasting og innstillinger</code> / <code>Resultater</code> that the spines don't contain. The accessibility reviewer's tabs and heading fixes (H-2, M-5) would use <code>Resultater</code>.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add both to OQ5. Either adopt the region labels as approved copy (useful for landmarks) or drop them.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Bloat &amp; overspecification</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Dense, but almost everything is load-bearing. The duplication carries drift risk, and one drift has already happened.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Repetition has already caused drift</h3>
+              <span class="finding-location">EXPERIENCE.md S5 groups, Temporary row (and IA, Component Patterns, Demo mode variants, Key Flow 2)</span>
+            </header>
+            <div class="finding-note">Demo S4 is described four times, focus rules three times, leave/reload twice. The S5 group table says "wait at least a minute for rate limits", but the approved <code>ai_rate_limited</code> text says <code>Vent litt før du prøver igjen.</code></div>
+            <div class="finding-fix"><strong>Fix:</strong> Make State Patterns and Focus management the single source and reference them elsewhere. Change "at least a minute" to "wait a little (approved text)".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Process provenance is noise for consumers</h3>
+              <span class="finding-location">Several places in both spines</span>
+            </header>
+            <div class="finding-note">"decided in Step 8", "(user wording)", "Step 4/5 and Step 8 demo decisions".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Remove in polish; the memlog keeps the history.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Inheritance discipline</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Both <code>sources:</code> paths resolve. UJ-1 is cited verbatim. PRD glossary terms map one-to-one to interface labels; FR-2 values map correctly to <code>Kort / Standard / Detaljert</code> and <code>Norsk bokmål / Engelsk</code>. Component names and token references are consistent. All 116 quoted memlog strings were extracted; every approved UI string appears character-for-character.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Unlisted upstream conflict: architecture glossary rule vs Norwegian labels</h3>
+              <span class="finding-location">EXPERIENCE.md Open Questions 4; memlog final PENDING entry; ARCHITECTURE-SPINE.md Consistency Conventions → Glossary</span>
+            </header>
+            <div class="finding-note">Architecture says "Code and UI use the PRD Glossary terms (… Summary, Flashcard Set, Key Concepts …)". The Norwegian UI labels (<code>Sammendrag</code>, <code>Flashkort</code>, <code>Nøkkelbegreper</code>) contradict the UI half, and the conflict is missing from the pending-upstream list.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add to pending item (4): "Conventions → Glossary: 'Code and UI use…' → 'Code uses the PRD Glossary terms; UI uses the approved Norwegian labels mapped in EXPERIENCE.md → Language &amp; Terminology'". Needs user approval, like the other pending changes.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Shape fit</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>DESIGN.md follows the canonical section order exactly, with an appended Open Questions section. EXPERIENCE.md has every required default plus Responsive &amp; Platform and Inspiration &amp; Anti-patterns. The invented sections (Language &amp; Terminology, Open Questions) earn their place. No findings beyond the mechanical notes.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details>
+        <summary>
+          <h2>Accessibility review</h2>
+          <span class="reviewer-source">review-accessibility.md</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Benchmarks: WCAG 2.2 AA as a design and testing target, plus the WAI-ARIA Authoring Practices Guide. Reviewer's verdict, kept in its own voice: the spines are above average for a student project — keyboard rules, dialog behaviour, focus destinations, reduced motion and a verified palette are all written down. Still, a developer who follows the spec exactly would ship real keyboard and screen-reader bugs. The live-region, tabs-pattern and reveal-order rules are too thin to build correctly without guessing, and the mockup already shows the wrong patterns.</p>
+            <p>Reviewer's own counts: Critical 1 · High 5 · Medium 8 · Low 9. Four findings overlap the rubric and are merged here ("raised by both"). Its contrast recheck reproduced every DESIGN.md value and added: dialog surface vs page background 1.04:1 (see M-4) and disabled fill vs background 1.11:1 (fine — the dashed border carries the shape).</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <span class="badge badge-both">Raised by both</span>
+              <h3 class="finding-title">C-1 Focused controls become <code>disabled</code>, so focus drops to <code>&lt;body&gt;</code></h3>
+              <span class="finding-location">EXPERIENCE.md Component Patterns (Upload bar, Generer, Vis eksempel, Flashcard, Prøv igjen, Results arrival); State Patterns S0/S3/S4; Interaction Primitives → Focus management; AF-1</span>
+            </header>
+            <div class="finding-note">Raised by both (rubric: State coverage, high; accessibility: critical). A focused native <code>&lt;button disabled&gt;</code> loses focus and <code>document.activeElement</code> becomes <code>&lt;body&gt;</code>. This happens on the main path: Generer is disabled in S3/S4 right after being pressed, so when <code>Resultatene er klare</code> is announced focus is nowhere, and Firefox, NVDA browse mode and Narrator scan mode may restart from the top. The spec's promise that results are "reached with the next <code>Tab</code>" (Results arrival; AF-1; Key Flow 1 step 6) is not reliable. Same for Vis eksempel in demo, Neste on the second-to-last card, Forrige on the second card, and Prøv igjen (S0x → S0, "all controls disabled"). A keyboard user stepping through flashcards loses focus once every deck. WCAG 2.4.3, 2.4.7, 2.1.1; APG "keyboard focus is not lost".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add one rule to Interaction Primitives: "A control that may be disabled while it has focus uses <code>aria-disabled="true"</code> instead of <code>disabled</code>. It stays focusable, gets the disabled styling, and its handler does nothing while <code>aria-disabled</code> is true." Apply to Generer, Vis eksempel, Forrige, Neste and Prøv igjen. Style <code>[aria-disabled="true"]</code> like <code>:disabled</code> (needs <code>button-secondary-disabled</code> too). Use <code>type="button"</code> with no form so submit isn't triggered. Acceptable alternative for Neste/Forrige: keep native <code>disabled</code> but move focus to the other button first. Add to T-1: "after every action, <code>document.activeElement</code> must never be <code>&lt;body&gt;</code>".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <span class="badge badge-both">Raised by both</span>
+              <h3 class="finding-title">H-1 Live regions are underspecified, and errors are announced twice</h3>
+              <span class="finding-location">EXPERIENCE.md AF-6; Component Patterns → Loading indicator, Error state, Results arrival; State Patterns S3/S4/S5</span>
+            </header>
+            <div class="finding-note">Raised by both (rubric: State coverage, low — double announcement; accessibility: high). AF-6 says what to announce, not how. Live regions only work if they exist, empty, before the text changes; the mockup inserts <code>role="status"</code> and <code>role="alert"</code> with the state. Errors are both pushed to the live region and focused, so the headline is read twice or cut off. Repeated identical text (second generation, second Prøv igjen failure) may be silent. No politeness level is stated. WCAG 4.1.3, 1.3.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One visually hidden <code>&lt;div role="status" aria-live="polite" aria-atomic="true" id="announcer"&gt;</code> from first render. S3: <code>Lager studiemateriell …</code> (demo: <code>Henter eksempel …</code>); S4: <code>Resultatene er klare</code>; polite. S5: no live region and no <code>role="alert"</code> — clear the announcer and move focus to the error headline (<code>&lt;h2 tabindex="-1"&gt;</code>); add <code>aria-describedby</code> to the action text if needed. Clear the text, then set it next tick, so repeats are announced. Assertive is not needed anywhere.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-2 The ARIA tabs pattern is incomplete in the spec and wrong in the mockup</h3>
+              <span class="finding-location">EXPERIENCE.md AF-3; Component Patterns → Result tabs; mockup frames 1, 2, 5</span>
+            </header>
+            <div class="finding-note">AF-3 leaves out <code>aria-controls</code>/<code>aria-labelledby</code> (the mockup has no ids at all), roving tabindex (without it <code>Tab</code> stops on all four tabs, contradicting AF-1's "one Tab stop"), <code>tabindex="0"</code> on a panel with no focusable content (Sammendrag may have no page links, so <code>Tab</code> jumps past the text users need most), keeping inactive panels mounted with <code>hidden</code>, and a name for the tab list. The mockup puts <code>role="tabpanel"</code> on the quiz <code>&lt;ol&gt;</code>, destroying its list semantics. WCAG 4.1.2, 1.3.1, 2.1.1, 2.4.3.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Expand AF-3 to a checklist: <code>div role="tablist" aria-label="Resultater"</code> → <code>button role="tab" id aria-selected aria-controls tabindex={selected?0:-1}</code> → <code>div role="tabpanel" id aria-labelledby tabindex="0" hidden={!selected}</code>; arrows wrap; focus follows selection; the quiz <code>&lt;ol&gt;</code> sits inside the panel. Add to DESIGN.md: the tab panel gets the standard focus ring.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-3 Revealed answers appear before the reveal button in reading order</h3>
+              <span class="finding-location">DESIGN.md Components → Flashcard, Quiz item; EXPERIENCE.md Flashcard, Quiz item</span>
+            </header>
+            <div class="finding-note">The answer renders above <code>Forrige / Vis svar / Neste</code> (flashcard) and above the reveal row (quiz). After pressing <code>Vis svar</code>, a screen-reader user is on the button and the answer is behind them; reading forward goes to Neste or the next question. That undermines the "practise" goal. <code>aria-controls</code> doesn't rescue it. WCAG 1.3.2, 2.4.3.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Pick one and record it. (a) Recommended: in DOM order the reveal button sits directly before the answer — flashcard: counter → term → <code>Vis svar</code> → answer (+ page links) → Forrige/Neste; quiz: question → <code>Vis svar</code> → answer → page links. (b) Keep the layout; answer gets <code>tabindex="-1"</code> and the spec documents Shift+↓ — weaker. Either way: answer is <code>hidden</code> when collapsed, has an <code>id</code> in <code>aria-controls</code>, button carries <code>aria-expanded</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-4 Flashcard navigation changes content silently</h3>
+              <span class="finding-location">EXPERIENCE.md AF-7; Component Patterns → Flashcard</span>
+            </header>
+            <div class="finding-note">On <code>Neste</code>/<code>Forrige</code> focus stays on the button while counter and term change. Nothing is announced, so a screen-reader user doesn't know which card is shown. AF-7 only says "<code>Kort N av M</code> readable". WCAG 4.1.3, 1.3.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Make the visible counter a polite live region present from the start of the panel: <code>&lt;p aria-live="polite" aria-atomic="true"&gt;Kort 4 av 8&lt;/p&gt;</code>. Leave the term out of the region. Combine with C-1 so focus stays on the last-card Neste.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-5 Reflow target is 200% zoom, but WCAG 2.2 AA requires 320 CSS px</h3>
+              <span class="finding-location">EXPERIENCE.md AF-11; Responsive &amp; Platform; DESIGN.md Layout &amp; Spacing</span>
+            </header>
+            <div class="finding-note">200% (≈ 640 CSS px) meets 1.4.4 Resize Text but not 1.4.10 Reflow, which requires 320 CSS px (400% on a 1280 px laptop). Likely failures at 320 px: four tabs in one row (<code>Nøkkelbegreper</code> is long), the 28 px flashcard term with long words, the page-link row, the not-saved note beside Ny fil, the demo heading beside Tilbake til start. "Laptop only" is no exemption — zoom is a laptop feature.</div>
+            <div class="finding-fix"><strong>Fix:</strong> AF-11: "Usable at 200% zoom (1.4.4) and reflows without horizontal scrolling at 320 CSS px / 400% zoom (1.4.10)." Tab list and rows use <code>flex-wrap: wrap</code>; terms and answers use <code>overflow-wrap: anywhere</code>; add a 320 px check to T-1. See Needs user decision.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <span class="badge badge-both">Raised by both</span>
+              <h3 class="finding-title">M-1 File-choice feedback and pre-check errors are not tied to the control or announced</h3>
+              <span class="finding-location">EXPERIENCE.md AF-6; Browser pre-check; File chip; S2; S5 Invalid-file / Too-big / Too-little groups</span>
+            </header>
+            <div class="finding-note">Raised by both (rubric: State coverage, medium; accessibility: medium). Choosing a file makes the chip appear silently. Pre-check messages (<code>Bare PDF- og TXT-filer støttes.</code> / <code>Filen er større enn 10 MB. Velg en mindre fil.</code>) have no association and no announcement; AF-6 doesn't list them. The problem chip is marked only by ✕ icon + colour. S5 file errors appear far from the file control. WCAG 3.3.1, 4.1.3, 1.3.1, 1.4.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Last opp is a real <code>&lt;button&gt;</code> that clicks a visually hidden native <code>&lt;input type="file" accept=".pdf,.txt,application/pdf,text/plain"&gt;</code> (or a styled <code>&lt;label&gt;</code>). Announce <code>Valgt fil: {navn}, {størrelse}</code> or the pre-check message via the shared announcer (H-1). Give the inline message an id and point to it with <code>aria-describedby</code> from Last opp (and Generer while disabled for the file). Add sr-only <code>Problem med filen:</code> to the problem chip; ✕ gets <code>aria-hidden="true"</code>. For S5 file errors, <code>aria-describedby</code> from Last opp to the action text.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-2 <code>lang="en"</code> scope would mispronounce Norwegian interface text inside results</h3>
+              <span class="finding-location">EXPERIENCE.md AF-5; State Patterns S4</span>
+            </header>
+            <div class="finding-note">The easy implementation puts <code>lang="en"</code> on the whole panel, so <code>PDF-side N ↗</code>, <code>Vis svar/Skjul svar</code>, <code>Kort N av M</code>, <code>Forrige/Neste</code>, tab names and the Verification Notice get read with an English voice. WCAG 3.1.2.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Put <code>lang={outputLanguage}</code> only on elements holding generated text (summary paragraphs, concept term + explanation, card term/answer, quiz question/answer), never on a container with controls or page links. Take <code>output_language</code> from the success envelope, not the select. Add the voice check to T-3.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-3 Page links: target size and accessible-name construction</h3>
+              <span class="finding-location">DESIGN.md Components → Page link; EXPERIENCE.md Page link, AF-7, AF-12</span>
+            </header>
+            <div class="finding-note">Page links are ≈ 20 px tall, not inside a sentence, so the 2.5.8 inline exception doesn't apply and AF-12's own "nothing interactive is smaller than 24×24" is broken. <code>↗</code> reads as "north east arrow". AF-7 gives the name <code>PDF-side N, åpnes i ny fane</code> but not how to build it; an <code>aria-label</code> could break 2.5.3. WCAG 2.5.8, 2.5.3, 2.4.4.</div>
+            <div class="finding-fix"><strong>Fix:</strong> <code>display:inline-flex; min-height:24px; padding:2px 4px</code>, ≥ 8 px gaps. Markup: <code>&lt;a href={blobUrl + '#page=' + n} target="_blank" rel="noopener"&gt;PDF-side {n}&lt;span aria-hidden="true"&gt; ↗&lt;/span&gt;&lt;span class="sr-only"&gt;, åpnes i ny fane&lt;/span&gt;&lt;/a&gt;</code> — no <code>aria-label</code>. Separator <code>·</code> gets <code>aria-hidden="true"</code>. Create the blob URL once per results session; revoke on Fortsett.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-4 Ny fil dialog: build details missing, and the card is invisible against the page</h3>
+              <span class="finding-location">EXPERIENCE.md Ny fil dialog, AF-4; DESIGN.md Components → Ny fil dialog, Open Questions 3</span>
+            </header>
+            <div class="finding-note">AF-4 doesn't say which element to use or what labels the dialog; there is no heading. The dialog is <code>surface</code> (#FFFDF7) with no shadow, border or backdrop decided — 1.04:1 against the background, so its edge is practically invisible at zoom. WCAG 4.1.2, 2.4.3, 1.4.11, 1.3.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Native <code>&lt;dialog&gt;</code> with <code>showModal()</code> (inert background, Esc <code>cancel</code>, <code>::backdrop</code> for free). <code>aria-labelledby</code> the question text, <code>autofocus</code> on Avbryt, handle <code>cancel</code> as Avbryt. Focus Ny fil explicitly after close; focus Last opp after S1 renders on Fortsett. Add <code>1px solid {colors.border}</code> (3.68:1) and a backdrop such as <code>rgb(42 40 35 / .45)</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <span class="badge badge-both">Raised by both</span>
+              <h3 class="finding-title">M-5 Heading structure is not defined (AF-8 says only "logical")</h3>
+              <span class="finding-location">EXPERIENCE.md AF-8; DESIGN.md Typography, row Heading</span>
+            </header>
+            <div class="finding-note">Raised by both (rubric: State coverage, medium; accessibility: medium). Only the error headline (h2) and the demo results heading are specified. Real-mode S4 has no results heading, so screen-reader users can't press H to jump to results. The brand is a <code>&lt;span&gt;</code> in the mockup; quiz questions are "headings" with no level. WCAG 1.3.1, 2.4.6, 2.4.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Record the outline: <code>h1</code> AI Study Buddy (in <code>&lt;header&gt;</code>); <code>h2</code> <code>Resultater</code> (visible or sr-only in real S4; the demo heading in demo); <code>h2</code> error headline (S5/S0x); no extra heading in the selected panel; <code>h3</code> per quiz question inside <code>ol &gt; li</code>; flashcard term a <code>p</code> (or <code>h3</code>). Landmarks: <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section aria-labelledby&gt;</code> for upload bar and results.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-6 The locked upload bar loses its semantics</h3>
+              <span class="finding-location">DESIGN.md Upload bar, File chip; EXPERIENCE.md Upload bar</span>
+            </header>
+            <div class="finding-note">Locked settings shown as "plain read-only values" drop the <code>&lt;label for&gt;</code> link; the mockup uses spans with a decorative <code>▾</code>. Lock state is icon + dashed border only, signalled by changing the region's <code>aria-label</code> to "(låst)" — name changes aren't announced. WCAG 1.3.1, 4.1.2, 1.4.1.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Locked: <code>&lt;dl&gt;</code> with <code>&lt;dt&gt;Språk på resultatene&lt;/dt&gt;&lt;dd&gt;Norsk bokmål&lt;/dd&gt;</code> etc.; lock icon <code>aria-hidden</code> plus visible or sr-only <code>Låst</code>. Keep the region name fixed. Unlocked: real <code>&lt;label for&gt;</code>. Course-code input: <code>maxlength="100"</code>, <code>autocomplete="off"</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-7 Fixed <code>height</code> tokens will clip text under text-spacing overrides and zoom</h3>
+              <span class="finding-location">DESIGN.md YAML components file-chip, settings-field, button-*, result-tab</span>
+            </header>
+            <div class="finding-note">Front matter uses <code>height: '{spacing.control-min-height}'</code> while the prose says "min 44px". A fixed height clips labels when users raise line-height/letter-spacing or when file name and meta wrap. WCAG 1.4.12, 1.4.10.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Rename to <code>minHeight</code> / CSS <code>min-height</code>, padding for rhythm. No <code>overflow:hidden</code> on text, except the file-name ellipsis, which falls back to <code>overflow-wrap:anywhere</code> at narrow widths.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">M-8 The testing plan relies on Lighthouse for things Lighthouse cannot check</h3>
+              <span class="finding-location">EXPERIENCE.md Accessibility Floor → Testing T-1..T-3</span>
+            </header>
+            <div class="finding-note">Lighthouse can't check focus loss, tab order, roving tabindex, the dialog trap, live-region timing, reading order after reveal, 320 px reflow, text spacing or pronunciation. T-1 and T-3 have no pass criteria. Process adequacy for the "designed and tested against WCAG 2.2 AA" claim.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Give T-1..T-3 pass criteria: T-1 focus never on <code>&lt;body&gt;</code>, Generer → one <code>Tab</code> reaches Ny fil, dialog Avbryt/Esc/Fortsett, 320 px + text-spacing check. T-2 add Accessibility Insights for Web (FastPass + Tab stops). T-3 name NVDA + Firefox/Chrome or Narrator + Edge; check error read once, <code>Kort N av M</code> announced, answer reachable reading forward, English voice for results, file choice announced.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-1 <code>Vis svar</code> / <code>Skjul svar</code> label change plus <code>aria-expanded</code></h3>
+              <span class="finding-location">EXPERIENCE.md AF-7, Flashcard, Quiz item</span>
+            </header>
+            <div class="finding-note">"Skjul svar, expanded" is understandable and the copy is approved. The real risk is a "fix" that adds a constant <code>aria-label="Vis svar"</code>, breaking 2.5.3.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Keep the toggle copy with <code>aria-expanded</code> + <code>aria-controls</code>. No <code>aria-label</code>, no <code>aria-pressed</code>. Note: "accessible name = visible label".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-2 External-AI notice link: same tab would lose results</h3>
+              <span class="finding-location">EXPERIENCE.md Notices (external-AI)</span>
+            </header>
+            <div class="finding-note"><code>Les mer om hvordan Anthropic behandler data</code> is visible in real S4. Same tab triggers the leave warning and can lose results; new tab should say so.</div>
+            <div class="finding-fix"><strong>Fix:</strong> <code>target="_blank" rel="noopener"</code> with sr-only <code>, åpnes i ny fane</code> and <code>aria-hidden</code> <code>↗</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-3 Leave/reload warning text is browser-controlled</h3>
+              <span class="finding-location">EXPERIENCE.md Leaving and reloading</span>
+            </header>
+            <div class="finding-note">The native <code>beforeunload</code> prompt is accessible but its text can't be changed. Fine, since the visible <code>Resultatene lagres ikke…</code> note carries the explanation.</div>
+            <div class="finding-fix"><strong>Fix:</strong> No behaviour change. Note that the in-page not-saved note is the accessible explanation; register the listener only in real S4, remove it on Fortsett.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-4 S0 / S0x on load: announcement and focus not defined</h3>
+              <span class="finding-location">EXPERIENCE.md State Patterns S0/S0x; Focus management</span>
+            </header>
+            <div class="finding-note">Live-region changes right after load are often missed, and the S0x error (<code>Får ikke kontakt med appens server</code>) has no focus rule — the S5 rule doesn't cover it.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Treat S0x like S5: focus its <code>h2</code> (<code>tabindex="-1"</code>); re-focus on repeated failures after <code>Prøv igjen</code>. Don't announce <code>Starter …</code>.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-5 Discoverability of disabled controls</h3>
+              <span class="finding-location">EXPERIENCE.md Generer; DESIGN.md Button — primary disabled</span>
+            </header>
+            <div class="finding-note">A native-disabled Generer is skipped by <code>Tab</code>; the reason is only nearby text. Disabled fill is 1.11:1 against the page, so the dashed border carries the shape — already intended.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Optional <code>aria-describedby</code> from Generer to the S1 guidance or current error action text. Keep the dashed border; never opacity alone.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-6 Focus-ring implementation and Focus Not Obscured</h3>
+              <span class="finding-location">DESIGN.md Focus ring; EXPERIENCE.md AF-2</span>
+            </header>
+            <div class="finding-note">The ring passes everywhere checked; the spec just needs to protect it. A sticky header or banner added later would risk 2.4.11.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add "header, DEMO banner and notices are not sticky/fixed" and "global <code>:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px }</code>; a <code>tabindex="-1"</code> headline may show the ring".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-7 No page title</h3>
+              <span class="finding-location">EXPERIENCE.md Foundation / Information Architecture</span>
+            </header>
+            <div class="finding-note">No <code>&lt;title&gt;</code> is specified. WCAG 2.4.2.</div>
+            <div class="finding-fix"><strong>Fix:</strong> <code>&lt;title&gt;AI Study Buddy&lt;/title&gt;</code>, optionally <code>AI Study Buddy – Demo</code> in demo mode. Landmarks per M-5.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-8 Tab label counts</h3>
+              <span class="finding-location">EXPERIENCE.md Result tabs</span>
+            </header>
+            <div class="finding-note"><code>Flashkort (8)</code> reads as "Flashkort, 8" — acceptable. Risk is hiding the count or adding a differing <code>aria-label</code> (2.5.3).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Keep the visible text as the accessible name.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">L-9 WCAG 2.2 applicability notes for the test notes</h3>
+              <span class="finding-location">EXPERIENCE.md Accessibility Floor → Testing</span>
+            </header>
+            <div class="finding-note">2.5.7 n/a (no drag); 3.2.6 n/a; 3.3.7 met for S5; 3.3.8 n/a (no login); 2.4.11 met if L-6 kept; 2.5.8 met except page links (M-3); 2.2.1 n/a (server wait, not a user time limit); 2.2.2 covered by AF-13; 3.2.2 met (only Generer starts a pass).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Copy these into the test notes as evidence for the WCAG 2.2 AA target claim.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li>Token-syntax collision: <code>{reference_id}</code> in the <code>internal_error</code> action text uses the same brace syntax as token references, so a <code>{path.to.token}</code> resolver will flag it. Use a distinct placeholder form (e.g. <code>‹reference_id›</code> or <code>&lt;reference_id&gt;</code>) or state that error-copy placeholders are runtime values. Same for any limit placeholders added (State coverage).</li>
+        <li>Frontmatter: DESIGN.md is complete. EXPERIENCE.md has no <code>description</code>. Both are <code>status: draft</code>; set to <code>final</code> at handoff.</li>
+        <li>Cross-references: <code>[DESIGN.md](DESIGN.md)</code>, <code>[EXPERIENCE.md](EXPERIENCE.md#open-questions)</code> and <code>.working/direction-refined-rolig.html</code> all resolve.</li>
+        <li>Name consistency: "Notice (info / warning)" vs "Notices", "Settings field" vs "Settings fields" — singular/plural only; token keys identical.</li>
+        <li>Mermaid: none in either spine.</li>
+        <li>Mockup URLs (<code>localhost:8000</code>, <code>?demo=1</code>) are already listed as spines-win conflicts in DESIGN.md Open Questions 5.</li>
+      </ul>
+    </div>
+
+    <div class="mechanical decisions">
+      <h3>Needs user decision</h3>
+      <ol>
+        <li><strong>Unknown-error wording vs disabled Generer.</strong> Fallback text <code>Prøv igjen.</code> asks for a retry while the Reload-required group keeps Generer disabled. Choose the wording (e.g. <code>Noe gikk galt</code> / <code>Last inn siden på nytt, og prøv igjen.</code>) or change the group's behaviour. (State coverage, high)</li>
+        <li><strong>How upload limits appear in text.</strong> Keep the literals <code>10 MB</code> / <code>80 sider</code> or switch to placeholders filled from <code>/api/status</code> — and if so, the number format (decimal comma, no <code>,0</code>) and a placeholder syntax that doesn't collide with <code>{token}</code> references. (State coverage, medium; Mechanical notes)</li>
+        <li><strong>Reflow target: 200% zoom vs 320 CSS px.</strong> Keep AF-11 at 200% zoom or adopt WCAG 1.4.10 Reflow at 320 CSS px / 400% zoom, which brings wrapping rules for tabs, rows and long words. (Accessibility H-5)</li>
+        <li><strong>Architecture glossary vs Norwegian UI labels.</strong> Approve changing Architecture Conventions → Glossary to "Code uses the PRD Glossary terms; UI uses the approved Norwegian labels", and add it to the pending upstream changes, item (4). (Inheritance discipline, medium)</li>
+        <li><strong>Disabled-while-focused pattern.</strong> <code>aria-disabled</code> on Generer, Vis eksempel, Forrige, Neste and Prøv igjen, or native <code>disabled</code> with focus moved first (e.g. Neste → Forrige). (Accessibility C-1, raised by both)</li>
+        <li><strong>Reveal order for answers.</strong> (a) DOM reorder so <code>Vis svar</code> sits directly before the answer, or (b) keep the visual order and rely on <code>tabindex="-1"</code> + Shift+↓. (Accessibility H-3)</li>
+        <li><strong>Demo page-link fallback.</strong> What demo page references show if architecture amendment (2) is rejected, e.g. plain <code>PDF-side N</code> labels without a link. (Flow coverage, medium)</li>
+        <li><strong>Control typography and hover styling.</strong> Scale step per control (Open Questions 1) and whether buttons/tabs/links get hover styling at all. (Token completeness, medium; Component coverage, low)</li>
+        <li><strong>Region labels from the mockup.</strong> Adopt <code>Opplasting og innstillinger</code> / <code>Resultater</code> as approved copy (useful for landmarks, tabs and the S4 heading) or drop them. (Visual reference coverage, low; Accessibility H-2, M-5)</li>
+      </ol>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: _bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/review-rubric.md</span>
+        <span>Accessibility: _bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/review-accessibility.md</span>
+        <span>Generated: 2026-11-08</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

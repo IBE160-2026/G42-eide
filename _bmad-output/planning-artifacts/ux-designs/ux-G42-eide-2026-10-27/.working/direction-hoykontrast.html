@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Høykontrast – retning</title>
+<style>
+/* ============================================================
+   Design direction: Høykontrast (High-contrast utilitarian)
+   Main accent: #0037B3
+   Palette (every hex used by the app mockup):
+  paper        #FFFFFF
+  ink          #000000
+  muted        #262626
+  accent       #0037B3
+  onAccent     #FFFFFF
+  border       #000000
+  yellow       #FFD60A
+  grey         #F2F2F2
+  errInk       #A3001B
+  disBg        #E6E6E6
+  disInk       #3D3D3D
+   Mock browser chrome (shared, neutral): #DEDEE2 bar, #B5B5BA dots, #FFFFFF url field, #3B3B3B url text, #76767C frame border.
+   Decorative-only: The yellow halo outside the focus ring is a supplementary cue (yellow vs white is low contrast, about 1.5:1); the 4px black outline alone satisfies the 3:1 focus requirement.
+   WCAG 2.x contrast (computed with relative luminance formula):
+  Body text / white: #000000 on #FFFFFF = 21.00:1 (needs 4.5:1) PASS
+  Muted text / white: #262626 on #FFFFFF = 15.13:1 (needs 4.5:1) PASS
+  Text on locked bar / grey: #000000 on #F2F2F2 = 18.76:1 (needs 4.5:1) PASS
+  Header text + logo / black: #FFFFFF on #000000 = 21.00:1 (needs 4.5:1) PASS
+  Accent link / white: #0037B3 on #FFFFFF = 9.56:1 (needs 4.5:1) PASS
+  Primary button text / blue: #FFFFFF on #0037B3 = 9.56:1 (needs 4.5:1) PASS
+  Selected tab text / black: #FFFFFF on #000000 = 21.00:1 (needs 4.5:1) PASS
+  Disabled button text / disabled bg: #3D3D3D on #E6E6E6 = 8.70:1 (needs 4.5:1) PASS
+  Info icon / blue tile: #FFFFFF on #0037B3 = 9.56:1 (needs 3:1) PASS
+  Warning icon / yellow tile: #000000 on #FFD60A = 14.88:1 (needs 3:1) PASS
+  DEMO banner text / yellow: #000000 on #FFD60A = 14.88:1 (needs 4.5:1) PASS
+  Error headline + problem file / white: #A3001B on #FFFFFF = 8.16:1 (needs 4.5:1) PASS
+  Error icon / red tile: #FFFFFF on #A3001B = 8.16:1 (needs 3:1) PASS
+  Control & region borders / white: #000000 on #FFFFFF = 21.00:1 (needs 3:1) PASS
+  Borders / locked grey: #000000 on #F2F2F2 = 18.76:1 (needs 3:1) PASS
+  Disabled dashed border / disabled bg: #000000 on #E6E6E6 = 16.83:1 (needs 3:1) PASS
+  Error border / white: #A3001B on #FFFFFF = 8.16:1 (needs 3:1) PASS
+  Blue tile edge / white: #0037B3 on #FFFFFF = 9.56:1 (needs 3:1) PASS
+  Focus ring (black outline) / white: #000000 on #FFFFFF = 21.00:1 (needs 3:1) PASS
+  Focus halo (yellow) vs black outline: #FFD60A on #000000 = 14.88:1 (needs 3:1) PASS
+  Mock browser URL text / URL field (frame): #3B3B3B on #FFFFFF = 11.20:1 (needs 4.5:1) PASS
+  Mock browser frame border / page (frame): #76767C on #FFFFFF = 4.51:1 (needs 3:1) PASS
+  Contrast table rule / page (frame): #767676 on #FFFFFF = 4.54:1 (needs 3:1) PASS
+   ============================================================ */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:32px 24px 64px}
+.stage{overflow-x:auto;padding:8px 4px 24px}
+.browser{width:1280px;margin:0 auto;border:1px solid #76767C;border-radius:10px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.14)}
+.browser.small{width:960px}
+.chrome{display:flex;align-items:center;gap:8px;background:#DEDEE2;padding:10px 14px;border-bottom:1px solid #76767C}
+.chrome .dot{width:12px;height:12px;border-radius:50%;background:#B5B5BA}
+.chrome .url{margin-left:16px;flex:1;max-width:520px;background:#FFFFFF;color:#3B3B3B;font:13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:7px 12px;border-radius:6px}
+.ic{width:22px;height:22px;flex:none}
+.ic-sm{width:16px;height:16px}
+.logo{width:26px;height:26px;flex:none}
+.btn{cursor:pointer;font:inherit}
+.btn[disabled]{cursor:not-allowed}
+.doc{max-width:1280px;margin:0 auto}
+.doc h1.dir-title{margin:0 0 6px}
+.rationale{max-width:820px;margin:0 0 28px}
+.sec-label{max-width:1280px;margin:40px auto 12px}
+.contrast{max-width:1280px;margin:48px auto 0;border-collapse:collapse;font:13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.contrast caption{text-align:left;font-weight:700;font-size:15px;padding:0 0 8px}
+.contrast th,.contrast td{text-align:left;padding:5px 10px;border-bottom:1px solid #767676}
+.contrast .sw{display:inline-block;width:14px;height:14px;border:1px solid #000;vertical-align:-2px;margin-right:6px}
+.contrast-wrap{overflow-x:auto}
+
+
+body{background:#FFFFFF;color:#000000;font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.doc h1.dir-title{font-size:32px;font-weight:900}
+.doc .sub{color:#262626;font-weight:600}
+.app{background:#FFFFFF;color:#000000;padding:24px 40px 40px}
+.app-header{display:flex;align-items:center;gap:10px;background:#000000;color:#FFFFFF;margin:-24px -40px 20px;padding:14px 40px}
+.brand{font-size:22px;font-weight:900;letter-spacing:.3px}
+.notice{display:flex;gap:0;align-items:stretch;border:2px solid #000000;border-radius:0;margin:0 0 10px;background:#FFFFFF}
+.notice .ic{width:24px;height:24px;box-sizing:content-box;padding:12px;flex:none}
+.notice p{margin:0;padding:12px 16px;font-weight:500}
+.notice-info .ic{background:#0037B3;color:#FFFFFF}
+.notice-warn{border-width:3px}
+.notice-warn .ic{background:#FFD60A;color:#000000;border-right:2px solid #000000}
+.notice-warn p{font-weight:700}
+.link,.page-link{color:#0037B3;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.bar{display:flex;align-items:flex-end;gap:16px;border:2px solid #000000;padding:14px 16px;margin:16px 0 20px}
+.bar.is-locked{background:#F2F2F2}
+.file{display:flex;align-items:center;gap:8px;flex:1.4;font-weight:700;padding-bottom:10px}
+.file .lock{display:inline-flex;align-items:center;gap:4px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1}
+.label{font-size:15px;font-weight:700;color:#000000}
+.value{font-size:17px;padding:8px 10px;border:2px solid #000000;background:#FFFFFF;border-radius:2px}
+.value.input{display:flex;justify-content:space-between}
+.btn{border-radius:2px;min-height:44px;padding:9px 20px;font-size:17px;font-weight:800;border:2px solid #000000}
+.btn-primary{background:#0037B3;color:#FFFFFF;border-color:#0037B3}
+.btn-primary[disabled]{background:#E6E6E6;color:#3D3D3D;border:2px dashed #000000;text-decoration:line-through}
+.btn-secondary{background:#FFFFFF;color:#000000}
+.btn-upload{display:inline-flex;gap:8px;align-items:center}
+.results-row{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:4px 0 18px}
+.note{margin:0;font-size:16px;font-weight:600;color:#000000}
+.tabs{display:flex;border-bottom:3px solid #000000}
+.tab{font:inherit;font-weight:700;font-size:17px;background:#FFFFFF;border:2px solid #000000;border-bottom:0;margin-right:-2px;color:#000000;padding:10px 22px;cursor:pointer}
+.tab[aria-selected="true"]{background:#000000;color:#FFFFFF;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+.panel{border:2px solid #000000;border-top:0;padding:22px 28px 26px}
+.fc-counter{margin:0 0 12px;font-weight:800;font-size:17px}
+.fc-card{border:2px solid #000000}
+.fc-front{font-size:30px;font-weight:900;margin:0;padding:20px 24px;border-bottom:2px solid #000000}
+.fc-answer{padding:20px 24px}
+.fc-answer p{font-size:20px;font-weight:500;margin:0 0 14px;max-width:900px}
+.fc-controls{display:flex;gap:12px;margin-top:18px}
+.fc-controls .btn:last-child{margin-left:auto}
+.is-focus{outline:4px solid #000000;outline-offset:2px;box-shadow:0 0 0 8px #FFD60A}
+.error-state{display:flex;gap:0;align-items:stretch;border:3px solid #A3001B;max-width:860px}
+.error-state .ic{width:30px;height:30px;box-sizing:content-box;padding:16px;background:#A3001B;color:#FFFFFF}
+.error-state div{padding:14px 18px}
+.error-state h2{margin:0 0 4px;font-size:22px;font-weight:900;color:#A3001B}
+.error-state p{margin:0;font-weight:500}
+.file-problem{gap:12px;padding-bottom:0}
+.file-problem .file-name{display:inline-flex;gap:6px;align-items:center;color:#A3001B;font-weight:800}
+.demo-banner{display:flex;gap:10px;align-items:center;background:#FFD60A;color:#000000;border:3px solid #000000;padding:12px 16px;font-weight:800}
+.demo-banner p{margin:0}
+.demo-heading{font-size:24px;font-weight:900;margin:18px 0 0}
+.sec-label{font-size:17px;font-weight:900;color:#000000}
+
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1 class="dir-title">Høykontrast</h1>
+  <p class="sub" lang="en">High-contrast utilitarian · accent #0037B3</p>
+  <p class="rationale" lang="en">A utilitarian, accessibility-first direction: pure black text on white, 2px solid black borders on every control and region, square 0–2px corners and no decoration beyond what carries meaning. One strong functional blue marks interaction, status uses heavy-bordered blocks with icon tiles, and the focus ring is a thick 4px black outline with a yellow halo that cannot be missed. Type is a step larger and bolder for maximum legibility at a glance.</p>
+</div>
+
+<p class="sec-label" lang="en">Hero — results, Flashkort tab (the "Skjul svar" button shows the focus ring)</p>
+<div class="stage">
+<div class="browser ">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000</span></div>
+  <div class="app"><header class="app-header"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6.5c3-1.5 6-1.5 9 0v13c-3-1.5-6-1.5-9 0zM21 6.5c-3-1.5-6-1.5-9 0v13c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="brand">AI Study Buddy</span></header><main><div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>Teksten i dokumentet ditt sendes til Anthropic, en ekstern KI-tjeneste, for å lage studiemateriell. AI Study Buddy lagrer ikke dokumentet eller resultatene. <a href="#" class="link">Les mer om hvordan Anthropic behandler data.</a></p></div>
+<section class="bar is-locked" aria-label="Opplasting og innstillinger">
+  <div class="file"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 2.5h8l5 5v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2.5v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="file-name">forelesning-7-lagerstyring.pdf</span><span class="lock" title="Låst"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg></span></div>
+  <div class="field"><span class="label">Språk på resultatene</span><span class="value">Norsk bokmål</span></div>
+  <div class="field"><span class="label">Detaljnivå</span><span class="value">Standard</span></div>
+  <div class="field"><span class="label">Emnekode (valgfritt)</span><span class="value">LOG201</span></div>
+  <button class="btn btn-primary" disabled>Generer</button>
+</section>
+<section class="results" aria-label="Resultater">
+  <div class="notices">
+    <div class="notice notice-warn" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 L22 20 H2 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></svg><p>Innholdet er laget av KI og kan inneholde feil. Kontroller det mot originaldokumentet.</p></div>
+    <div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>PDF-side 2 og 7 hadde ingen lesbar tekst (for eksempel bilder eller skannede sider) og ble ikke analysert.</p></div>
+  </div>
+  <div class="results-row">
+    <p class="note">Resultatene lagres ikke. De forsvinner hvis du lukker eller laster inn siden på nytt.</p>
+    <button class="btn btn-secondary">Ny fil</button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="false">Sammendrag</button>
+    <button class="tab" role="tab" aria-selected="false">Nøkkelbegreper</button>
+    <button class="tab" role="tab" aria-selected="true">Flashkort (8)</button>
+    <button class="tab" role="tab" aria-selected="false">Quiz (6)</button>
+  </div>
+  <div class="panel" role="tabpanel">
+    <p class="fc-counter">Kort 3 av 8</p>
+    <div class="fc-card">
+      <p class="fc-front">Sikkerhetslager</p>
+      <div class="fc-answer">
+        <p>Et ekstra lager som holdes for å dekke usikkerhet i etterspørsel og leveringstid, slik at man unngår å gå tom for varer.</p>
+        <a href="#" class="page-link">PDF-side 4 ↗</a>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="btn btn-secondary">◀ Forrige</button>
+      <button class="btn btn-secondary is-focus">Skjul svar</button>
+      <button class="btn btn-secondary">Neste ▶</button>
+    </div>
+  </div>
+</section></main></div>
+</div>
+</div>
+
+<p class="sec-label" lang="en">Secondary — error state (upload unlocked) and DEMO banner sample</p>
+<div class="stage">
+<div class="browser small">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000</span></div>
+  <div class="app"><header class="app-header"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6.5c3-1.5 6-1.5 9 0v13c-3-1.5-6-1.5-9 0zM21 6.5c-3-1.5-6-1.5-9 0v13c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="brand">AI Study Buddy</span></header><main><div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>Teksten i dokumentet ditt sendes til Anthropic, en ekstern KI-tjeneste, for å lage studiemateriell. AI Study Buddy lagrer ikke dokumentet eller resultatene. <a href="#" class="link">Les mer om hvordan Anthropic behandler data.</a></p></div>
+<section class="bar is-open" aria-label="Opplasting og innstillinger">
+  <div class="file file-problem"><button class="btn btn-primary btn-upload"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16V4M7 9l5-5 5 5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Last opp</span></button><span class="file-name"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>skannede-notater.pdf</span></span></div>
+  <div class="field"><span class="label">Språk på resultatene</span><span class="value input">Norsk bokmål <span class="caret" aria-hidden="true">▾</span></span></div>
+  <div class="field"><span class="label">Detaljnivå</span><span class="value input">Standard <span class="caret" aria-hidden="true">▾</span></span></div>
+  <div class="field"><span class="label">Emnekode (valgfritt)</span><span class="value input">LOG201</span></div>
+  <button class="btn btn-primary" disabled>Generer</button>
+</section>
+<section class="results" aria-label="Resultater">
+  <div class="error-state" role="alert"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><div><h2>Fant ingen lesbar tekst</h2><p>Skannede PDF-er og sider med bare bilder støttes ikke. Velg en PDF med tekst du kan markere.</p></div></div>
+</section></main></div>
+</div>
+</div>
+<div class="stage">
+<div class="browser small">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000/?demo=1</span></div>
+  <div class="app"><main>
+<div class="demo-banner" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg><p>DEMO – du ser et ferdig eksempel. Ingen KI-tjeneste brukes, og egne filer kan ikke lastes opp.</p></div>
+<h2 class="demo-heading">Eksempelresultater (ikke generert nå)</h2></main></div>
+</div>
+</div>
+
+<div class="contrast-wrap">
+<table class="contrast" lang="en">
+<caption>Contrast check — Høykontrast (WCAG 2.x)</caption>
+<thead><tr><th>Pair</th><th>Foreground</th><th>Background</th><th>Ratio</th><th>Requirement</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Body text / white</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>21.00:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Muted text / white</td><td><span class="sw" style="background:#262626"></span>#262626</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>15.13:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Text on locked bar / grey</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#F2F2F2"></span>#F2F2F2</td><td><strong>18.76:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Header text + logo / black</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><strong>21.00:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Accent link / white</td><td><span class="sw" style="background:#0037B3"></span>#0037B3</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>9.56:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Primary button text / blue</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#0037B3"></span>#0037B3</td><td><strong>9.56:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Selected tab text / black</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><strong>21.00:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Disabled button text / disabled bg</td><td><span class="sw" style="background:#3D3D3D"></span>#3D3D3D</td><td><span class="sw" style="background:#E6E6E6"></span>#E6E6E6</td><td><strong>8.70:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Info icon / blue tile</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#0037B3"></span>#0037B3</td><td><strong>9.56:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Warning icon / yellow tile</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#FFD60A"></span>#FFD60A</td><td><strong>14.88:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>DEMO banner text / yellow</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#FFD60A"></span>#FFD60A</td><td><strong>14.88:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Error headline + problem file / white</td><td><span class="sw" style="background:#A3001B"></span>#A3001B</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>8.16:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Error icon / red tile</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#A3001B"></span>#A3001B</td><td><strong>8.16:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Control & region borders / white</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>21.00:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Borders / locked grey</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#F2F2F2"></span>#F2F2F2</td><td><strong>18.76:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Disabled dashed border / disabled bg</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#E6E6E6"></span>#E6E6E6</td><td><strong>16.83:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Error border / white</td><td><span class="sw" style="background:#A3001B"></span>#A3001B</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>8.16:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Blue tile edge / white</td><td><span class="sw" style="background:#0037B3"></span>#0037B3</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>9.56:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Focus ring (black outline) / white</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>21.00:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Focus halo (yellow) vs black outline</td><td><span class="sw" style="background:#FFD60A"></span>#FFD60A</td><td><span class="sw" style="background:#000000"></span>#000000</td><td><strong>14.88:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Mock browser URL text / URL field (frame)</td><td><span class="sw" style="background:#3B3B3B"></span>#3B3B3B</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>11.20:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Mock browser frame border / page (frame)</td><td><span class="sw" style="background:#76767C"></span>#76767C</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>4.51:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Contrast table rule / page (frame)</td><td><span class="sw" style="background:#767676"></span>#767676</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>4.54:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>
