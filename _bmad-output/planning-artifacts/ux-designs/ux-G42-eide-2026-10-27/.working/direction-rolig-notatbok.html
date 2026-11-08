@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rolig notatbok – retning</title>
+<style>
+/* ============================================================
+   Design direction: Rolig notatbok (Calm notebook)
+   Main accent: #1D5C63
+   Palette (every hex used by the app mockup):
+  paper        #F7F3EA
+  surface      #FFFDF7
+  ink          #2A2823
+  muted        #5B5649
+  accent       #1D5C63
+  onAccent     #FFFFFF
+  accentSoft   #E2EEEC
+  line         #DDD5C4
+  ctrlBorder   #857D6C
+  warnBg       #FBF1DC
+  warnInk      #6E4600
+  infoBg       #E7EFF3
+  infoInk      #1F4A63
+  errBg        #FBE9E7
+  errInk       #8E2A20
+  disBg        #ECE7DC
+  disInk       #5F5A4E
+   Mock browser chrome (shared, neutral): #DEDEE2 bar, #B5B5BA dots, #FFFFFF url field, #3B3B3B url text, #76767C frame border.
+   Decorative-only: line (#DDD5C4) is used only for decorative dividers/card edges that carry no meaning; every meaningful boundary (inputs, buttons, locked bar) uses ctrlBorder or accent.
+   WCAG 2.x contrast (computed with relative luminance formula):
+  Body text / paper: #2A2823 on #F7F3EA = 13.30:1 (needs 4.5:1) PASS
+  Body text / surface (card): #2A2823 on #FFFDF7 = 14.48:1 (needs 4.5:1) PASS
+  Muted text (labels, note, counter) / paper: #5B5649 on #F7F3EA = 6.60:1 (needs 4.5:1) PASS
+  Muted text / surface: #5B5649 on #FFFDF7 = 7.19:1 (needs 4.5:1) PASS
+  Accent link, selected tab / paper: #1D5C63 on #F7F3EA = 6.86:1 (needs 4.5:1) PASS
+  Accent link (page link) / surface: #1D5C63 on #FFFDF7 = 7.47:1 (needs 4.5:1) PASS
+  Primary button text / accent: #FFFFFF on #1D5C63 = 7.60:1 (needs 4.5:1) PASS
+  Secondary button text / surface: #1D5C63 on #FFFDF7 = 7.47:1 (needs 4.5:1) PASS
+  Disabled button text / disabled bg: #5F5A4E on #ECE7DC = 5.57:1 (needs 4.5:1) PASS
+  Info notice text + icon / info bg: #1F4A63 on #E7EFF3 = 8.13:1 (needs 4.5:1) PASS
+  Warning notice text + icon / warning bg: #6E4600 on #FBF1DC = 7.37:1 (needs 4.5:1) PASS
+  Error headline + icon / error bg: #8E2A20 on #FBE9E7 = 7.16:1 (needs 4.5:1) PASS
+  Error detail text / error bg: #2A2823 on #FBE9E7 = 12.56:1 (needs 4.5:1) PASS
+  Problem file name / surface: #8E2A20 on #FFFDF7 = 8.25:1 (needs 4.5:1) PASS
+  DEMO banner text + icon / accent soft: #1D5C63 on #E2EEEC = 6.40:1 (needs 4.5:1) PASS
+  Control border (inputs, locked bar) / surface: #857D6C on #FFFDF7 = 4.01:1 (needs 3:1) PASS
+  Control border / paper: #857D6C on #F7F3EA = 3.68:1 (needs 3:1) PASS
+  Secondary button border / surface: #1D5C63 on #FFFDF7 = 7.47:1 (needs 3:1) PASS
+  Selected tab indicator / paper: #1D5C63 on #F7F3EA = 6.86:1 (needs 3:1) PASS
+  Focus ring / paper: #1D5C63 on #F7F3EA = 6.86:1 (needs 3:1) PASS
+  Logo icon / paper: #1D5C63 on #F7F3EA = 6.86:1 (needs 3:1) PASS
+  Mock browser URL text / URL field (frame): #3B3B3B on #FFFFFF = 11.20:1 (needs 4.5:1) PASS
+  Mock browser frame border / page (frame): #76767C on #F7F3EA = 4.08:1 (needs 3:1) PASS
+  Contrast table rule / page (frame): #767676 on #F7F3EA = 4.10:1 (needs 3:1) PASS
+   ============================================================ */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:32px 24px 64px}
+.stage{overflow-x:auto;padding:8px 4px 24px}
+.browser{width:1280px;margin:0 auto;border:1px solid #76767C;border-radius:10px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.14)}
+.browser.small{width:960px}
+.chrome{display:flex;align-items:center;gap:8px;background:#DEDEE2;padding:10px 14px;border-bottom:1px solid #76767C}
+.chrome .dot{width:12px;height:12px;border-radius:50%;background:#B5B5BA}
+.chrome .url{margin-left:16px;flex:1;max-width:520px;background:#FFFFFF;color:#3B3B3B;font:13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:7px 12px;border-radius:6px}
+.ic{width:22px;height:22px;flex:none}
+.ic-sm{width:16px;height:16px}
+.logo{width:26px;height:26px;flex:none}
+.btn{cursor:pointer;font:inherit}
+.btn[disabled]{cursor:not-allowed}
+.doc{max-width:1280px;margin:0 auto}
+.doc h1.dir-title{margin:0 0 6px}
+.rationale{max-width:820px;margin:0 0 28px}
+.sec-label{max-width:1280px;margin:40px auto 12px}
+.contrast{max-width:1280px;margin:48px auto 0;border-collapse:collapse;font:13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.contrast caption{text-align:left;font-weight:700;font-size:15px;padding:0 0 8px}
+.contrast th,.contrast td{text-align:left;padding:5px 10px;border-bottom:1px solid #767676}
+.contrast .sw{display:inline-block;width:14px;height:14px;border:1px solid #000;vertical-align:-2px;margin-right:6px}
+.contrast-wrap{overflow-x:auto}
+
+
+body{background:#F7F3EA;color:#2A2823;font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.doc h1.dir-title{font-size:30px;font-weight:600;color:#2A2823}
+.doc .sub{color:#5B5649}
+.app{background:#F7F3EA;color:#2A2823;padding:40px 72px 56px}
+.app-header{display:flex;align-items:center;gap:12px;color:#1D5C63;padding-bottom:28px;margin-bottom:28px;border-bottom:1px solid #DDD5C4}
+.brand{font-size:22px;font-weight:600;letter-spacing:.2px;color:#2A2823}
+.notice{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;border-radius:10px;margin:0 0 14px}
+.notice p{margin:0}
+.notice-info{background:#E7EFF3;color:#1F4A63}
+.notice-warn{background:#FBF1DC;color:#6E4600}
+.link,.page-link{color:#1D5C63;text-decoration:underline;text-underline-offset:3px}
+.bar{display:flex;align-items:flex-end;gap:28px;background:#FFFDF7;border:1px solid #DDD5C4;border-radius:10px;padding:20px 24px;margin:28px 0 40px}
+.bar.is-locked{background:#F7F3EA;border-style:dashed;border-color:#857D6C}
+.file{display:flex;align-items:center;gap:10px;flex:1.4;color:#2A2823;font-weight:500;padding-bottom:8px}
+.file .lock{color:#5B5649;display:inline-flex}
+.field{display:flex;flex-direction:column;gap:6px;flex:1}
+.label{font-size:14px;color:#5B5649}
+.value{font-size:16px;color:#2A2823;padding:8px 0}
+.value.input{display:flex;justify-content:space-between;background:#FFFDF7;border:1px solid #857D6C;border-radius:8px;padding:8px 12px}
+.btn{border-radius:10px;padding:11px 22px;font-size:16px;font-weight:500;border:1px solid transparent}
+.btn-primary{background:#1D5C63;color:#FFFFFF}
+.btn-primary[disabled]{background:#ECE7DC;color:#5F5A4E;border:1px dashed #857D6C}
+.btn-secondary{background:#FFFDF7;color:#1D5C63;border-color:#1D5C63}
+.btn-upload{display:inline-flex;gap:8px;align-items:center}
+.results-row{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:6px 0 32px}
+.note{margin:0;font-size:15px;color:#5B5649}
+.tabs{display:flex;gap:6px;border-bottom:1px solid #DDD5C4;margin-bottom:0}
+.tab{font:inherit;font-size:16px;background:transparent;border:0;border-bottom:3px solid transparent;color:#5B5649;padding:12px 20px;margin-bottom:-1px;cursor:pointer}
+.tab[aria-selected="true"]{color:#1D5C63;font-weight:600;border-bottom-color:#1D5C63}
+.panel{padding:40px 0 8px;max-width:760px;margin:0 auto}
+.fc-counter{text-align:center;color:#5B5649;font-size:15px;margin:0 0 16px}
+.fc-card{background:#FFFDF7;border:1px solid #DDD5C4;border-radius:12px;padding:48px 56px;box-shadow:0 1px 0 #DDD5C4}
+.fc-front{font-size:28px;font-weight:600;text-align:center;margin:0 0 28px;color:#2A2823}
+.fc-answer{border-top:1px solid #DDD5C4;padding-top:26px;text-align:center}
+.fc-answer p{font-size:19px;line-height:1.7;margin:0 0 18px}
+.page-link{font-size:15px}
+.fc-controls{display:flex;justify-content:center;gap:16px;margin-top:28px}
+.is-focus{outline:2px solid #1D5C63;outline-offset:3px}
+.error-state{display:flex;gap:16px;align-items:flex-start;background:#FBE9E7;color:#8E2A20;border-radius:10px;padding:24px 28px;max-width:720px}
+.error-state h2{margin:0 0 6px;font-size:20px;font-weight:600}
+.error-state p{margin:0;color:#2A2823}
+.file-problem{gap:16px}
+.file-problem .file-name{display:inline-flex;gap:8px;align-items:center;color:#8E2A20}
+.demo-banner{display:flex;gap:12px;align-items:center;background:#E2EEEC;color:#1D5C63;border-radius:10px;padding:14px 20px;font-weight:500}
+.demo-banner p{margin:0}
+.demo-heading{font-size:22px;font-weight:600;margin:24px 0 0;color:#2A2823}
+.sec-label{font-size:15px;font-weight:600;color:#5B5649}
+
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1 class="dir-title">Rolig notatbok</h1>
+  <p class="sub" lang="en">Calm notebook · accent #1D5C63</p>
+  <p class="rationale" lang="en">A calm study notebook: warm off-white paper, a single deep-teal ink accent and generous spacing keep visual noise low so the flashcard text is the loudest thing on screen. Medium 10px corners and relaxed 17px/1.65 reading type make long sessions feel unhurried. Notices are soft tinted panels that inform without alarming.</p>
+</div>
+
+<p class="sec-label" lang="en">Hero — results, Flashkort tab (the "Skjul svar" button shows the focus ring)</p>
+<div class="stage">
+<div class="browser ">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000</span></div>
+  <div class="app"><header class="app-header"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6.5c3-1.5 6-1.5 9 0v13c-3-1.5-6-1.5-9 0zM21 6.5c-3-1.5-6-1.5-9 0v13c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="brand">AI Study Buddy</span></header><main><div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>Teksten i dokumentet ditt sendes til Anthropic, en ekstern KI-tjeneste, for å lage studiemateriell. AI Study Buddy lagrer ikke dokumentet eller resultatene. <a href="#" class="link">Les mer om hvordan Anthropic behandler data.</a></p></div>
+<section class="bar is-locked" aria-label="Opplasting og innstillinger">
+  <div class="file"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 2.5h8l5 5v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2.5v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="file-name">forelesning-7-lagerstyring.pdf</span><span class="lock" title="Låst"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg></span></div>
+  <div class="field"><span class="label">Språk på resultatene</span><span class="value">Norsk bokmål</span></div>
+  <div class="field"><span class="label">Detaljnivå</span><span class="value">Standard</span></div>
+  <div class="field"><span class="label">Emnekode (valgfritt)</span><span class="value">LOG201</span></div>
+  <button class="btn btn-primary" disabled>Generer</button>
+</section>
+<section class="results" aria-label="Resultater">
+  <div class="notices">
+    <div class="notice notice-warn" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 L22 20 H2 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></svg><p>Innholdet er laget av KI og kan inneholde feil. Kontroller det mot originaldokumentet.</p></div>
+    <div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>PDF-side 2 og 7 hadde ingen lesbar tekst (for eksempel bilder eller skannede sider) og ble ikke analysert.</p></div>
+  </div>
+  <div class="results-row">
+    <p class="note">Resultatene lagres ikke. De forsvinner hvis du lukker eller laster inn siden på nytt.</p>
+    <button class="btn btn-secondary">Ny fil</button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="false">Sammendrag</button>
+    <button class="tab" role="tab" aria-selected="false">Nøkkelbegreper</button>
+    <button class="tab" role="tab" aria-selected="true">Flashkort (8)</button>
+    <button class="tab" role="tab" aria-selected="false">Quiz (6)</button>
+  </div>
+  <div class="panel" role="tabpanel">
+    <p class="fc-counter">Kort 3 av 8</p>
+    <div class="fc-card">
+      <p class="fc-front">Sikkerhetslager</p>
+      <div class="fc-answer">
+        <p>Et ekstra lager som holdes for å dekke usikkerhet i etterspørsel og leveringstid, slik at man unngår å gå tom for varer.</p>
+        <a href="#" class="page-link">PDF-side 4 ↗</a>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="btn btn-secondary">◀ Forrige</button>
+      <button class="btn btn-secondary is-focus">Skjul svar</button>
+      <button class="btn btn-secondary">Neste ▶</button>
+    </div>
+  </div>
+</section></main></div>
+</div>
+</div>
+
+<p class="sec-label" lang="en">Secondary — error state (upload unlocked) and DEMO banner sample</p>
+<div class="stage">
+<div class="browser small">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000</span></div>
+  <div class="app"><header class="app-header"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6.5c3-1.5 6-1.5 9 0v13c-3-1.5-6-1.5-9 0zM21 6.5c-3-1.5-6-1.5-9 0v13c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="brand">AI Study Buddy</span></header><main><div class="notice notice-info" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.3" fill="currentColor"/></svg><p>Teksten i dokumentet ditt sendes til Anthropic, en ekstern KI-tjeneste, for å lage studiemateriell. AI Study Buddy lagrer ikke dokumentet eller resultatene. <a href="#" class="link">Les mer om hvordan Anthropic behandler data.</a></p></div>
+<section class="bar is-open" aria-label="Opplasting og innstillinger">
+  <div class="file file-problem"><button class="btn btn-primary btn-upload"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16V4M7 9l5-5 5 5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Last opp</span></button><span class="file-name"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>skannede-notater.pdf</span></span></div>
+  <div class="field"><span class="label">Språk på resultatene</span><span class="value input">Norsk bokmål <span class="caret" aria-hidden="true">▾</span></span></div>
+  <div class="field"><span class="label">Detaljnivå</span><span class="value input">Standard <span class="caret" aria-hidden="true">▾</span></span></div>
+  <div class="field"><span class="label">Emnekode (valgfritt)</span><span class="value input">LOG201</span></div>
+  <button class="btn btn-primary" disabled>Generer</button>
+</section>
+<section class="results" aria-label="Resultater">
+  <div class="error-state" role="alert"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><div><h2>Fant ingen lesbar tekst</h2><p>Skannede PDF-er og sider med bare bilder støttes ikke. Velg en PDF med tekst du kan markere.</p></div></div>
+</section></main></div>
+</div>
+</div>
+<div class="stage">
+<div class="browser small">
+  <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">localhost:8000/?demo=1</span></div>
+  <div class="app"><main>
+<div class="demo-banner" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg><p>DEMO – du ser et ferdig eksempel. Ingen KI-tjeneste brukes, og egne filer kan ikke lastes opp.</p></div>
+<h2 class="demo-heading">Eksempelresultater (ikke generert nå)</h2></main></div>
+</div>
+</div>
+
+<div class="contrast-wrap">
+<table class="contrast" lang="en">
+<caption>Contrast check — Rolig notatbok (WCAG 2.x)</caption>
+<thead><tr><th>Pair</th><th>Foreground</th><th>Background</th><th>Ratio</th><th>Requirement</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Body text / paper</td><td><span class="sw" style="background:#2A2823"></span>#2A2823</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>13.30:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Body text / surface (card)</td><td><span class="sw" style="background:#2A2823"></span>#2A2823</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>14.48:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Muted text (labels, note, counter) / paper</td><td><span class="sw" style="background:#5B5649"></span>#5B5649</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>6.60:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Muted text / surface</td><td><span class="sw" style="background:#5B5649"></span>#5B5649</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>7.19:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Accent link, selected tab / paper</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>6.86:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Accent link (page link) / surface</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>7.47:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Primary button text / accent</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><strong>7.60:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Secondary button text / surface</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>7.47:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Disabled button text / disabled bg</td><td><span class="sw" style="background:#5F5A4E"></span>#5F5A4E</td><td><span class="sw" style="background:#ECE7DC"></span>#ECE7DC</td><td><strong>5.57:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Info notice text + icon / info bg</td><td><span class="sw" style="background:#1F4A63"></span>#1F4A63</td><td><span class="sw" style="background:#E7EFF3"></span>#E7EFF3</td><td><strong>8.13:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Warning notice text + icon / warning bg</td><td><span class="sw" style="background:#6E4600"></span>#6E4600</td><td><span class="sw" style="background:#FBF1DC"></span>#FBF1DC</td><td><strong>7.37:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Error headline + icon / error bg</td><td><span class="sw" style="background:#8E2A20"></span>#8E2A20</td><td><span class="sw" style="background:#FBE9E7"></span>#FBE9E7</td><td><strong>7.16:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Error detail text / error bg</td><td><span class="sw" style="background:#2A2823"></span>#2A2823</td><td><span class="sw" style="background:#FBE9E7"></span>#FBE9E7</td><td><strong>12.56:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Problem file name / surface</td><td><span class="sw" style="background:#8E2A20"></span>#8E2A20</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>8.25:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>DEMO banner text + icon / accent soft</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#E2EEEC"></span>#E2EEEC</td><td><strong>6.40:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Control border (inputs, locked bar) / surface</td><td><span class="sw" style="background:#857D6C"></span>#857D6C</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>4.01:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Control border / paper</td><td><span class="sw" style="background:#857D6C"></span>#857D6C</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>3.68:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Secondary button border / surface</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#FFFDF7"></span>#FFFDF7</td><td><strong>7.47:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Selected tab indicator / paper</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>6.86:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Focus ring / paper</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>6.86:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Logo icon / paper</td><td><span class="sw" style="background:#1D5C63"></span>#1D5C63</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>6.86:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Mock browser URL text / URL field (frame)</td><td><span class="sw" style="background:#3B3B3B"></span>#3B3B3B</td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><strong>11.20:1</strong></td><td>Text ≥ 4.5:1</td><td>✔ Pass</td></tr>
+<tr><td>Mock browser frame border / page (frame)</td><td><span class="sw" style="background:#76767C"></span>#76767C</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>4.08:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+<tr><td>Contrast table rule / page (frame)</td><td><span class="sw" style="background:#767676"></span>#767676</td><td><span class="sw" style="background:#F7F3EA"></span>#F7F3EA</td><td><strong>4.10:1</strong></td><td>Non-text / large ≥ 3:1</td><td>✔ Pass</td></tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>
