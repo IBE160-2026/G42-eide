@@ -3,7 +3,7 @@ title: AI Study Buddy — Architecture Explained
 audience: course reviewer / examiner (IBE160)
 status: final
 created: 2026-10-26
-updated: 2026-10-27
+updated: 2026-11-08
 companion_of: ARCHITECTURE-SPINE.md
 ---
 
@@ -72,7 +72,7 @@ AI output can be incomplete, wrongly shaped, padded or wrongly cited. The struct
 → the AI may cite only {1, 3}; anything else is removed.
 ```
 
-Page numbers are the **PDF viewer's page positions**, shown as "PDF page 3", so they always match what the student sees on screen. Plain-text files carry no page numbers at all, rather than made-up ones.
+Page numbers are the **PDF viewer's page positions**, shown as "PDF-side 3", so they always match what the student sees on screen. Plain-text files carry no page numbers at all, rather than made-up ones.
 
 ## Languages
 
@@ -80,18 +80,19 @@ Page numbers are the **PDF viewer's page positions**, shown as "PDF page 3", so 
 - **Output language:** the student chooses Norwegian Bokmål (the default, because the developer's own lecture notes are mostly Norwegian) or English. All four Result types are written in that language, whatever language the document is in.
 - **Terminology:** subject-specific terms are kept. When the output language differs from the document's, the original term appears in brackets the first time it is used, for example "safety stock (sikkerhetslager)", so students keep the exact words used in their course. Terms are never force-translated inaccurately.
 - **Page references** work the same way in both languages.
-- **Interface language** (buttons, notices, messages) is decided in the UX design step.
+- **Interface language:** all buttons, notices and error messages are in Norwegian Bokmål, whatever output language is chosen. English is only an option for the generated study content.
 - **Quality check:** Anthropic describes its models as multilingual, but Norwegian quality is checked by hand. At least one Norwegian document is run in both output languages, with terminology and page references reviewed.
 
 ## Demo mode
 
-The app can run with no API key, no internet and no cost (`AI_MODE=demo`, the default):
+The app can run with no API key and no cost, and it makes no external network or AI-provider calls (`AI_MODE=demo`, the default). The only traffic is between the browser and the local backend on the same laptop:
 
 - It works **only on a bundled sample**: an original 5–8-page lecture **in Norwegian** on inventory management and supply-chain logistics, written by the developer, with one image-only page.
 - It shows **prepared results** (Norwegian, Standard detail). Changing the language or detail level in demo mode does **not** generate a new translation. Those choices are shown as fixed, with a note saying so.
 - Uploading is blocked in demo mode, so it can **never pretend to analyse someone's own file**.
 - The real checks still run. Only the AI call is replaced by a saved answer that was recorded once and reviewed by hand.
-- It is labelled clearly: a permanent banner, an "Example results (not generated live)" heading, and a `mode: "demo"` field in every reply.
+- It is labelled clearly: a permanent banner, an "Eksempelresultater (ikke generert nå)" heading, and a `mode: "demo"` field in every reply.
+- Page links in the demo open the bundled sample PDF from the local backend (a read-only address that serves only that one file), so they work offline.
 
 This is also how a reviewer can run the app from the README without a key.
 
@@ -134,6 +135,6 @@ This is also how a reviewer can run the app from the README without a key.
 
 - No OCR: scanned or image-only pages are skipped, and the student is told which ones.
 - Tables and figures may be unreadable after text extraction.
-- One document at a time, with size limits (provisionally 10 MB, 80 pages).
+- One document at a time, with size limits (provisionally 10 MB, meaning 10,485,760 bytes, and 80 pages).
 - Page checks prove a page exists, not that it is the best source. Quality is checked by hand.
 - The interactive quiz with scoring is planned as Phase 2.

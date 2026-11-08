@@ -7,7 +7,7 @@ paradigm: 'Pipeline (pipes-and-filters) backend with a swappable AI connector; t
 scope: 'Whole MVP: local single-user web app — upload one PDF or plain-text Document, one Generation Pass, display Results'
 status: final
 created: '2026-10-26'
-updated: '2026-10-27'
+updated: '2026-11-08'
 binds: [FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7, SM-1, SM-2, SM-3, SM-C1]
 sources:
   - _bmad-output/planning-artifacts/prds/prd-G42-eide-2026-09-16/prd.md
@@ -15,6 +15,8 @@ sources:
   - _bmad-output/planning-artifacts/briefs/brief-G42-eide-2026-09-14/brief.md
   - _bmad-output/planning-artifacts/briefs/brief-G42-eide-2026-09-14/addendum.md
   - _bmad-output/planning-artifacts/briefs/brief-G42-eide-2026-09-14/tilbakemelding-product-brief.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/EXPERIENCE.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-G42-eide-2026-10-27/DESIGN.md
 companions: [.memlog.md, REVIEWER-EXPLAINER.md]
 ---
 
@@ -109,7 +111,7 @@ flowchart TD
 
 - **Binds:** FR-4, FR-7
 - **Prevents:** fabricated or spoofed page numbers; drift between "page" meanings; chunk-mapping complexity.
-- **Rule:** Stage 2 extracts text per PDF page with pypdf. Each page with non-empty text is wrapped `<page number="N">…</page>`, N = 1-based PDF page position (as a PDF viewer shows it, not the printed slide number). Supplied set = numbers of pages with text; pages without text get no marker and go into `skipped_pages`. Marker-like strings inside page text are neutralised before wrapping. No pages with text, or a plain-text Document whose stripped text is empty → `no_extractable_text` before any AI call. Plain text gets no markers. No chunking. UI label: "PDF page N".
+- **Rule:** Stage 2 extracts text per PDF page with pypdf. Each page with non-empty text is wrapped `<page number="N">…</page>`, N = 1-based PDF page position (as a PDF viewer shows it, not the printed slide number). Supplied set = numbers of pages with text; pages without text get no marker and go into `skipped_pages`. Marker-like strings inside page text are neutralised before wrapping. No pages with text, or a plain-text Document whose stripped text is empty → `no_extractable_text` before any AI call. Plain text gets no markers. No chunking. UI label: `PDF-side N` (Norwegian interface; exact link text and accessible name in EXPERIENCE.md).
 
 ### AD-9 — AI output contract [ADOPTED]
 
@@ -141,7 +143,7 @@ flowchart TD
   | `ai_unavailable`, `ai_output_invalid` | 502 |
   | `ai_credits_exhausted`, `session_call_limit_reached` | 503 |
 
-  The list is closed; adding a code changes the backend enum, the TS union and frontend headlines together. The frontend owns the headline text per code plus a generic fallback for unknown codes and its own network/timeout failure; the backend `message` (in the interface language chosen at UX — English until then; no provider bodies, paths or secrets) is shown as a secondary detail line in plain text.
+  The list is closed; adding a code changes the backend enum, the TS union and frontend headlines together. The frontend owns the headline text per code plus a generic fallback for unknown codes and its own network/timeout failure; the backend `message` (in Norwegian Bokmål, the interface language defined in EXPERIENCE.md; no provider bodies, paths or secrets) is shown as a secondary detail line in plain text. All interface and error text is Norwegian Bokmål regardless of the selected `output_language`; the optional English output language (AD-17) applies only to the AI-generated study content, never to interface or error messages.
 
 ### AD-12 — Pydantic is the contract source of truth [ADOPTED]
 
@@ -153,19 +155,19 @@ flowchart TD
 
 - **Binds:** demo mode, FR-5, FR-6
 - **Prevents:** demo output passed off as analysis of a user's file; demo depending on network or key.
-- **Rule:** With `AI_MODE=demo`: only the bundled sample is processed, via `POST /api/demo`; uploads are disabled in the UI and `POST /api/generate` returns `demo_mode_no_uploads` (checked before the pass lock). In real mode `POST /api/demo` returns `demo_not_enabled`. The sample is the developer's original Norwegian (Bokmål) lecture on inventory management and supply-chain logistics; its fixture was recorded with default inputs (`standard`, `nb`). Demo Generation Inputs are fixed to those recorded values: the UI shows them disabled with a note that the demo shows prepared results and does **not** generate a new translation or detail level when a selection changes. Stages 1, 2, 3 and 5 run for real on the sample with those inputs; stage 4 returns the fixture; stage 5 validates it against the sample's real markers. At runtime demo needs no key and makes no network calls: no provider client is created and the frontend loads no external resources (system or locally bundled fonts, no CDN scripts). Labelled in three places: `mode: "demo"`, a permanent banner, and a Results heading "Example results (not generated live)". The fixture was recorded once from a real run, manually reviewed, and committed with a provenance note (date, model ID, inputs, reviewed).
+- **Rule:** With `AI_MODE=demo`: only the bundled sample is processed, via `POST /api/demo`; uploads are disabled in the UI and `POST /api/generate` returns `demo_mode_no_uploads` (checked before the pass lock). In real mode `POST /api/demo` returns `demo_not_enabled`. The sample is the developer's original Norwegian (Bokmål) lecture on inventory management and supply-chain logistics; its fixture was recorded with default inputs (`standard`, `nb`). Demo Generation Inputs are fixed to those recorded values: the UI shows them disabled with a note that the demo shows prepared results and does **not** generate a new translation or detail level when a selection changes. Stages 1, 2, 3 and 5 run for real on the sample with those inputs; stage 4 returns the fixture; stage 5 validates it against the sample's real markers. At runtime demo needs no key and makes no external network or AI-provider calls: no provider client is created and the frontend loads no external resources (system or locally bundled fonts, no CDN scripts); local browser-to-backend HTTP on the laptop (AD-3) is allowed. Demo page links open the bundled sample PDF through `GET /api/demo/sample.pdf`: GET only, read-only, available only when `AI_MODE=demo`; it serves only the one fixed, committed sample PDF (no path parameter, no query input, no other file reachable) and returns its exact bytes as `application/pdf` with `Content-Disposition: inline`. In real mode it returns `demo_not_enabled` (403); a missing or unreadable sample file returns `internal_error` (500) via the catch-all handler — existing AD-11 codes only. It does not take the pass lock (AD-16), counts no paid call (AD-15) and creates no provider client. Link format: `<NEXT_PUBLIC_API_BASE_URL>/api/demo/sample.pdf#page=N`, opened in a new tab (a top-level navigation, so CORS does not apply). Labelled in three places: `mode: "demo"`, a permanent banner, and a Results heading `Eksempelresultater (ikke generert nå)`. The fixture was recorded once from a real run, manually reviewed, and committed with a provenance note (date, model ID, inputs, reviewed).
 
 ### AD-14 — Input limits checked in a fixed order [ADOPTED · values provisional · resolves PRD OQ1]
 
 - **Binds:** FR-1, cost constraints
 - **Prevents:** oversized input exhausting memory or budget; the same file passing in one build and failing in another.
-- **Rule:** Settings (provisional; revisit after testing real lecture PDFs): 10 MB, 80 PDF pages, 200,000 characters, 60,000 input tokens. Order: (a) api layer — reject declared length over 10 MB, count bytes while reading in chunks and abort once over; (b) stage 1 — file type by content signature (not extension), UTF-8 for plain text, PDF opens (`unreadable_file` if not), **total** PDF page count ≤ 80; (c) stage 2 — `no_extractable_text`, then the sum of extracted text **before markers** ≤ 200,000 chars; (d) cost gate — token ceiling. Any limit → `file_too_large` with `limit` set.
+- **Rule:** Settings (provisional; revisit after testing real lecture PDFs): 10 MB, 80 PDF pages, 200,000 characters, 60,000 input tokens. **10 MB means 10,485,760 bytes** (binary convention: 1 MB = 1,048,576 bytes); `max_upload_bytes` = 10,485,760 and the api-layer byte check uses exactly that value. The frontend converts bytes to MB with the same convention (÷ 1,048,576, at most one decimal, Norwegian decimal comma) for both the displayed limit and the uploaded file's size, so the UI label "10 MB" always refers to 10,485,760 bytes. Order: (a) api layer — reject declared length over 10 MB, count bytes while reading in chunks and abort once over; (b) stage 1 — file type by content signature (not extension), UTF-8 for plain text, PDF opens (`unreadable_file` if not), **total** PDF page count ≤ 80; (c) stage 2 — `no_extractable_text`, then the sum of extracted text **before markers** ≤ 200,000 chars; (d) cost gate — token ceiling. Any limit → `file_too_large` with `limit` set.
 
 ### AD-15 — Paid-call cost controls [ADOPTED]
 
 - **Binds:** cost constraints, FR-7
 - **Prevents:** budget overruns from oversized prompts, retries, loops or repeated clicks (USD 5–10 total project budget).
-- **Rule:** Cost gate (real mode only, between stage 3 and 4): call-cap check first (`session_call_limit_reached`, message "local limit reached — restart the backend"), then `count_input_tokens` (free provider endpoint) + fixed safety margin vs the AD-14 ceiling; a counting failure → `ai_unavailable`, no paid call. Output capped by `max_tokens` (≈16,000 including thinking). Zero automatic retries anywhere, including the SDK (`max_retries=0`). AI timeout 90 s → `ai_unavailable`. Prepaid credits only, auto-reload off; the purchased credit is the hard total cap. Routine development and all automated tests use demo or fakes.
+- **Rule:** Cost gate (real mode only, between stage 3 and 4): call-cap check first (`session_call_limit_reached`; user-facing headline and action text exactly as in EXPERIENCE.md → Voice and Tone, which never shows the cap's number), then `count_input_tokens` (free provider endpoint) + fixed safety margin vs the AD-14 ceiling; a counting failure → `ai_unavailable`, no paid call. Output capped by `max_tokens` (≈16,000 including thinking). Zero automatic retries anywhere, including the SDK (`max_retries=0`). AI timeout 90 s → `ai_unavailable`. Prepaid credits only, auto-reload off; the purchased credit is the hard total cap. Routine development and all automated tests use demo or fakes.
 
 ### AD-16 — One pass at a time, one owner [ADOPTED]
 
@@ -196,7 +198,7 @@ flowchart TD
 
 - **Binds:** SM-1, SM-3
 - **Prevents:** untested error paths; paid tests; unverified citation quality.
-- **Rule:** (1) pytest per stage, every error code via fakes, plus full gate-chain tests (e.g. `insufficient_content` with empty fields) and extraction tests proving Norwegian characters (æ, ø, å) survive PDF and UTF-8 text extraction; (2) contract tests on both fixtures, backend and frontend; (3) a small focused set of frontend tests (demo banner, skipped-pages notice, error headlines, plain-text rendering); (4) deliberate manual real-AI sessions on 3–5 test PDFs chosen per the AD-19 sending rules (own lecture-style or openly licensed; real course PDFs only with confirmed permission; each session's cost log notes every document's source and permission basis) with a citation-quality table (supports / partly / doesn't, ~5 items per PDF) and a cost log, including at least one Norwegian document run with both output languages and terminology checked by hand; (5) a manual UI checklist in both modes before each milestone, including a network-off demo check. Layers 1–3 never use a real key.
+- **Rule:** (1) pytest per stage, every error code via fakes, plus full gate-chain tests (e.g. `insufficient_content` with empty fields) and extraction tests proving Norwegian characters (æ, ø, å) survive PDF and UTF-8 text extraction, plus `GET /api/demo/sample.pdf` tests: in demo mode it returns bytes identical to the sample file processed by the demo pass, as `application/pdf`; in real mode it returns 403 `demo_not_enabled`; a missing sample file returns `internal_error`; it ignores any query input and exposes no other file; (2) contract tests on both fixtures, backend and frontend; (3) a small focused set of frontend tests (demo banner, skipped-pages notice, error headlines, plain-text rendering); (4) deliberate manual real-AI sessions on 3–5 test PDFs chosen per the AD-19 sending rules (own lecture-style or openly licensed; real course PDFs only with confirmed permission; each session's cost log notes every document's source and permission basis) with a citation-quality table (supports / partly / doesn't, ~5 items per PDF) and a cost log, including at least one Norwegian document run with both output languages and terminology checked by hand; (5) a manual UI checklist in both modes before each milestone, including a network-off demo check. Layers 1–3 never use a real key.
 
 ### AD-21 — Git workflow, CI and process evidence [ADOPTED · resolves PRD OQ4]
 
@@ -214,13 +216,13 @@ flowchart TD
 
 | Concern | Convention |
 | --- | --- |
-| Endpoints | `GET /api/status` → `{mode, limits: {max_upload_bytes, max_pdf_pages, max_text_chars}, options: {detail_level: {values, default}, output_language: {values, default}}, accepted_types: ["application/pdf", "text/plain"]}`; `POST /api/generate` (multipart per AD-17); `POST /api/demo` (no body). If `/api/status` fails, the frontend shows a "backend not reachable" state. |
+| Endpoints | `GET /api/status` → `{mode, limits: {max_upload_bytes, max_pdf_pages, max_text_chars}, options: {detail_level: {values, default}, output_language: {values, default}}, accepted_types: ["application/pdf", "text/plain"]}`; `POST /api/generate` (multipart per AD-17); `POST /api/demo` (no body); `GET /api/demo/sample.pdf` (demo mode only, read-only, fixed bundled sample PDF; see AD-13). The value of `max_upload_bytes` is 10,485,760 (binary 10 MB, AD-14). If `/api/status` fails, the frontend shows the "server not reachable" state (UI headline `Får ikke kontakt med appens server`). |
 | JSON naming | `snake_case` on both sides; TS types use the same names |
-| Page numbers | 1-based PDF viewer position; displayed "PDF page N" |
+| Page numbers | 1-based PDF viewer position; displayed `PDF-side N` |
 | Errors | Only the AD-11 envelope, codes and HTTP mapping |
 | Config | One backend settings module from environment (`AI_MODE`, key, model, effort, `max_tokens`, timeout, limits, call cap, `ALLOWED_ORIGIN`); no literals in stages |
 | Logging | Local only; stage, code, duration, tokens, `reference_id`; never content or secrets |
-| Glossary | Code and UI use the PRD Glossary terms (Document, Generation Pass, Results, Summary, Flashcard Set, Quiz, Key Concepts, Page Reference, Generation Inputs, Verification Notice) |
+| Glossary | Code uses the PRD Glossary terms (Document, Generation Pass, Results, Summary, Flashcard Set, Quiz, Key Concepts, Page Reference, Generation Inputs, Verification Notice); the UI uses the approved Norwegian labels (EXPERIENCE.md → Language & Terminology). |
 | Notices with Results | Verification Notice always (FR-6); skipped-pages notice when `skipped_pages` is non-empty; demo banner in demo mode; external-AI notice in real mode (AD-7) |
 | Frontend starter defaults | Replace `next/font/google` with system/local fonts; agent-feedback option off; telemetry disabled |
 
@@ -263,7 +265,7 @@ G42-eide/
       config.py          # settings from environment
     tests/               # pytest, fake connectors, generated test files
     .env.example         # AI_MODE=demo, blank key
-  samples/               # own sample PDF, demo-ai-output.json, demo-response.json, provenance note
+  samples/               # own sample PDF (also served read-only to demo page links, AD-13), demo-ai-output.json, demo-response.json, provenance note
   .logs/<user>/          # session logs + issues.md via the sesjonslogg skill (AD-19, AD-21)
   CLAUDE.md              # agent instructions (course-provided; references sesjonslogg)
   .github/workflows/     # CI: tests on every Pull Request
@@ -297,7 +299,7 @@ flowchart LR
 | FR-5 Display Results | frontend results view | AD-10, AD-11, AD-18 |
 | FR-6 Verification Notice | frontend results view | Conventions (notices) |
 | FR-7 Failure handling | every stage; error handlers; frontend error view | AD-10, AD-11, AD-15 |
-| Demo mode | connectors/demo, samples/ | AD-4, AD-13 |
+| Demo mode | connectors/demo, samples/, api (`GET /api/demo/sample.pdf`) | AD-4, AD-13 |
 | Security & privacy | config, logging, repo | AD-3, AD-6, AD-7, AD-19 |
 | SM-1 | tests, manual sessions | AD-20 |
 | SM-2 / SM-3 | README, explainer, Git, CI, .logs/ session logs | AD-21, AD-22, REVIEWER-EXPLAINER.md |
