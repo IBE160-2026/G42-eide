@@ -7,10 +7,11 @@
 - [ ] 2026-10-27 [architecture-workflow](999-2026-10-27-20-20-59-architecture-workflow.md) — Manually check Norwegian output quality and terminology on Claude Haiku 5.5
 - [ ] 2026-10-27 [architecture-workflow](999-2026-10-27-20-20-59-architecture-workflow.md) — Decide whether to update uv (0.8.15) before implementation
 - [ ] 2026-10-27 [architecture-workflow](999-2026-10-27-20-20-59-architecture-workflow.md) — Decide whether to commit the BMAD and Claude Code tool folders (.claude/, _bmad/)
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): AD-13 demo heading → "Eksempelresultater (ikke generert nå)"
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): read-only backend access to the bundled sample PDF for clickable demo page links
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending PRD change (approved, NOT APPLIED): new glossary wording for "Quiz" (reveal answers, display-only)
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): English interface wording in the architecture (PDF page N, "backend not reachable", AD-15 message, AD-11 "English until then")
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): glossary convention "Code uses PRD Glossary terms; the UI uses the approved Norwegian labels"
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture clarification (NOT APPLIED): MB unit definition for max_upload_bytes vs "10 MB"
-- [ ] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Decision dependency: if sample-PDF access is not approved, reconsider the demo verification flow (Key Flow 2)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): AD-13 demo heading → "Eksempelresultater (ikke generert nå)" (løst 2026-11-08; architecture 44059f6, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): read-only backend access to the bundled sample PDF for clickable demo page links (løst 2026-11-08; architecture 44059f6, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending PRD change (approved, NOT APPLIED): new glossary wording for "Quiz" (reveal answers, display-only) (løst 2026-11-08; PRD 50b403d, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): English interface wording in the architecture (PDF page N, "backend not reachable", AD-15 message, AD-11 "English until then") (løst 2026-11-08; architecture 44059f6, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture change (NOT APPLIED): glossary convention "Code uses PRD Glossary terms; the UI uses the approved Norwegian labels" (løst 2026-11-08; architecture 44059f6, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Pending architecture clarification (NOT APPLIED): MB unit definition for max_upload_bytes vs "10 MB" (løst 2026-11-08; architecture 44059f6, PRD 50b403d, UX 4ac2989)
+- [x] 2026-11-08 [ux-design](998-2026-11-08-13-09-42-ux-design.md) — Decision dependency: if sample-PDF access is not approved, reconsider the demo verification flow (Key Flow 2) (løst 2026-11-08; resolved by architecture 44059f6 AD-13, UX 4ac2989)
+- [ ] 2026-11-08 [upstream-reconciliation](997-2026-11-08-17-37-29-upstream-reconciliation.md) — Run BMAD epics and stories (bmad-create-epics-and-stories) from the reconciled PRD, architecture and UX
