@@ -29,14 +29,14 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-10-2026 11:36
-last_updated: 11-10-2026 11:36
+last_updated: 11-10-2026 13:43
 project: G42-eide
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 development_status:
-  epic-1: backlog
-  1-1-set-up-the-project-from-the-approved-starters: backlog
+  epic-1: in-progress
+  1-1-set-up-the-project-from-the-approved-starters: review
   1-2-backend-settings-and-the-status-endpoint: backlog
   1-3-one-error-format-for-every-failure: backlog
   1-4-page-shell-and-visual-foundation: backlog

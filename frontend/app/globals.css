@@ -1,0 +1,11 @@
+/* System font stack only; no web fonts are loaded. Design tokens arrive in Story 1.4. */
+html {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
