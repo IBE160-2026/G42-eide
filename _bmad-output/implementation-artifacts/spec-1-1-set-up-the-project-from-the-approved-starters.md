@@ -104,6 +104,12 @@ Implementation results (2026-11-10), pending developer review:
 - Resolved: vitest 5.0.5, vite 8.3.7, @vitejs/plugin-react 6.3.0, jsdom 29.1.1, typescript 5.9.3, next 16.4.6, react 19.3.0; fastapi 0.162.2, uvicorn 0.54.0, pydantic 2.14.3, pydantic-settings 2.16.2, python-multipart 0.0.32, pypdf 6.21.4, pytest 9.1.1. The lockfile contains the Linux x64 bindings for `@next/swc`, rolldown, lightningcss and sharp.
 - Open: CI not yet run on GitHub; `npm ci` reports 8 moderate audit findings in starter dependencies (left as is).
 
+CI correction (2026-11-10, developer-approved), after the first GitHub run:
+
+- **First CI run (PR #7, run 42819586614, commit `abd1039`):** the frontend job passed (`npm ci`, `npm test`, `npm run build` on Node 22.19.0). The backend job failed at "Set up job" before any step ran: ``Unable to resolve action `astral-sh/setup-uv@v10`, unable to find version `v10` ``.
+- **Cause:** `astral-sh/setup-uv` publishes only exact release tags (e.g. `v10.3.3`) and no floating `v10` major tag, unlike `actions/checkout` and `actions/setup-node`. The pre-implementation check in note 4 queried `git/refs/tags/v10`, which GitHub answers with a prefix match (`v10.1.0` … `v10.3.3`); the exact `git/ref/tags/v10` returns 404. The `astral-sh/setup-uv@v10` named in note 4 is therefore wrong.
+- **Correction:** `.github/workflows/ci.yml` now uses `astral-sh/setup-uv@v10.3.3` (tag commit `68559e99cc807c1eb7e9238fd43a15bba460eec2`). Tool versions (uv 0.8.15, Python 3.13.7, Node 22.19.0), dependencies and lockfiles are unchanged.
+
 ## Spec Change Log
 
 - **2026-11-10, review iteration 1 (developer-approved):** triggered by triage finding 1 (CI never builds or type-checks the Next.js app). Amended the Execution task for `.github/workflows/ci.yml` so the frontend job also runs `npm run build` after `npm test`, and added the build to Verification. Known-bad state avoided: a broken `layout.tsx` or `next.config.ts` passing CI. The developer chose a targeted patch instead of a full revert and re-derive. KEEP: all other implemented files, the committed lockfiles, the jsdom 29 pin, `pythonpath = ["."]`, `agentRules: false` and the `!.env.example` exception.
