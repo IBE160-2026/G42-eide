@@ -1,0 +1,87 @@
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
+generated: 11-10-2026 11:36
+last_updated: 11-10-2026 11:36
+project: G42-eide
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+development_status:
+  epic-1: backlog
+  1-1-set-up-the-project-from-the-approved-starters: backlog
+  1-2-backend-settings-and-the-status-endpoint: backlog
+  1-3-one-error-format-for-every-failure: backlog
+  1-4-page-shell-and-visual-foundation: backlog
+  1-5-startup-check-starter-server-not-reachable: backlog
+  1-6-check-a-document-s-bytes-stage-1: backlog
+  1-7-extract-text-with-real-page-markers-stage-2: backlog
+  1-8-build-the-source-constrained-prompt-stage-3: backlog
+  1-9-connector-interface-ai-output-models-and-test-fakes: backlog
+  1-10-validate-ai-output-with-three-gates-stage-5: backlog
+  1-11-run-a-complete-pass-one-at-a-time-run_pass-stage-6: backlog
+  1-12-add-the-original-norwegian-sample-lecture-pdf: backlog
+  1-13-temporary-fixture-demo-connector-and-post-api-demo: backlog
+  1-14-serve-the-sample-pdf-for-demo-page-links: backlog
+  1-15-demo-start-screen-and-vis-eksempel: backlog
+  1-16-results-shell-notices-and-accessible-tabs: backlog
+  1-17-summary-rendering-and-pdf-page-links: backlog
+  1-18-nøkkelbegreper-panel: backlog
+  1-19-flashkort: backlog
+  1-20-quiz: backlog
+  1-21-back-to-start-and-demo-acceptance: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-upload-route-with-the-byte-cap-post-api-generate: backlog
+  2-2-cost-gate-call-cap-token-ceiling-paid-call-counter: backlog
+  2-3-real-anthropic-connector: backlog
+  2-4-real-mode-start-screen-privacy-notice-and-settings: backlog
+  2-5-choose-a-file-file-chip-and-browser-pre-check: backlog
+  2-6-generate-and-see-my-results: backlog
+  2-7-page-links-to-my-own-pdf: backlog
+  2-8-problems-with-my-file-s5-invalid-too-big-too-little-content: backlog
+  2-9-service-limit-and-connection-problems-s5-other-groups: backlog
+  2-10-start-over-and-protection-against-leaving-ny-fil: backlog
+  2-11-real-mode-setup-guide-and-real-mode-acceptance: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-build-and-test-the-fixture-recording-script: backlog
+  3-2-record-and-review-the-final-demo-fixture: backlog
+  3-3-regenerate-the-demo-envelope-and-prove-the-demo-is-offline-a: backlog
+  3-4-final-automated-verification-and-test-traceability: backlog
+  3-5-final-real-mode-quality-session-citations-languages-and-cost: backlog
+  3-6-final-manual-ui-and-accessibility-verification: backlog
+  3-7-final-privacy-security-and-spending-safeguard-verification: backlog
+  3-8-final-readme-and-implementation-explanation: backlog
+  3-9-evidence-index-and-reflection-report-preparation: backlog
+  3-10-final-submission-check-u-1-repository-push-and-lecturer-acce: backlog
+  epic-3-retrospective: optional
