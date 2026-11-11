@@ -1,8 +1,5 @@
-"""FastAPI application entry point.
+"""Module-level app for the README command ``uv run uvicorn app.main:app ...``."""
 
-The app has no routes yet; the status endpoint and other routes arrive in later stories.
-"""
+from app.application import build_app
 
-from fastapi import FastAPI
-
-app = FastAPI(title="AI Study Buddy")
+app = build_app()
