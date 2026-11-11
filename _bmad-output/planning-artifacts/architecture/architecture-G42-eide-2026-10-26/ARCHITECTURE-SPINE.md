@@ -7,7 +7,7 @@ paradigm: 'Pipeline (pipes-and-filters) backend with a swappable AI connector; t
 scope: 'Whole MVP: local single-user web app — upload one PDF or plain-text Document, one Generation Pass, display Results'
 status: final
 created: '2026-10-26'
-updated: '2026-11-08'
+updated: '2026-11-11'
 binds: [FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7, SM-1, SM-2, SM-3, SM-C1]
 sources:
   - _bmad-output/planning-artifacts/prds/prd-G42-eide-2026-09-16/prd.md
@@ -129,12 +129,14 @@ flowchart TD
 
 - **Binds:** FR-1, FR-5, FR-6, FR-7, demo mode
 - **Prevents:** reply-shape disagreement; framework error bodies or CORS-less 500s rendering as blank screens; demo results unlabelled; message-ownership conflicts.
-- **Rule:** Success (HTTP 200): `{mode: "real" | "demo", results: ValidatedResults, skipped_pages: int[]}` — `skipped_pages` always present, sorted, `[]` for plain text. Every non-2xx reply, including framework validation errors, unknown routes, oversize bodies and unhandled exceptions, has the body `{error_code, message, limit?, reference_id?}`; the catch-all handler runs inside CORS so headers survive. The frontend decides success vs failure by the presence of `error_code`, never by status alone.
+- **Rule:** Success (HTTP 200): `{mode: "real" | "demo", results: ValidatedResults, skipped_pages: int[]}` — `skipped_pages` always present, sorted, `[]` for plain text. Every non-2xx reply, including framework validation errors, unknown routes, unsupported methods, oversize bodies and unhandled exceptions, has the body `{error_code, message, limit?, reference_id?}`; the catch-all handler runs inside CORS so headers survive. Two exceptions, both following HTTP and CORS semantics: (1) CORS preflight requests (`OPTIONS` with `Origin` and `Access-Control-Request-Method`) are answered by the CORS middleware with its standard replies on any path — they are part of the browser's CORS handshake, not API replies, and the page cannot read their bodies; a plain `OPTIONS` request is not a preflight and is an unsupported method; (2) no route accepts `HEAD`, so a `HEAD` request receives `method_not_allowed` (405) with an `Allow` header, or `not_found` (404) for an unknown path, with status and headers only and never a body. The frontend decides success vs failure by the presence of `error_code`, never by status alone.
 
   | error_code | HTTP |
   | --- | --- |
   | `unsupported_file_type`, `bad_text_encoding`, `unreadable_file`, `no_extractable_text`, `invalid_request` | 400 |
   | `demo_mode_no_uploads`, `demo_not_enabled` | 403 |
+  | `not_found` | 404 |
+  | `method_not_allowed` (with an `Allow` header listing the supported methods) | 405 |
   | `generation_in_progress` | 409 |
   | `file_too_large` (with `limit`: `bytes` / `pages` / `characters` / `tokens`) | 413 |
   | `insufficient_content` | 422 |
@@ -198,7 +200,7 @@ flowchart TD
 
 - **Binds:** SM-1, SM-3
 - **Prevents:** untested error paths; paid tests; unverified citation quality.
-- **Rule:** (1) pytest per stage, every error code via fakes, plus full gate-chain tests (e.g. `insufficient_content` with empty fields) and extraction tests proving Norwegian characters (æ, ø, å) survive PDF and UTF-8 text extraction, plus `GET /api/demo/sample.pdf` tests: in demo mode it returns bytes identical to the sample file processed by the demo pass, as `application/pdf`; in real mode it returns 403 `demo_not_enabled`; a missing sample file returns `internal_error`; it ignores any query input and exposes no other file; (2) contract tests on both fixtures, backend and frontend; (3) a small focused set of frontend tests (demo banner, skipped-pages notice, error headlines, plain-text rendering); (4) deliberate manual real-AI sessions on 3–5 test PDFs chosen per the AD-19 sending rules (own lecture-style or openly licensed; real course PDFs only with confirmed permission; each session's cost log notes every document's source and permission basis) with a citation-quality table (supports / partly / doesn't, ~5 items per PDF) and a cost log, including at least one Norwegian document run with both output languages and terminology checked by hand; (5) a manual UI checklist in both modes before each milestone, including a network-off demo check. Layers 1–3 never use a real key.
+- **Rule:** (1) pytest per stage, every error code via fakes, plus full gate-chain tests (e.g. `insufficient_content` with empty fields) and extraction tests proving Norwegian characters (æ, ø, å) survive PDF and UTF-8 text extraction, plus `GET /api/demo/sample.pdf` tests: in demo mode it returns bytes identical to the sample file processed by the demo pass, as `application/pdf`; in real mode it returns 403 `demo_not_enabled`; a missing sample file returns `internal_error`; it ignores any query input and exposes no other file; other paths return 404 `not_found` and methods other than `GET` (including `HEAD`) return 405 `method_not_allowed` with `Allow: GET`; (2) contract tests on both fixtures, backend and frontend; (3) a small focused set of frontend tests (demo banner, skipped-pages notice, error headlines, plain-text rendering); (4) deliberate manual real-AI sessions on 3–5 test PDFs chosen per the AD-19 sending rules (own lecture-style or openly licensed; real course PDFs only with confirmed permission; each session's cost log notes every document's source and permission basis) with a citation-quality table (supports / partly / doesn't, ~5 items per PDF) and a cost log, including at least one Norwegian document run with both output languages and terminology checked by hand; (5) a manual UI checklist in both modes before each milestone, including a network-off demo check. Layers 1–3 never use a real key.
 
 ### AD-21 — Git workflow, CI and process evidence [ADOPTED · resolves PRD OQ4]
 
@@ -219,7 +221,7 @@ flowchart TD
 | Endpoints | `GET /api/status` → `{mode, limits: {max_upload_bytes, max_pdf_pages, max_text_chars}, options: {detail_level: {values, default}, output_language: {values, default}}, accepted_types: ["application/pdf", "text/plain"]}`; `POST /api/generate` (multipart per AD-17); `POST /api/demo` (no body); `GET /api/demo/sample.pdf` (demo mode only, read-only, fixed bundled sample PDF; see AD-13). The value of `max_upload_bytes` is 10,485,760 (binary 10 MB, AD-14). If `/api/status` fails, the frontend shows the "server not reachable" state (UI headline `Får ikke kontakt med appens server`). |
 | JSON naming | `snake_case` on both sides; TS types use the same names |
 | Page numbers | 1-based PDF viewer position; displayed `PDF-side N` |
-| Errors | Only the AD-11 envelope, codes and HTTP mapping |
+| Errors | Only the AD-11 envelope, codes and HTTP mapping (CORS preflight and `HEAD` exceptions in AD-11) |
 | Config | One backend settings module from environment (`AI_MODE`, key, model, effort, `max_tokens`, timeout, limits, call cap, `ALLOWED_ORIGIN`); no literals in stages |
 | Logging | Local only; stage, code, duration, tokens, `reference_id`; never content or secrets |
 | Glossary | Code uses the PRD Glossary terms (Document, Generation Pass, Results, Summary, Flashcard Set, Quiz, Key Concepts, Page Reference, Generation Inputs, Verification Notice); the UI uses the approved Norwegian labels (EXPERIENCE.md → Language & Terminology). |

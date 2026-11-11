@@ -195,7 +195,7 @@ Technical requirements from the architecture spine that shape epics and stories.
 | AR-9 | **Page markers:** stage 2 extracts per PDF page with pypdf; each page with non-empty text wrapped `<page number="N">…</page>` (N = 1-based PDF viewer position); pages without text go into `skipped_pages`; marker-like strings in page text are neutralised; no text at all (or empty plain text) → `no_extractable_text` before any AI call; plain text gets no markers; no chunking. | AD-8 |
 | AR-10 | **AI output contract:** structured output `{status: "ok" \| "insufficient_content", summary: {text, pages}, flashcards: [{front, back, pages}], quiz: [{question, answer, pages}], key_concepts: [{term, explanation, pages}]}`; the model must never pad. | AD-9 |
 | AR-11 | **Stage 5 three gates → `ValidatedResults`:** Gate 1 `stop == complete`; Gate 2 parse, `insufficient_content` handled first, full Pydantic parse with no empty text; Gate 3 ≥ 5 items per list, PDF pages filtered to the supplied set, any flashcard/quiz item/key concept left with zero pages fails the pass, Summary pages optional but filtered, any page on plain text fails the pass. Failures → `ai_output_invalid`. `pages` always a sorted, de-duplicated `int[]`. Stage 6 accepts only `ValidatedResults`. | AD-10 |
-| AR-12 | **Backend→browser contract:** success `{mode, results, skipped_pages}`; every non-2xx (including framework validation errors, unknown routes, oversize bodies, unhandled exceptions) uses `{error_code, message, limit?, reference_id?}`; catch-all handler inside CORS; closed error list with fixed HTTP mapping (400/403/409/413/422/429/500/502/503); `reference_id` 8 lowercase hex, also on the log line; backend `message` in Norwegian Bokmål; frontend decides success by presence of `error_code`. | AD-11 |
+| AR-12 | **Backend→browser contract:** success `{mode, results, skipped_pages}`; every non-2xx (including framework validation errors, unknown routes, unsupported methods, oversize bodies, unhandled exceptions) uses `{error_code, message, limit?, reference_id?}`; catch-all handler inside CORS; closed error list with fixed HTTP mapping (400/403/404/405/409/413/422/429/500/502/503); CORS preflight replies and bodyless `HEAD` replies are exempt (AD-11); `reference_id` 8 lowercase hex, also on the log line; backend `message` in Norwegian Bokmål; frontend decides success by presence of `error_code`. | AD-11 |
 | AR-13 | **Contracts:** Pydantic is the source of truth; frontend TS types mirror them by hand with identical `snake_case` names. Fixtures: `samples/demo-ai-output.json` (raw AD-9 shape, consumed by the demo connector) and `samples/demo-response.json` (exact AD-11 success envelope from `/api/demo`, regenerated and asserted by a backend test, consumed by frontend tests with a runtime shape check); drift fails CI. | AD-12 |
 | AR-14 | **Demo mode:** `POST /api/demo` processes only the bundled sample; `POST /api/generate` returns `demo_mode_no_uploads` in demo (checked before the pass lock); `POST /api/demo` returns `demo_not_enabled` in real mode. Stages 1, 2, 3, 5 run for real on the sample with fixed inputs (`standard`, `nb`); stage 4 returns the fixture. No key, no provider client, no external network or resources at runtime. `GET /api/demo/sample.pdf`: GET only, demo only, serves only the fixed sample PDF as `application/pdf`, `Content-Disposition: inline`; real mode → `demo_not_enabled` (403); missing file → `internal_error` (500); no pass lock, no paid-call count. Labelled by `mode: "demo"`, a permanent banner and the heading `Eksempelresultater (ikke generert nå)`. The sample is the developer's own original Norwegian (Bokmål) lecture on inventory management and supply-chain logistics; the fixture is recorded once from a real run, manually reviewed and committed with a provenance note (date, model ID, inputs, reviewed). Supporting detail (explainer): 5–8 pages with one image-only page. | AD-13 |
 | AR-15 | **Input limits in fixed order** (values provisional): 10 MB = 10,485,760 bytes, 80 PDF pages, 200,000 extracted characters, 60,000 input tokens. Order: api layer declared length + chunked byte count → stage 1 content signature, UTF-8, PDF opens (`unreadable_file`), total page count → stage 2 `no_extractable_text`, then characters before markers → cost gate tokens. Any limit → `file_too_large` with `limit` = `bytes`/`pages`/`characters`/`tokens`. | AD-14 |
@@ -267,7 +267,7 @@ From the UX design contract (DESIGN.md for visuals and tokens, EXPERIENCE.md for
 **Errors**
 
 - **UX-DR-32 Error state component (S5/S0x):** `<h2 tabindex="-1">` headline → action text → backend `message` as a smaller muted detail line (plain text); focus moves to the headline (announced once); no `role="alert"`, no live-region announcement; file and settings stay visible when safe; upload bar unlocked; choosing a new file returns to S2.
-- **UX-DR-33 Headline + action text per code:** implement the exact Norwegian texts in EXPERIENCE.md → Error headline + action per code for: server unreachable, `unsupported_file_type`, `bad_text_encoding`, `unreadable_file`, `no_extractable_text`, `file_too_large` (per `limit`: bytes / pages / characters / tokens, each followed by `Prøv med én forelesning om gangen.`), `insufficient_content`, `generation_in_progress`, `ai_unavailable`, `ai_rate_limited`, `ai_output_invalid`, `ai_credits_exhausted`, `session_call_limit_reached`, network failure during generation (`Mistet kontakten med serveren`), `internal_error` (with `<reference_id>`), `invalid_request`, and unknown/other codes including `demo_mode_no_uploads` and `demo_not_enabled` (`Noe gikk galt`). No message implies a retry costs money.
+- **UX-DR-33 Headline + action text per code:** implement the exact Norwegian texts in EXPERIENCE.md → Error headline + action per code for: server unreachable, `unsupported_file_type`, `bad_text_encoding`, `unreadable_file`, `no_extractable_text`, `file_too_large` (per `limit`: bytes / pages / characters / tokens, each followed by `Prøv med én forelesning om gangen.`), `insufficient_content`, `generation_in_progress`, `ai_unavailable`, `ai_rate_limited`, `ai_output_invalid`, `ai_credits_exhausted`, `session_call_limit_reached`, network failure during generation (`Mistet kontakten med serveren`), `internal_error` (with `<reference_id>`), `invalid_request`, and unknown/other codes including `demo_mode_no_uploads`, `demo_not_enabled`, `not_found` and `method_not_allowed` (`Noe gikk galt`). No message implies a retry costs money.
 - **UX-DR-34 S5 error groups:** Invalid file, Too big, Too little content → file kept and marked, Generer aria-disabled until replaced; Temporary (`ai_unavailable`, `ai_rate_limited`, `ai_output_invalid`, `generation_in_progress`, `internal_error`, network failure) → Generer available; Hard stop (`ai_credits_exhausted`, `session_call_limit_reached`) → Generer aria-disabled, reload required; Reload required (`invalid_request`, unknown codes) → Generer aria-disabled. Demo errors use the same table with `Vis eksempel` in Generer's place.
 
 **Accessibility floor and testing**
@@ -455,8 +455,28 @@ So that the interface can always show a clear message instead of a blank screen.
 **Acceptance Criteria:**
 
 **Given** the closed list of error codes in `contracts/` with their HTTP mapping (AR-12)
-**When** any route fails, including framework validation errors, unknown routes and unhandled exceptions
+**When** any request fails, including framework validation errors, unknown routes, unsupported methods and unhandled exceptions
 **Then** the body is `{error_code, message, limit?, reference_id?}`, and the CORS headers are present.
+
+**Given** a request to a path that has no route
+**When** it is received
+**Then** the reply is `not_found` (404) with the message `Adressen finnes ikke.`, never echoing the path.
+
+**Given** a request with a method the route does not support, including a plain `OPTIONS` request
+**When** it is received
+**Then** the reply is `method_not_allowed` (405) with the message `Metoden støttes ikke for denne adressen.` and an `Allow` header listing the supported methods.
+
+**Given** a malformed request or a framework validation error
+**When** it is received
+**Then** the reply is `invalid_request` (400).
+
+**Given** a `HEAD` request
+**When** it is received
+**Then** the reply is `method_not_allowed` (405) with an `Allow` header, or `not_found` (404) for an unknown path, with headers only and no body (AD-11).
+
+**Given** a CORS preflight (`OPTIONS` with `Origin` and `Access-Control-Request-Method`)
+**When** it is received
+**Then** the CORS middleware answers it unchanged — 200 for an allowed origin, method and header on any path, and its plain-text 400 when rejected — and it is exempt from the envelope (AD-11).
 
 **Given** an unhandled exception
 **When** it is caught
@@ -467,7 +487,7 @@ So that the interface can always show a clear message instead of a blank screen.
 **Then** it holds only the stage, code, duration, token counts and `reference_id`, never document text, AI output or secrets (AR-26).
 
 **And** the backend `message` texts are Norwegian Bokmål with no paths, provider bodies or secrets
-**And** pytest covers every code's HTTP status, the unknown route, the validation error, the catch-all with its CORS headers, and the log content.
+**And** pytest covers every code's HTTP status, the unknown route, the unsupported method with its `Allow` header, the validation error, `HEAD`, both preflight cases, the catch-all with its CORS headers, and the log content.
 
 ### Story 1.4: Page shell and visual foundation
 
@@ -794,7 +814,11 @@ So that I can check a citation against the source while offline.
 
 **Given** any query string or path variation
 **When** it is called
-**Then** no other file is reachable.
+**Then** no other file is reachable; a path that matches no route follows the AD-11 unknown-route rule (`not_found`, 404).
+
+**Given** a method other than `GET` on the existing route `/api/demo/sample.pdf`, including `HEAD`
+**When** it is called
+**Then** it follows the AD-11 unsupported-method rule: `method_not_allowed` (405) with `Allow: GET`; a `HEAD` reply has headers only and no body, and CORS preflights are answered by the CORS middleware (AD-11).
 
 **And** the endpoint takes no pass lock, counts no paid call and creates no provider client
 **And** pytest covers each case above.

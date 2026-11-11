@@ -128,7 +128,7 @@ Order in the error state: headline → action text → backend detail line (`mes
 | network failure during generation (frontend) | `Mistet kontakten med serveren` | `Sjekk at serveren kjører, og prøv igjen.` |
 | `internal_error` | `Noe gikk uventet galt` | `Prøv igjen. Hvis feilen gjentar seg, oppgi referansen: <reference_id>.` (`<reference_id>` = the envelope's `reference_id`) |
 | `invalid_request` | `Forespørselen var ugyldig` | `Last inn siden på nytt, og prøv igjen.` |
-| unknown / other, incl. `demo_mode_no_uploads`, `demo_not_enabled` | `Noe gikk galt` | `Last inn siden på nytt, og prøv igjen.` |
+| unknown / other, incl. `demo_mode_no_uploads`, `demo_not_enabled`, `not_found`, `method_not_allowed` | `Noe gikk galt` | `Last inn siden på nytt, og prøv igjen.` |
 
 ## Language & Terminology
 
@@ -205,7 +205,7 @@ Behavioural rules. Visual specs: DESIGN.md → Components. Focus rules: Interact
 | Too little content | `insufficient_content` | Kept; file marked | aria-disabled until replaced | Choose a document with more content |
 | Temporary | `ai_unavailable`, `ai_rate_limited`, `ai_output_invalid`, `generation_in_progress`, `internal_error` (with reference), network failure during generation | Kept | **Available** | **When** to retry (wait a little — approved texts above; wait for the running generation) |
 | Hard stop | `ai_credits_exhausted`, `session_call_limit_reached` | Kept | **aria-disabled** | The needed action, then reload the page (the app cannot detect resolution); demo still works |
-| Reload required | `invalid_request`, unknown/other codes (incl. `demo_mode_no_uploads`, `demo_not_enabled`) | Kept when safe | **aria-disabled** (not assumed temporary or retryable) | Reload the page (`Last inn siden på nytt, og prøv igjen.`) |
+| Reload required | `invalid_request`, unknown/other codes (incl. `demo_mode_no_uploads`, `demo_not_enabled`, `not_found`, `method_not_allowed`) | Kept when safe | **aria-disabled** (not assumed temporary or retryable) | Reload the page (`Last inn siden på nytt, og prøv igjen.`) |
 
 Generer is available after an error only when retrying is known to be safe (the Temporary group).
 
