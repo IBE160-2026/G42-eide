@@ -6,13 +6,18 @@ Tests import from here; only ``app.main`` builds the app from the real environme
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.errors import CatchAllMiddleware, configure_logging, register_error_handlers
 from app.api.status import router as status_router
 from app.config import Settings, SettingsRefused, load_settings
 
 
 def create_app(settings: Settings) -> FastAPI:
-    application = FastAPI(title="AI Study Buddy")
+    configure_logging()
+    application = FastAPI(title="AI Study Buddy", redirect_slashes=False)
     application.state.settings = settings
+    register_error_handlers(application)
+    # The last-added middleware is outermost: CORS → catch-all → exception handlers → router.
+    application.add_middleware(CatchAllMiddleware)
     application.add_middleware(
         CORSMiddleware,
         allow_origins=[settings.allowed_origin],
