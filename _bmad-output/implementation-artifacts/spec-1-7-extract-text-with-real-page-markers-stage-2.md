@@ -2,8 +2,9 @@
 title: 'Story 1.7: Extract text with real page markers (stage 2)'
 type: 'feature'
 created: '2026-11-13'
-status: 'ready-for-dev'
+status: 'in-progress'
 route: 'dispatch'
+baseline_commit: 'efd5023bdbb86f265de715a7c4d86405e189f439'
 review_loop_iteration: 0
 context:
   - '{project-root}/_bmad-output/implementation-artifacts/epic-1-context.md'
@@ -88,8 +89,8 @@ context:
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `backend/app/pipeline/stage2_extract.py` -- `ExtractedDocument` (frozen dataclass: `kind: Literal["pdf", "text"]`, `text: str`, `supplied_pages: tuple[int, ...]`, `skipped_pages: tuple[int, ...]`); `extract_document(document: CheckedDocument, *, max_text_chars: int) -> ExtractedDocument` following decisions 1–9; one module-level compiled pattern for decision 4; no logging configuration -- AD-8, AR-9, AR-15.
-- [ ] `backend/tests/test_stage2_extract.py` -- one test per matrix row, with PDFs generated in the test (text pages via a content stream as in the Code Map, image-only pages via an image XObject, whitespace-only pages), extraction errors simulated with `monkeypatch`; plus invariants: `supplied_pages` and `skipped_pages` are disjoint, sorted, and together equal `1..page_count` for PDFs.
+- [x] `backend/app/pipeline/stage2_extract.py` -- `ExtractedDocument` (frozen dataclass: `kind: Literal["pdf", "text"]`, `text: str`, `supplied_pages: tuple[int, ...]`, `skipped_pages: tuple[int, ...]`); `extract_document(document: CheckedDocument, *, max_text_chars: int) -> ExtractedDocument` following decisions 1–9; one module-level compiled pattern for decision 4; no logging configuration -- AD-8, AR-9, AR-15.
+- [x] `backend/tests/test_stage2_extract.py` -- one test per matrix row, with PDFs generated in the test (text pages via a content stream as in the Code Map, image-only pages via an image XObject, whitespace-only pages), extraction errors simulated with `monkeypatch`; plus invariants: `supplied_pages` and `skipped_pages` are disjoint, sorted, and together equal `1..page_count` for PDFs.
 
 **Acceptance Criteria:**
 - Given the backend, when `uv sync --locked && uv run pytest -q` run, then all tests pass (the existing 259 plus the new ones) with no new dependency and an unchanged `uv.lock`.
@@ -98,9 +99,36 @@ context:
 
 ## Implementation Notes
 
+- `stage2_extract.py` extracts every PDF page first inside one `try` (`_extract_pages`); any exception → `PassFailure("unreadable_file") from None`. Only after every page was read do the checks run: `no_extractable_text`, then the character limit, then the result (decisions 6 and 9).
+- Neutralising is the private `_neutralise()` around the single compiled pattern from Design Notes (renamed from the public `neutralise()` after review, O1); plain text is neutralised but not trimmed.
+- The `extract_document` docstring states the contract later stages rely on: the three codes, their order, and that `max_text_chars` counts the original extracted text (O3).
+- Tests (63) generate PDFs with pypdf only: text pages via a Type1 Helvetica / WinAnsi content stream, image-only pages via an image XObject, whitespace-only and empty pages. The helper uses pypdf's private `PdfWriter._add_object` (no public alternative in 6.21); a pypdf upgrade could break the test helper, not production code.
+- The decision 4 lookalike regression tests (T3) run through `CheckedText`, because the cp1252 test font cannot draw U+200B or U+FF1C; the same `_neutralise()` handles PDF pages.
+- Review findings D1 (retained `__context__`) and L1 (invisible-only text) are recorded in `deferred-work.md`; `sprint-status.yaml` was not changed during implementation, at the developer's instruction.
+
 ## Spec Change Log
 
 ## Review Triage Log
+
+Review iteration 1 (2026-11-13): blind-hunter (BH), edge-case-hunter (ECH), verification-gap (VG: no gaps; ten deliberate mutations of `stage2_extract.py` were each caught by at least one test). Claims verified by the orchestrator (OC) on the working tree. No intent_gap or bad_spec entries, so no loopback; T1–T3, O1 and O3 approved by the developer and sent to the implementation subagent; applied and verified (63 stage 2 tests, 322 backend tests in total, both also with `-W error`). D1 and L1 recorded in `deferred-work.md`.
+
+| # | Source | Finding | Verdict | Evidence | Route |
+|---|---|---|---|---|---|
+| D1 | BH | `raise PassFailure("unreadable_file") from None` keeps the original pypdf exception in `__context__` | low | OC: `__suppress_context__` is `True` and the formatted traceback hides the pypdf message, but `__context__` still references it; stage 1's `_open_pdf` uses the same approved pattern. Not reachable today (no error reporter walks `__context__`) | defer (stages 1 and 2 together) |
+| T1 | BH | Privacy test does not run the `unreadable_file` extraction-error path | low | `_secret_failures()` covers only `no_extractable_text` and `file_too_large` | patch (no `__context__ is None` assertion on this path, per D1) |
+| T2 | BH | No test for a zero-page PDF, a bare `<` at a page end, or an extraction error on page 1 | low | OC: zero pages → `no_extractable_text`; `slutt <` stays `slutt <\n</page>`; only page 2 and the page list were simulated | patch |
+| T3 | BH, ECH | Decision 4 behaviour on non-whitespace lookalikes is not pinned | low | OC: `<`+U+200B+`page…`, soft hyphen, fullwidth `＜page>` and `&lt;page` are unchanged, as approved | patch (regression tests of approved behaviour) |
+| O1 | BH | Public `neutralise()` is not in the spec | low | Nothing outside the tests uses it; stage 3 receives neutralised text | patch (rename to `_neutralise`) |
+| O3 | BH | `extract_document` docstring does not state its contract | low | Codes, order and original-text count are what Stories 1.8 and 1.10 rely on | patch (docstring only) |
+| L1 | ECH | Text containing only zero-width or similar invisible characters passes the no-text check | low | OC: a page of U+200B returns an `ExtractedDocument`; decision 2 uses `str.strip()` | defer (known limitation) |
+| O2 | BH, ECH | Non-`CheckedPdf` input falls through to the text branch | low | The `CheckedDocument` union restricts the input; an explicit branch adds code for an unreachable case | reject |
+| O4 | BH | Test helper uses pypdf's private `PdfWriter._add_object` | low | Test-only risk on a pypdf upgrade; a shared helper would change Story 1.6's test file | reject (noted) |
+| O5 | BH | `Page` type alias checks nothing; one invariant check duplicated | low | Cosmetic, test-only, no named harm | reject |
+| O6 | BH, ECH | All pages extracted before the limit check; no time budget | low | Cost bounded by 80 pages and 10 MB (AD-14); stopping early complicates decision 9's order | reject |
+| L2 | ECH, BH | Zero-width, soft-hyphen and fullwidth tag lookalikes are not neutralised | false | Approved decision 4 (only `\s`); stage 5 (AR-11) drops every page outside the supplied set, so a forged marker can at most name a real page; pinned by T3 | reject |
+| L3 | ECH, BH | Literal `&lt;page` cannot be told apart from neutralised text | false | Nothing downstream un-escapes; the prompt is plain text (AD-18) | reject |
+| L4 | BH | Implementation Notes and Spec Change Log empty | false | Filled at the final workflow step, as in Story 1.6 | reject |
+| L5 | ECH | Untracked BMAD folders in `git status` | false | Pre-existing, excluded by agreement | reject |
 
 ## Design Notes
 
