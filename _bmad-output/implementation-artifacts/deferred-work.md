@@ -37,3 +37,15 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.6 triage finding 10, verified with `pickle` and `copy.deepcopy` on `PassFailure("file_too_large", limit="pages")` and the same `AppError`. Unreachable today: nothing in `backend/app/` pickles or copies errors, and each pass runs in one process. Fixing only `PassFailure` would diverge from `AppError`, which Story 1.6 must not change.
   risk: Low today; would matter if errors ever cross a process boundary (process pool, worker queue) or are deep-copied.
   follow-up: In a later story that needs it, fix both classes together (for example `__reduce__` returning `(type(self), (self.code, self.limit))`) with a pickle and deepcopy round-trip test. No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-7-extract-text-with-real-page-markers-stage-2.md`
+  summary: `raise PassFailure(...) from None` in stage 1 (`_open_pdf`) and stage 2 (`_extract_pages`) suppresses the original pypdf exception in formatted tracebacks but does not remove it: `__context__` still references the exception object, including any message text.
+  evidence: Story 1.7 triage finding D1, verified 2026-11-13: `__suppress_context__` is `True`, `traceback.format_exception` hides the pypdf message, and `__context__` is still the original exception in both stages. Not reachable today: no code walks `__context__` and there is no error reporter.
+  risk: Low today; would matter if an error reporter, debugger hook or `exc_info` handler later walks `__context__` and records it.
+  follow-up: Correct stages 1 and 2 together (for example raise after leaving the `except` block, so `__context__` is `None`) with a test for both. No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-7-extract-text-with-real-page-markers-stage-2.md`
+  summary: Known limitation: a PDF page or text document containing only zero-width or similar invisible characters (for example U+200B) passes the no-text check, because decision 2 uses `str.strip()`, which removes whitespace only.
+  evidence: Story 1.7 triage finding L1, verified 2026-11-13: a page of U+200B returns an `ExtractedDocument` instead of `no_extractable_text`.
+  risk: Low. Such text would be sent on to later stages; the AI would most likely report `insufficient_content`.
+  follow-up: Revisit only with a developer decision (for example also treating Unicode format characters, category Cf, as empty). No change without approval.
