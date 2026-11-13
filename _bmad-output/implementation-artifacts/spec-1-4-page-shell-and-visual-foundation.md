@@ -2,8 +2,9 @@
 title: 'Story 1.4: Page shell and visual foundation'
 type: 'feature'
 created: '2026-11-13'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
+baseline_commit: 'b1c1214'
 review_loop_iteration: 0
 context:
   - '{project-root}/_bmad-output/implementation-artifacts/epic-1-context.md'
@@ -72,12 +73,12 @@ context:
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `frontend/app/globals.css` -- every DESIGN.md token as a custom property on `:root` (`--color-*`, `--font-family`, `--font-<role>-size/-weight/-line-height`, `--radius-*`, `--space-1…8` and the size tokens; the D-8 role tokens `--font-settings-value-*` (= `ui`) and `--font-demo-heading-*` (= `heading`); the D-9 padding tokens `--padding-notice: 8px 16px`, `--padding-flashcard: 32px 48px`, `--padding-quiz-item: 16px 24px`, `--padding-page-inline: 48px`, `--padding-header: 12px 48px`); base `html`/`body` styles (background, text colour, body typography); the global `:focus-visible` rule; a `.sr-only` visually-hidden class; the page frame (centred, `max-width: var(--content-max-width)`, side padding `--padding-page-inline`) and the header band (surface background, header rule, logo colour, brand typography, `--padding-header`) -- UX-DR-1, UX-DR-3, UX-DR-5, D-8, D-9.
-- [ ] `frontend/app/layout.tsx` -- `lang="nb"`, `title: "AI Study Buddy"` -- UX-DR-5.
-- [ ] `frontend/components/Logo.tsx` -- the mockup's open-book SVG, `aria-hidden="true"`, `focusable="false"`, stroke `currentColor` -- UX-DR-4.
-- [ ] `frontend/components/StatusRegion.tsx` -- client component rendering the single empty, visually hidden status region, and an exported `announce(message)` that clears the region and sets the message on the next tick; at most one pending timer (a new call cancels the previous one); the effect cleanup on unmount clears the pending timer and detaches the setter; no-op when the region is not mounted; never used for errors -- UX-DR-20.
-- [ ] `frontend/app/page.tsx` -- the shell: `<header>` (logo + `h1` `AI Study Buddy`), `<main>` with the two named, empty sections in order, and the status region -- UX-DR-5.
-- [ ] `frontend/__tests__/` -- Vitest for every matrix row and AC: landmarks, `h1`, region names and order, the empty status region and its attributes, `announce` (fake timers: clear then set, repeats, empty, unmounted, rapid calls set only the latest, unmount while pending sets nothing and logs no React warning), the logo attributes, `lang` and title (from `RootLayout`'s returned element and the `metadata` export, since jsdom cannot render `<html>` inside a container), and the CSS file read as text: every token with its exact value, the focus-ring rule, and no `box-shadow`, gradient, `@font-face`, `prefers-color-scheme: dark`, fixed `height:`, `position: sticky/fixed` or `outline: none`.
+- [x] `frontend/app/globals.css` -- every DESIGN.md token as a custom property on `:root` (`--color-*`, `--font-family`, `--font-<role>-size/-weight/-line-height`, `--radius-*`, `--space-1…8` and the size tokens; the D-8 role tokens `--font-settings-value-*` (= `ui`) and `--font-demo-heading-*` (= `heading`); the D-9 padding tokens `--padding-notice: 8px 16px`, `--padding-flashcard: 32px 48px`, `--padding-quiz-item: 16px 24px`, `--padding-page-inline: 48px`, `--padding-header: 12px 48px`); base `html`/`body` styles (background, text colour, body typography); the global `:focus-visible` rule; a `.sr-only` visually-hidden class; the page frame (centred, `max-width: var(--content-max-width)`, side padding `--padding-page-inline`) and the header band (surface background, header rule, logo colour, brand typography, `--padding-header`) -- UX-DR-1, UX-DR-3, UX-DR-5, D-8, D-9.
+- [x] `frontend/app/layout.tsx` -- `lang="nb"`, `title: "AI Study Buddy"` -- UX-DR-5.
+- [x] `frontend/components/Logo.tsx` -- the mockup's open-book SVG, `aria-hidden="true"`, `focusable="false"`, stroke `currentColor` -- UX-DR-4.
+- [x] `frontend/components/StatusRegion.tsx` -- client component rendering the single empty, visually hidden status region, and an exported `announce(message)` that clears the region and sets the message on the next tick; at most one pending timer (a new call cancels the previous one); the effect cleanup on unmount clears the pending timer and detaches the setter; no-op when the region is not mounted; never used for errors -- UX-DR-20.
+- [x] `frontend/app/page.tsx` -- the shell: `<header>` (logo + `h1` `AI Study Buddy`), `<main>` with the two named, empty sections in order, and the status region -- UX-DR-5.
+- [x] `frontend/__tests__/` -- Vitest for every matrix row and AC: landmarks, `h1`, region names and order, the empty status region and its attributes, `announce` (fake timers: clear then set, repeats, empty, unmounted, rapid calls set only the latest, unmount while pending sets nothing and logs no React warning), the logo attributes, `lang` and title (from `RootLayout`'s returned element and the `metadata` export, since jsdom cannot render `<html>` inside a container), and the CSS file read as text: every token with its exact value, the focus-ring rule, and no `box-shadow`, gradient, `@font-face`, `prefers-color-scheme: dark`, fixed `height:`, `position: sticky/fixed` or `outline: none`.
 
 **Acceptance Criteria:**
 - Given the frontend, when `npm ci && npm test && npm run build` run, then all tests pass and the build compiles and type-checks.
@@ -86,9 +87,35 @@ context:
 
 ## Implementation Notes
 
+- `announce` writes the region's `textContent` directly; React never renders children into the region, so the clear and the set cannot be batched into one render (a repeated message is still announced).
+- The header title uses `{colors.text}` per DESIGN.md `app-header`; only the logo is teal (the mockup's teal title is overridden by the approved documents).
+- The status region is rendered after `<main>` (the spec does not fix its position).
+- `.sr-only` uses `max-height: 1px` (not `height`) to respect the no-fixed-`height:` rule; it stays hidden via `width: 1px`, `overflow: hidden` and `clip-path: inset(50%)`.
+- `.page` has `max-width: calc(var(--content-max-width) + 2 * var(--padding-page-inline))`, so the content itself is at most 960px.
+
 ## Spec Change Log
 
 ## Review Triage Log
+
+Review iteration 1 (2026-11-13): blind-hunter (BH), edge-case-hunter (ECH), verification-gap (VG: no gaps found). No intent_gap or bad_spec entries, so no loopback; patches sent to the implementation subagent.
+
+| # | Source | Finding | Verdict | Evidence | Route |
+|---|---|---|---|---|---|
+| 1 | BH, ECH | Page-frame test matches `max-width`/`margin: 0 auto` anywhere in the file | low | `.app-header__inner` has both declarations, so the test passes with `.page` removed | patch |
+| 2 | BH | Header band and base `body` styles from the `globals.css` task are not tested | low | The CSS tests check tokens, the focus rule, `.sr-only` existence and forbidden patterns only; a regression in `.app-header`, its title or `body` goes unnoticed | patch |
+| 3 | BH | Tests do not check that the markup carries the CSS classes | low | `page.test.tsx` never reads `className` on `header`, `h1`, `svg` or `main`; a rename on either side breaks the layout with all tests green | patch |
+| 4 | BH, ECH | "Nothing sticky or fixed" DOM test cannot fail | low | It reads inline `el.style.position`; the shell sets no inline styles and jsdom does not apply `globals.css`. The CSS-text test already covers this | patch (delete) |
+| 5 | BH | No test for `announce("")` cancelling a pending message | low | The empty-announce test runs the timers between the two calls, so the cancel path for an empty message is never exercised | patch |
+| 6 | BH, ECH | A non-owning `StatusRegion` unmounting cancels the owner's pending announcement | low | The cleanup calls `cancelPending()` before the `regionNode === node` check. Unreachable today (one instance), but the fix only moves the call inside the existing guard | patch |
+| 7 | BH, ECH | A second `StatusRegion` silently takes over; no dev warning | low | Only `page.tsx` renders it and the spec requires exactly one; a warning adds a new branch for an unreachable case | reject |
+| 8 | ECH | Region remounting with a new node between `announce` and the tick writes to an uncleared node | false | Unmount cleanup cancels the pending timer, so the old timer can never fire into the new node; a new node also renders empty | reject |
+| 9 | ECH | Forbidden `outline: none` pattern misses `outline: 0px`, `outline-width: 0`, `outline-style: none` | low | The regex only matches `outline:` followed by `none` or `0` | patch |
+| 10 | ECH | "Never overridden" focus ring not enforced | low | The test reads only the first `:focus-visible` block; a later `button:focus-visible` override would pass | patch |
+| 11 | ECH | `tokenValue` reads only the first definition | low | A later redefinition of a token with a wrong value would pass the exact-value checks | patch |
+| 12 | BH | `.sr-only` uses `max-height: 1px` instead of the standard `height: 1px` | false | The region stays hidden: `width: 1px`, `overflow: hidden`, `white-space: nowrap` and `clip-path: inset(50%)`; the spec forbids fixed `height:` | reject |
+| 13 | BH, ECH | No narrow-screen handling; 48px side padding at 320px leaves 224px | false | DESIGN.md: "no breakpoints were decided"; AF-11 requires no two-dimensional scrolling at 320px, which holds (the `h1` wraps between words, nothing has a fixed width). 48px is the approved D-9 value | reject |
+| 14 | BH | Form controls do not inherit the font | low | Real for future controls, but the shell has none; not caused by this change | defer (Story 1.5, first control) |
+| 15 | BH, ECH | `sprint-status.yaml` changed despite the Never list; spec `in-review` vs sprint `in-progress` | false | The orchestrator made the change under the bmad-build workflow with the developer's explicit approval (2026-11-13); the Never list binds the implementation. `in-review` is the spec's internal status; the story moves to `review` in step 5, as in Story 1.3 | reject |
 
 ## Design Notes
 

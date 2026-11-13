@@ -1,11 +1,194 @@
-/* System font stack only; no web fonts are loaded. Design tokens arrive in Story 1.4. */
+/*
+ * Design tokens and base styles (Story 1.4).
+ * Source: DESIGN.md frontmatter. Light mode only; system font stack only (no web fonts);
+ * flat (no shadows or gradients); sizes are minimums, never fixed heights.
+ */
+:root {
+  /* Colours (27) */
+  --color-background: #F7F3EA;
+  --color-surface: #FFFDF7;
+  --color-text: #2A2823;
+  --color-text-muted: #5B5649;
+  --color-primary: #1D5C63;
+  --color-primary-hover: #174B51;
+  --color-on-primary: #FFFFFF;
+  --color-hover-tint: #E2EEEC;
+  --color-border: #857D6C;
+  --color-border-subtle: #DDD5C4;
+  --color-focus: #1D5C63;
+  --color-notice-info-bg: #E7EFF3;
+  --color-notice-info-fg: #1F4A63;
+  --color-notice-info-border: #1F4A63;
+  --color-notice-warning-bg: #FBF1DC;
+  --color-notice-warning-fg: #6E4600;
+  --color-notice-warning-border: #6E4600;
+  --color-error-bg: #FBE9E7;
+  --color-error-fg: #8E2A20;
+  --color-error-border: #8E2A20;
+  --color-demo-bg: #E2EEEC;
+  --color-demo-fg: #1D5C63;
+  --color-demo-border: #1D5C63;
+  --color-disabled-bg: #ECE7DC;
+  --color-disabled-fg: #5F5A4E;
+  --color-disabled-border: #857D6C;
+  --color-backdrop: #2A28238C;
+
+  /* Typography: one shared system font stack, 9 roles */
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --font-caption-size: 14px;
+  --font-caption-weight: 400;
+  --font-caption-line-height: 1.35;
+
+  --font-small-size: 15px;
+  --font-small-weight: 400;
+  --font-small-line-height: 1.35;
+
+  --font-body-size: 17px;
+  --font-body-weight: 400;
+  --font-body-line-height: 1.65;
+
+  --font-ui-size: 17px;
+  --font-ui-weight: 500;
+  --font-ui-line-height: 1.35;
+
+  --font-answer-size: 19px;
+  --font-answer-weight: 400;
+  --font-answer-line-height: 1.7;
+
+  --font-heading-size: 20px;
+  --font-heading-weight: 600;
+  --font-heading-line-height: 1.25;
+
+  --font-subheading-size: 17px;
+  --font-subheading-weight: 600;
+  --font-subheading-line-height: 1.35;
+
+  --font-brand-size: 24px;
+  --font-brand-weight: 700;
+  --font-brand-line-height: 1.25;
+
+  --font-flashcard-term-size: 28px;
+  --font-flashcard-term-weight: 600;
+  --font-flashcard-term-line-height: 1.25;
+
+  /* D-8 role assignments: settings-field value = ui, demo results heading = heading */
+  --font-settings-value-size: var(--font-ui-size);
+  --font-settings-value-weight: var(--font-ui-weight);
+  --font-settings-value-line-height: var(--font-ui-line-height);
+  --font-demo-heading-size: var(--font-heading-size);
+  --font-demo-heading-weight: var(--font-heading-weight);
+  --font-demo-heading-line-height: var(--font-heading-line-height);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+
+  /* Size tokens (minimums, never fixed heights) */
+  --control-min-height: 44px;
+  --target-min: 24px;
+  --reflow-min-width: 320px;
+  --measure-answer: 65ch;
+  --content-max-width: 960px;
+  --border-hairline: 1px;
+  --border-header-rule: 2px;
+  --border-emphasis: 3px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  /* D-9 padding tokens (snapped to the spacing scale) */
+  --padding-notice: 8px 16px;
+  --padding-flashcard: 32px 48px;
+  --padding-quiz-item: 16px 24px;
+  --padding-page-inline: 48px;
+  --padding-header: 12px 48px;
+}
+
+/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
+
+/* Global focus ring: applies to every focusable element; never removed or overridden. */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Visually hidden, still read by assistive technology. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  max-height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Header band */
+.app-header {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-bottom: var(--border-header-rule) solid var(--color-primary);
+  padding: var(--padding-header);
+}
+
+.app-header__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.app-header__logo {
+  flex: none;
+  color: var(--color-primary);
+}
+
+.app-header__title {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-brand-size);
+  font-weight: var(--font-brand-weight);
+  line-height: var(--font-brand-line-height);
+}
+
+/* Page frame: centred content, at most 960px wide */
+.page {
+  max-width: calc(var(--content-max-width) + 2 * var(--padding-page-inline));
+  margin: 0 auto;
+  padding-inline: var(--padding-page-inline);
 }
