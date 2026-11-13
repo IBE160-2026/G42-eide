@@ -31,3 +31,9 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.5 triage finding 6. They match the live `GET /api/status` reply today, but adding a value to a backend `Literal` (for example a new output language) would keep every backend and frontend test green while the real app rejects the reply and stays in S0x.
   risk: Medium. A backend contract change could block startup without CI noticing.
   follow-up: When the shared fixtures arrive (Story 1.13, `samples/demo-response.json` per AR-13), add a backend-written status fixture or a backend test that emits the reply, and assert it in `status.test.ts`.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-6-check-a-document-s-bytes-stage-1.md`
+  summary: `PassFailure` (pipeline) and `AppError` (api) cannot be pickled or deep-copied when they carry a `limit`: both store only the code in `args`, so rebuilding them raises `ValueError("file_too_large needs a limit")`.
+  evidence: Story 1.6 triage finding 10, verified with `pickle` and `copy.deepcopy` on `PassFailure("file_too_large", limit="pages")` and the same `AppError`. Unreachable today: nothing in `backend/app/` pickles or copies errors, and each pass runs in one process. Fixing only `PassFailure` would diverge from `AppError`, which Story 1.6 must not change.
+  risk: Low today; would matter if errors ever cross a process boundary (process pool, worker queue) or are deep-copied.
+  follow-up: In a later story that needs it, fix both classes together (for example `__reduce__` returning `(type(self), (self.code, self.limit))`) with a pickle and deepcopy round-trip test. No change without approval.

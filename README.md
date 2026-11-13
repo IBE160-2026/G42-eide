@@ -54,3 +54,7 @@ npm test
 ```
 
 GitHub Actions kjører begge testsettene på hver Pull Request (`.github/workflows/ci.yml`), med samme versjoner av uv, Python og Node som over, og uten hemmeligheter eller API-nøkkel.
+
+## Kjente begrensninger
+
+PDF-filer må begynne med «%PDF-». Filer med ekstra bytes foran denne signaturen avvises som ikke-støttet filtype.
