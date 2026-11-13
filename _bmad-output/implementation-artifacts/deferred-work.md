@@ -19,3 +19,9 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Triage finding 5. `backend/tests/test_app.py` needs only `fastapi`, so removing `uvicorn` from the dependencies would not fail CI. Startup on `127.0.0.1:8000` was verified manually on 2026-11-10.
   risk: Low. The README start command could break without CI noticing.
   follow-up: Story 1.2 (backend settings and the status endpoint), which adds `httpx`, should include an HTTP test of `GET /api/status` through FastAPI's `TestClient`.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-4-page-shell-and-visual-foundation.md`
+  summary: The base styles do not make form controls inherit the font, so buttons, inputs, selects and textareas would use the browser default font instead of the token stack.
+  evidence: Story 1.4 triage finding 14. `globals.css` sets typography on `html` and `body` only; browsers do not inherit `font` into form controls by default. The Story 1.4 shell has no controls, so nothing is affected yet.
+  risk: Low. Visible only once a story adds the first control.
+  follow-up: Story 1.5 (first control, `Prøv igjen`) should add `button, input, select, textarea { font: inherit; }` to `globals.css`, with a CSS-text test.
