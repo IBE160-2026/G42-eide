@@ -2,7 +2,7 @@
 title: 'Story 1.7: Extract text with real page markers (stage 2)'
 type: 'feature'
 created: '2026-11-13'
-status: 'in-progress'
+status: 'done'
 route: 'dispatch'
 baseline_commit: 'efd5023bdbb86f265de715a7c4d86405e189f439'
 review_loop_iteration: 0
