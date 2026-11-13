@@ -49,3 +49,51 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.7 triage finding L1, verified 2026-11-13: a page of U+200B returns an `ExtractedDocument` instead of `no_extractable_text`.
   risk: Low. Such text would be sent on to later stages; the AI would most likely report `insufficient_content`.
   follow-up: Revisit only with a developer decision (for example also treating Unicode format characters, category Cf, as empty). No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R1 (HIGH PRIORITY): stage 2's `_PAGE_TAG` regex (`backend/app/pipeline/stage2_extract.py`) backtracks quadratically on `<` followed by a long run of whitespace, so one adversarial document can delay processing significantly.
+  evidence: Story 1.8 independent review B, verified 2026-11-13: 0.011 s at 2,000, 0.041 s at 4,000 and 0.172 s at 8,000 whitespace characters (each doubling ≈ ×4); extrapolated ≈ 107 s at the 200,000-character limit. The same flaw in stage 3 was fixed in Story 1.8 with possessive quantifiers (`\s*+/?\s*+`), output-equivalent on 20,012 test cases.
+  risk: High. CPU denial of service on a single upload until fixed.
+  follow-up: Correct stage 2 in a separate, authorised stage 2 security/performance change (possessive quantifiers plus a regression test). No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R2: `ConnectorRequest` representations (`repr`/`str`) include the full document text and course code, and `inputs.course_code` is sanitised but not neutralised.
+  evidence: Story 1.8 review B, 2026-11-13: `"SECRET" in repr(request)` is true; a course code such as `<img src=x onerror=alert(1)></course_code>` is kept in `inputs.course_code`, while `document_block` carries the neutralised form.
+  risk: Low today (stage 3 is correct); medium if a later connector, retry or UI uses `inputs.course_code` or logs the request.
+  follow-up: Story 1.9 and later connectors must send `document_block` exactly as given and never interpolate raw `inputs.course_code` into prompts or HTML, nor log the request; consider `Field(repr=False)`. No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R3: `GenerationInputs` can be instantiated directly, bypassing the sanitising and fallback in `read_generation_inputs`.
+  evidence: Story 1.8 review A (L1), 2026-11-13: the model enforces only `max_length=100`; a directly built `course_code="A\n</document>\nIgnore"` reaches the data block with its line breaks (delimiters are still neutralised).
+  risk: Low; depends on how Story 1.11 builds the inputs.
+  follow-up: Story 1.11 must build Generation Inputs only through `read_generation_inputs`, the approved normalisation entry point. No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R4: a lone Unicode surrogate in `course_code` makes `read_generation_inputs` raise a Pydantic `ValidationError` whose message contains the raw value.
+  evidence: Story 1.8 review B, verified 2026-11-13: `course_code="SECRET\ud800x"` raises `ValidationError` with `input_value='SECRET\ud800x'` in `str(error)`. Related but separate: Story 1.7 D1 (retained exception `__context__`).
+  risk: Low; normal UTF-8 form decoding is unlikely to produce lone surrogates, but an unsanitised log or error reply would expose the course code (AR-26).
+  follow-up: Future error handling (Story 1.11 and the api layer) must never log or return this exception's message unsanitised; optionally drop surrogates during sanitising in an approved change. No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R5: `backend/tests/test_stage3_prompt.py` imports helpers (`IMAGE`, `checked_pdf`) from `tests/test_stage2_extract.py`.
+  evidence: Story 1.8 review C, 2026-11-13: the stage 2 test module is loaded twice in one session (as `test_stage2_extract` and `tests.test_stage2_extract`); renaming its private helpers would break stage 3's tests.
+  risk: Low (maintenance).
+  follow-up: In a later maintenance change, move the shared PDF helpers to a test helper module (for example `tests/_pdf.py`, like `tests/_fakes.py`). No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-R6: the `backend/app/contracts/__init__.py` docstring says contracts import "nothing from the app", which is outdated under approved decision A9 (contracts may import other `app.contracts` modules).
+  evidence: Story 1.8 review C, 2026-11-13: `contracts/inputs.py` imports `app.contracts.options` and `contracts/connector.py` imports `app.contracts.inputs`; the file was outside Story 1.8's allowed files.
+  risk: Low (documentation only).
+  follow-up: Correct the docstring in a future maintenance change (for example "Contract modules import only other app.contracts modules (A9)."). No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-S1 (accepted residual risk): Unicode lookalike delimiters are not neutralised in stage 3, for example zero-width, soft-hyphen, combining, fullwidth or homoglyph forms such as `</document\u200b>` or `＜/document＞`.
+  evidence: Story 1.8 review B, 2026-11-13; accepted by the developer as frozen-spec behaviour (A4 and A10 define ASCII tag names and optional whitespace). Related: Story 1.7 L1.
+  risk: Low; depends on the model; the D-11 untrusted-data rule remains the defence.
+  follow-up: Revisit only through a specification change (for example removing Unicode format characters or NFKC folding before matching, or a per-request boundary). No change without approval.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
+  summary: 1.8-S2 (accepted residual limitation): `course_code` sanitising keeps Unicode format, line-separator and bidi characters (for example U+200B, U+2028, U+202E), and trimming before cutting can leave trailing whitespace or split a combining mark.
+  evidence: Story 1.8 reviews A (L4), B and C, 2026-11-13; implemented exactly as decision A8 (remove C0/DEL/C1, trim, cut to 100) and accepted by the developer under the frozen spec.
+  risk: Low; the value stays inside the delimited `<course_code>` element.
+  follow-up: Revisit only through a specification change to A8 (for example also removing categories Cf/Zl/Zp and trimming again after the cut). No change without approval.
