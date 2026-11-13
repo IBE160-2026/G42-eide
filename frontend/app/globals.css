@@ -192,3 +192,92 @@ body {
   margin: 0 auto;
   padding-inline: var(--padding-page-inline);
 }
+
+/* Form controls inherit the font (deferred from Story 1.4). */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Primary button (DESIGN.md button-primary / -hover / -disabled).
+ * The unavailable state is aria-disabled, never native disabled (UX-DR-18). */
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: var(--border-hairline) solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--font-ui-size);
+  font-weight: var(--font-ui-weight);
+  line-height: var(--font-ui-line-height);
+  cursor: pointer;
+}
+
+.button-primary:hover:not([aria-disabled="true"]) {
+  background: var(--color-primary-hover);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary-hover);
+}
+
+.button-primary[aria-disabled="true"] {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-fg);
+  border: var(--border-hairline) dashed var(--color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* Error state (DESIGN.md error-state), used by S0x. */
+.error-state {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-error-bg);
+  color: var(--color-error-fg);
+  border-left: var(--border-emphasis) solid var(--color-error-border);
+  border-radius: var(--radius-sm);
+}
+
+.error-state__icon {
+  flex: none;
+  margin-top: var(--space-1);
+  color: var(--color-error-fg);
+}
+
+.error-state__content {
+  min-width: 0;
+}
+
+.error-state__headline {
+  margin: 0;
+  color: var(--color-error-fg);
+  font-size: var(--font-heading-size);
+  font-weight: var(--font-heading-weight);
+  line-height: var(--font-heading-line-height);
+}
+
+.error-state__action {
+  margin: var(--space-1) 0 var(--space-4);
+  color: var(--color-text);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
+
+/* S0 `Starter …`: plain body text in the muted colour (unmocked surface). */
+.startup-message {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
