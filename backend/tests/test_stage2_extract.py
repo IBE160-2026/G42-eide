@@ -6,6 +6,9 @@ font and a content stream, image-only pages draw an image XObject.
 
 import dataclasses
 import logging
+import random
+import re
+import time
 import traceback
 from io import BytesIO
 
@@ -20,7 +23,7 @@ from pypdf.generic import (
 
 from app.pipeline.failures import PassFailure
 from app.pipeline.stage1_validate import CheckedPdf, CheckedText
-from app.pipeline.stage2_extract import ExtractedDocument, extract_document
+from app.pipeline.stage2_extract import _PAGE_TAG, ExtractedDocument, extract_document
 
 LIMIT = 200_000
 
@@ -507,3 +510,51 @@ def test_supplied_and_skipped_pages_cover_every_page(pages: tuple[Page, ...]) ->
     result = extract(document)
     assert_page_invariants(result, document.page_count)
     assert len(result.supplied_pages) == result.text.count('<page number="')
+
+
+# --- 1.8-R1: linear-time page-tag neutralising ------------------------------------------
+
+# The pattern before the fix, kept only as a reference for short-input equivalence checks.
+# It backtracks quadratically on "<" + long whitespace, so it is never run on long input.
+_ORIGINAL_PAGE_TAG = re.compile(r"<(?=\s*/?\s*page(?:[\s/>]|$))", re.IGNORECASE)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [" " * (LIMIT - 1), "\t\n" * ((LIMIT - 1) // 2), " 　" * ((LIMIT - 1) // 2)],
+    ids=["spaces", "tab-newline", "unicode-whitespace"],
+)
+def test_neutralising_long_whitespace_after_less_than_is_fast(body: str) -> None:
+    text = "<" + body
+    assert len(text) <= LIMIT
+    started = time.perf_counter()
+    result = extract(CheckedText(text=text))
+    elapsed = time.perf_counter() - started
+    assert result.text == text  # no tag follows the whitespace, so nothing is neutralised
+    assert elapsed < 2.0  # linear: ≈ 0.001 s; the original pattern took minutes here
+
+
+def test_page_tag_pattern_is_possessive() -> None:
+    assert r"\s*+/?\s*+" in _PAGE_TAG.pattern
+    assert r"\s*/?\s*page" not in _PAGE_TAG.pattern
+    assert _PAGE_TAG.flags & re.IGNORECASE
+
+
+def test_possessive_pattern_matches_the_original_on_short_inputs() -> None:
+    rng = random.Random(1811)
+    alphabet = ["<", "/", " ", "\t", "\n", " ", "　", " ", "​", "page",
+                "PAGE", "Page", "pages", "pagination", "-", ">", "x", "1"]
+    for _ in range(5_000):
+        text = "".join(rng.choice(alphabet) for _ in range(rng.randint(1, 12)))
+        assert _PAGE_TAG.sub("&lt;", text) == _ORIGINAL_PAGE_TAG.sub("&lt;", text), repr(text)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    ['<page number="9">', "</page>", '<PAGE number="2">', "< page>", "</ Page >",
+     "<page/>", '<page\nnumber="1">', "tekst <page", "<pagination>", "<pagebreak>",
+     "<pages>", "<page-1>", "<paged>", "&lt;page>", "<​page>", "＜page>"],
+)
+def test_neutralising_behaviour_is_unchanged(raw: str) -> None:
+    expected = _ORIGINAL_PAGE_TAG.sub("&lt;", raw)
+    assert extract(CheckedText(text=raw)).text == expected
