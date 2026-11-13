@@ -2,8 +2,9 @@
 title: "Story 1.6: Check a document's bytes (stage 1)"
 type: 'feature'
 created: '2026-11-13'
-status: 'ready-for-dev'
+status: 'in-review'
 route: 'dispatch'
+baseline_commit: '0d492b5851679a1d033b960743fc40e517d1f354'
 review_loop_iteration: 0
 context:
   - '{project-root}/_bmad-output/implementation-artifacts/epic-1-context.md'
@@ -95,10 +96,10 @@ context:
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `backend/app/pipeline/failures.py` -- `PassFailure(Exception)` with `code: ErrorCode` and `limit: LimitKind | None`, same validation as `AppError`; message is the code only -- decision 1.
-- [ ] `backend/app/pipeline/stage1_validate.py` -- `CheckedPdf(reader, page_count)` and `CheckedText(text)` (frozen dataclasses, `CheckedDocument = CheckedPdf | CheckedText`); `validate_bytes(doc: bytes, filename: str, *, max_pdf_pages: int) -> CheckedDocument` applying the order in Boundaries; extension helper per decision 8; displaced-signature check per decision 9; no logging configuration (decision 7); every pypdf exception while opening, decrypting or counting pages → `PassFailure("unreadable_file")` -- FR-1, AR-15, decisions 2–5, 7–9.
-- [ ] `backend/tests/test_stage1_validate.py` -- one test per matrix row (files generated in the tests), plus: `PassFailure` validation; `pipeline` modules do not import `app.api`; no error message contains the filename or document text.
-- [ ] `README.md` -- append `## Kjente begrensninger` with the approved sentence; nothing else changes -- decision 6, AC "known limitations".
+- [x] `backend/app/pipeline/failures.py` -- `PassFailure(Exception)` with `code: ErrorCode` and `limit: LimitKind | None`, same validation as `AppError`; message is the code only -- decision 1.
+- [x] `backend/app/pipeline/stage1_validate.py` -- `CheckedPdf(reader, page_count)` and `CheckedText(text)` (frozen dataclasses, `CheckedDocument = CheckedPdf | CheckedText`); `validate_bytes(doc: bytes, filename: str, *, max_pdf_pages: int) -> CheckedDocument` applying the order in Boundaries; extension helper per decision 8; displaced-signature check per decision 9; no logging configuration (decision 7); every pypdf exception while opening, decrypting or counting pages → `PassFailure("unreadable_file")` -- FR-1, AR-15, decisions 2–5, 7–9.
+- [x] `backend/tests/test_stage1_validate.py` -- one test per matrix row (files generated in the tests), plus: `PassFailure` validation; `pipeline` modules do not import `app.api`; no error message contains the filename or document text.
+- [x] `README.md` -- append `## Kjente begrensninger` with the approved sentence; nothing else changes -- decision 6, AC "known limitations".
 
 **Acceptance Criteria:**
 - Given the backend, when `uv sync --locked && uv run pytest` run, then all tests pass (the existing 164 plus the new ones) with no new dependency and an unchanged `uv.lock`.
@@ -110,6 +111,29 @@ context:
 ## Spec Change Log
 
 ## Review Triage Log
+
+Before review (developer request, 2026-11-13): the production `assert text is not None` in `validate_bytes` was replaced by a narrowable result type (`_text_rules` returns `ErrorCode | CheckedText`); behaviour unchanged.
+
+Review iteration 1 (2026-11-13): blind-hunter (BH), edge-case-hunter (ECH), verification-gap (VG); 18 findings merged into 16. No intent_gap or bad_spec entries, so no loopback; patches 1–9 approved by the developer and sent to the implementation subagent.
+
+| # | Source | Finding | Verdict | Evidence | Route |
+|---|---|---|---|---|---|
+| 1 | VG | No test proves the pypdf exception is hidden (`from None`) | low | VG (pre-verified): removing `from None` left all 82 tests green; the original moves to `__context__`, which no test read (AD-7/AR-26) | patch |
+| 2 | VG | Edges of the disallowed control-character ranges untested | low | VG (pre-verified): an off-by-one at every range edge left all tests green | patch |
+| 3 | BH, ECH | Decision 9's ASCII-only displaced-PDF case untested | low | Verified: `b" %PDF-1.4…"` named `.txt` → `CheckedText`, named `.pdf` → `unsupported_file_type`; no test pinned either | patch |
+| 4 | BH | UTF-8 BOM combinations untested | low | Verified: BOM + text with `%PDF-` → `CheckedText`; BOM only → `CheckedText("")`; BOM + NUL → `unsupported_file_type`; none tested | patch |
+| 5 | BH | No-content test checks the exception, not log records | low | `test_errors_never_contain_the_filename_or_document_text` inspects only the exception; the spec bans content in any log line | patch |
+| 6 | BH | `test_valid_pdf_gives_its_page_count` depends on the environment | low | It reads `load_settings().max_pdf_pages`; a page limit below 3 in the environment breaks a page-count test | patch |
+| 7 | BH | Import-boundary test scans only top-level files and uses a magic count | low | `glob("*.py")` misses subpackages; `len(modules) >= 3` breaks as modules change | patch |
+| 8 | BH | Comment on the displaced-signature check describes the wrong place | low | The check runs after the text rules fail, not in the binary-signature step; result equivalent | patch |
+| 9 | VG | Weak assertion in `test_page_limit_comes_from_the_caller` | low | `assert check(...)` is always true for a dataclass instance | patch |
+| 10 | BH, ECH | `PassFailure("file_too_large", limit=…)` cannot be pickled or deep-copied | medium (unverified impact) | Verified `ValueError` on pickle and `deepcopy`; Story 1.3's `AppError` has the same pattern. Unreachable today: nothing in `app/` pickles or copies errors, passes run in one process. Fixing only `PassFailure` would diverge from `AppError`, which this spec forbids changing | defer |
+| 11 | ECH | ASCII-only displaced PDF named `.txt` is accepted | false | Approved, documented limitation (decision 9); now pinned by test 3 | reject |
+| 12 | BH | Latin-1 + `%PDF-` → `unsupported_file_type` is not in the README | false | Approved limitation (decision 9); decision 6 fixes the README to exactly the approved sentence | reject |
+| 13 | BH | Broad `except Exception` in `_open_pdf` hides programming errors | false | Required by the spec (every pypdf failure while opening, decrypting or counting → `unreadable_file`; decision 4); test 1 now pins that nothing leaks. Cost noted: a bug would surface as `unreadable_file` | reject |
+| 14 | ECH | A zero-page PDF passes stage 1 | false | Approved (decision 4: stage 1 does not guarantee extraction); stage 2 rejects it with `no_extractable_text` | reject |
+| 15 | ECH | `max_pdf_pages` ≤ 0 from a non-settings caller | false | Unreachable: the setting is `PositiveInt` and the stage is called only with settings | reject |
+| 16 | BH, ECH | `sprint-status.yaml` in the diff despite the Never list; spec `in-review` vs sprint `in-progress` | false | Workflow updates approved by the developer; the Never list binds the implementation. The story moves to `review` in step 5, as in Stories 1.4 and 1.5 | reject |
 
 ## Design Notes
 
