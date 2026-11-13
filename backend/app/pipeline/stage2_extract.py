@@ -15,8 +15,10 @@ from app.pipeline.stage1_validate import CheckedDocument, CheckedPdf
 
 # A marker-like page tag: "<", optional whitespace, optional "/", optional whitespace,
 # "page" in any case, then whitespace, "/", ">" or the end of the text. Only the "<" is
-# matched, so the rest of the tag stays unchanged.
-_PAGE_TAG = re.compile(r"<(?=\s*/?\s*page(?:[\s/>]|$))", re.IGNORECASE)
+# matched, so the rest of the tag stays unchanged. The possessive "\s*+" matches the same
+# text as "\s*" here but never backtracks, so a long run of whitespace after "<" is checked
+# in linear rather than quadratic time (1.8-R1).
+_PAGE_TAG = re.compile(r"<(?=\s*+/?\s*+page(?:[\s/>]|$))", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
