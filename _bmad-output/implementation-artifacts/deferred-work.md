@@ -55,6 +55,7 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.8 independent review B, verified 2026-11-13: 0.011 s at 2,000, 0.041 s at 4,000 and 0.172 s at 8,000 whitespace characters (each doubling ≈ ×4); extrapolated ≈ 107 s at the 200,000-character limit. The same flaw in stage 3 was fixed in Story 1.8 with possessive quantifiers (`\s*+/?\s*+`), output-equivalent on 20,012 test cases.
   risk: High. CPU denial of service on a single upload until fixed.
   follow-up: Correct stage 2 in a separate, authorised stage 2 security/performance change (possessive quantifiers plus a regression test). No change without approval.
+  resolution: Fixed 2026-11-13 in PR #24, merged as a0658cf3d91b8d85cca783b76553f64dfb7511db (fix commit 142bee64ed9aded9e58363dab53ad69bc23544e6). Stage 2's `_PAGE_TAG` now uses possessive whitespace quantifiers; 21 regression test cases added. Independent review approved with non-blocking observations. GitHub Actions run 43497140948: Backend 415 passed, Frontend 97 passed.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
   summary: 1.8-R2: `ConnectorRequest` representations (`repr`/`str`) include the full document text and course code, and `inputs.course_code` is sanitised but not neutralised.
