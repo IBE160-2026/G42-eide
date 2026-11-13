@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-10-2026 11:36
-last_updated: 11-13-2026 17:31
+last_updated: 11-13-2026 20:27
 project: G42-eide
 project_key: NOKEY
 tracking_system: file-system
@@ -43,7 +43,7 @@ development_status:
   1-5-startup-check-starter-server-not-reachable: done
   1-6-check-a-document-s-bytes-stage-1: done
   1-7-extract-text-with-real-page-markers-stage-2: done
-  1-8-build-the-source-constrained-prompt-stage-3: backlog
+  1-8-build-the-source-constrained-prompt-stage-3: done
   1-9-connector-interface-ai-output-models-and-test-fakes: backlog
   1-10-validate-ai-output-with-three-gates-stage-5: backlog
   1-11-run-a-complete-pass-one-at-a-time-run_pass-stage-6: backlog
