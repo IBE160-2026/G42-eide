@@ -25,3 +25,9 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.4 triage finding 14. `globals.css` sets typography on `html` and `body` only; browsers do not inherit `font` into form controls by default. The Story 1.4 shell has no controls, so nothing is affected yet.
   risk: Low. Visible only once a story adds the first control.
   follow-up: Story 1.5 (first control, `Prøv igjen`) should add `button, input, select, textarea { font: inherit; }` to `globals.css`, with a CSS-text test.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-5-startup-check-starter-server-not-reachable.md`
+  summary: The frontend status fixture (`validStatus()`) and the allowed lists in `isStatusResponse` are hand-copied from the backend contract, and no test detects drift between them.
+  evidence: Story 1.5 triage finding 6. They match the live `GET /api/status` reply today, but adding a value to a backend `Literal` (for example a new output language) would keep every backend and frontend test green while the real app rejects the reply and stays in S0x.
+  risk: Medium. A backend contract change could block startup without CI noticing.
+  follow-up: When the shared fixtures arrive (Story 1.13, `samples/demo-response.json` per AR-13), add a backend-written status fixture or a backend test that emits the reply, and assert it in `status.test.ts`.

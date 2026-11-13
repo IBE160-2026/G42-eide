@@ -171,6 +171,66 @@ describe("base rules", () => {
     expect(body).toMatch(/line-height:\s*var\(--font-body-line-height\);/);
   });
 
+  test("form controls inherit the font", () => {
+    expect(rules).toMatch(
+      /(^|\n)\s*button,\s*input,\s*select,\s*textarea\s*\{\s*font:\s*inherit;\s*\}/,
+    );
+  });
+
+  test("the primary button uses its tokens and a 44px minimum height", () => {
+    const button = ruleBody(".button-primary");
+    expect(button).toMatch(/background:\s*var\(--color-primary\);/);
+    expect(button).toMatch(/color:\s*var\(--color-on-primary\);/);
+    expect(button).toMatch(/border:\s*var\(--border-hairline\) solid var\(--color-primary\);/);
+    expect(button).toMatch(/border-radius:\s*var\(--radius-md\);/);
+    expect(button).toMatch(/min-height:\s*var\(--control-min-height\);/);
+    expect(button).toMatch(/font-size:\s*var\(--font-ui-size\);/);
+    expect(button).toMatch(/font-weight:\s*var\(--font-ui-weight\);/);
+
+    const hover = ruleBody('.button-primary:hover:not([aria-disabled="true"])');
+    expect(hover).toMatch(/background:\s*var\(--color-primary-hover\);/);
+    expect(hover).toMatch(/border-color:\s*var\(--color-primary-hover\);/);
+  });
+
+  test("the aria-disabled primary button uses the disabled tokens and a dashed border", () => {
+    const disabled = ruleBody('.button-primary[aria-disabled="true"]');
+    expect(disabled).toMatch(/background:\s*var\(--color-disabled-bg\);/);
+    expect(disabled).toMatch(/color:\s*var\(--color-disabled-fg\);/);
+    expect(disabled).toMatch(
+      /border:\s*var\(--border-hairline\) dashed var\(--color-disabled-border\);/,
+    );
+  });
+
+  test("the error state uses its tokens", () => {
+    const state = ruleBody(".error-state");
+    expect(state).toMatch(/background:\s*var\(--color-error-bg\);/);
+    expect(state).toMatch(
+      /border-left:\s*var\(--border-emphasis\) solid var\(--color-error-border\);/,
+    );
+    expect(state).toMatch(/border-radius:\s*var\(--radius-sm\);/);
+    expect(state).toMatch(/padding:\s*var\(--space-4\);/);
+    expect(state).toMatch(/gap:\s*var\(--space-4\);/);
+
+    const headline = ruleBody(".error-state__headline");
+    expect(headline).toMatch(/color:\s*var\(--color-error-fg\);/);
+    expect(headline).toMatch(/font-size:\s*var\(--font-heading-size\);/);
+    expect(headline).toMatch(/font-weight:\s*var\(--font-heading-weight\);/);
+
+    const action = ruleBody(".error-state__action");
+    expect(action).toMatch(/color:\s*var\(--color-text\);/);
+    expect(action).toMatch(/font-size:\s*var\(--font-body-size\);/);
+
+    expect(ruleBody(".startup-message")).toMatch(/color:\s*var\(--color-text-muted\);/);
+  });
+
+  test("new rules use no raw colour values", () => {
+    const start = rules.indexOf("button,");
+    expect(start).toBeGreaterThanOrEqual(0);
+    const added = rules.slice(start);
+    expect(added).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(added).not.toMatch(/\b(rgba?|hsla?)\(/i);
+  });
+
   test.each([
     ["box-shadow", /box-shadow/i],
     ["gradient", /gradient\(/i],

@@ -1,7 +1,19 @@
 import { render, screen, within } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import Home from "../app/page";
 import RootLayout, { metadata } from "../app/layout";
+
+// Rendering <Home /> starts the startup status request; keep it pending.
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() => new Promise<Response>(() => {})),
+  );
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 test("renders the header with the h1 and the decorative logo", () => {
   render(<Home />);
@@ -9,6 +21,8 @@ test("renders the header with the h1 and the decorative logo", () => {
   const heading = within(header).getByRole("heading", { level: 1 });
   expect(heading.textContent).toBe("AI Study Buddy");
   expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+  expect(heading.id).toBe("app-title");
+  expect(heading.getAttribute("tabindex")).toBe("-1");
 
   const svg = header.querySelector("svg");
   expect(svg).not.toBeNull();
@@ -26,6 +40,16 @@ test("renders main with the two named regions in order", () => {
     "Resultater",
   ]);
   regions.forEach((r) => expect(r.tagName).toBe("SECTION"));
+});
+
+test("renders the startup check inside Resultater, nothing in the upload section", () => {
+  render(<Home />);
+  const results = screen.getByRole("region", { name: "Resultater" });
+  expect(results.textContent).toBe("Starter …");
+  expect(results.querySelector(".startup-message")).not.toBeNull();
+  const upload = screen.getByRole("region", { name: "Opplasting og innstillinger" });
+  expect(upload.textContent).toBe("");
+  expect(upload.children).toHaveLength(0);
 });
 
 test("renders exactly one empty, visually hidden status region", () => {

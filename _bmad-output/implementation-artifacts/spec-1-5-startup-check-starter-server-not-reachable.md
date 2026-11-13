@@ -2,8 +2,9 @@
 title: 'Story 1.5: Startup check (Starter … / server not reachable)'
 type: 'feature'
 created: '2026-11-13'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
+baseline_commit: 'de924d0a0e1b7ce8eacb913ae989510046520827'
 review_loop_iteration: 0
 context:
   - '{project-root}/_bmad-output/implementation-artifacts/epic-1-context.md'
@@ -80,15 +81,15 @@ context:
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `frontend/lib/contracts.ts` -- TS types mirroring `StatusResponse` and its parts with identical `snake_case` names and literal unions -- AR-13.
-- [ ] `frontend/lib/status.ts` -- `apiBaseUrl()` (env value, trimmed, one trailing slash removed; fallback `http://127.0.0.1:8000`); `isStatusResponse(value)` runtime shape check (mode in the union, three numeric limits, each option with a string-array `values` containing its `default`, `accepted_types` a string array); `fetchStatus(signal)` doing `GET {base}/api/status` with `cache: "no-store"`, returning the parsed status or throwing on network error, non-2xx, invalid JSON or failed shape check -- decisions Failure, Base URL.
-- [ ] `frontend/lib/focus-target.ts` -- G-2 hook, module-level like `announce`: `registerStartupFocusTarget(element): () => void` replaces the current target and returns an unregister that clears it only if that element is still the registered one (designed for a React ref callback's cleanup); `focusAfterStartupRecovery()` focuses the target if it is connected, then checks `document.activeElement`; if there is no target, it is disconnected, or focus did not land, it focuses `#app-title`; if that is missing too, it does nothing and never throws. Later stories register only the mode-appropriate control (`Last opp` real, `Vis eksempel` demo), so one target exists at a time -- decision G-2.
-- [ ] `frontend/components/ErrorIcon.tsx` -- the mockup's error icon, `aria-hidden="true"`, `focusable="false"`, stroke `currentColor`.
-- [ ] `frontend/components/AppStatusProvider.tsx` -- client component owning the only status request and its state, exposed through React context and `useAppStatus()` → `{phase: "starting" | "failed" | "retrying" | "ready", status: StatusResponse | null, retry()}` (throws a clear error outside the provider). One request on mount and per `retry()`, via an `AbortController` aborted by a 10-second `setTimeout` (cleared when settled) and on unmount; an aborted-by-unmount request changes nothing; `retry()` does nothing unless `phase` is `failed`. Stories 1.15 and 2.4 read `status` and `phase` from this hook instead of fetching -- AR-24, decisions Failure, Timeout.
-- [ ] `frontend/components/StartupCheck.tsx` -- client component using `useAppStatus()`: renders S0 (`starting`), S0x (`failed`, `retrying` with the button aria-disabled) or nothing (`ready`). Focus in effects on phase changes: headline on every entry into `failed` (including first load), `focusAfterStartupRecovery()` on `retrying` → `ready`, nothing on `starting` → `ready` -- UX-DR-6, UX-DR-18, UX-DR-32.
-- [ ] `frontend/app/page.tsx` -- `h1` gets `id="app-title"` and `tabIndex={-1}`; `<AppStatusProvider>` wraps `main` (both sections) so either section can read the status; `<StartupCheck />` inside `Resultater` -- D-7, G-2.
-- [ ] `frontend/app/globals.css` -- `button, input, select, textarea { font: inherit; }`; `.button-primary` (+ `:hover` when not `[aria-disabled="true"]`, + `[aria-disabled="true"]`), `.error-state` and its parts, `.startup-message`, all from tokens -- deferred item, UX-DR-1.
-- [ ] `frontend/__tests__/` -- `startup-check.test.tsx` with `fetch` stubbed and fake timers for every matrix row (shared status: two `useAppStatus()` consumers in different sections, `fetch` called once); `focus-target.test.ts` (register then unregister → `h1`; stale unregister keeps the newer target; disconnected target → `h1`; target that cannot take focus → `h1`; no `h1` → no throw); `status.test.ts` for `apiBaseUrl`, `isStatusResponse` (valid sample matching the backend's default reply, plus each malformed variant) and `fetchStatus`; update `page.test.tsx` (stub `fetch`; `h1` has `id` and `tabindex="-1"`; `StartupCheck` inside `Resultater`) and `globals-css.test.ts` (font-inherit rule; button, disabled and error-state rules use tokens).
+- [x] `frontend/lib/contracts.ts` -- TS types mirroring `StatusResponse` and its parts with identical `snake_case` names and literal unions -- AR-13.
+- [x] `frontend/lib/status.ts` -- `apiBaseUrl()` (env value, trimmed, one trailing slash removed; fallback `http://127.0.0.1:8000`); `isStatusResponse(value)` runtime shape check (mode in the union, three numeric limits, each option with a string-array `values` containing its `default`, `accepted_types` a string array); `fetchStatus(signal)` doing `GET {base}/api/status` with `cache: "no-store"`, returning the parsed status or throwing on network error, non-2xx, invalid JSON or failed shape check -- decisions Failure, Base URL.
+- [x] `frontend/lib/focus-target.ts` -- G-2 hook, module-level like `announce`: `registerStartupFocusTarget(element): () => void` replaces the current target and returns an unregister that clears it only if that element is still the registered one (designed for a React ref callback's cleanup); `focusAfterStartupRecovery()` focuses the target if it is connected, then checks `document.activeElement`; if there is no target, it is disconnected, or focus did not land, it focuses `#app-title`; if that is missing too, it does nothing and never throws. Later stories register only the mode-appropriate control (`Last opp` real, `Vis eksempel` demo), so one target exists at a time -- decision G-2.
+- [x] `frontend/components/ErrorIcon.tsx` -- the mockup's error icon, `aria-hidden="true"`, `focusable="false"`, stroke `currentColor`.
+- [x] `frontend/components/AppStatusProvider.tsx` -- client component owning the only status request and its state, exposed through React context and `useAppStatus()` → `{phase: "starting" | "failed" | "retrying" | "ready", status: StatusResponse | null, retry()}` (throws a clear error outside the provider). One request on mount and per `retry()`, via an `AbortController` aborted by a 10-second `setTimeout` (cleared when settled) and on unmount; an aborted-by-unmount request changes nothing; `retry()` does nothing unless `phase` is `failed`. Stories 1.15 and 2.4 read `status` and `phase` from this hook instead of fetching -- AR-24, decisions Failure, Timeout.
+- [x] `frontend/components/StartupCheck.tsx` -- client component using `useAppStatus()`: renders S0 (`starting`), S0x (`failed`, `retrying` with the button aria-disabled) or nothing (`ready`). Focus in effects on phase changes: headline on every entry into `failed` (including first load), `focusAfterStartupRecovery()` on `retrying` → `ready`, nothing on `starting` → `ready` -- UX-DR-6, UX-DR-18, UX-DR-32.
+- [x] `frontend/app/page.tsx` -- `h1` gets `id="app-title"` and `tabIndex={-1}`; `<AppStatusProvider>` wraps `main` (both sections) so either section can read the status; `<StartupCheck />` inside `Resultater` -- D-7, G-2.
+- [x] `frontend/app/globals.css` -- `button, input, select, textarea { font: inherit; }`; `.button-primary` (+ `:hover` when not `[aria-disabled="true"]`, + `[aria-disabled="true"]`), `.error-state` and its parts, `.startup-message`, all from tokens -- deferred item, UX-DR-1.
+- [x] `frontend/__tests__/` -- `startup-check.test.tsx` with `fetch` stubbed and fake timers for every matrix row (shared status: two `useAppStatus()` consumers in different sections, `fetch` called once); `focus-target.test.ts` (register then unregister → `h1`; stale unregister keeps the newer target; disconnected target → `h1`; target that cannot take focus → `h1`; no `h1` → no throw); `status.test.ts` for `apiBaseUrl`, `isStatusResponse` (valid sample matching the backend's default reply, plus each malformed variant) and `fetchStatus`; update `page.test.tsx` (stub `fetch`; `h1` has `id` and `tabindex="-1"`; `StartupCheck` inside `Resultater`) and `globals-css.test.ts` (font-inherit rule; button, disabled and error-state rules use tokens).
 
 **Acceptance Criteria:**
 - Given the frontend, when `npm ci && npm test && npm run lint && npm run build` run, then all pass with no new dependency.
@@ -98,9 +99,34 @@ context:
 
 ## Implementation Notes
 
+- `retry()` is guarded by a ref mirroring `phase` (set in handlers and request callbacks, never during render), so a second activation before React re-renders still sends no request; the button's click handler also returns early while `retrying`.
+- S0x renders the same element tree in `failed` and `retrying`, so `Prøv igjen` and the headline keep their identity and focus while checking.
+- `isStatusResponse` also requires every option value and default to be in the backend's literal union (stricter than "default in values").
+- Shared test helpers (`validStatus`, `fakeResponse`, `stubControllableFetch`) live in `frontend/__tests__/status-fixtures.ts` (not a test file); the stubbed `fetch` rejects on abort like the real one.
+- Extra tests beyond the matrix: React `StrictMode` double mount (first request aborted, no S0x, no focus move) and `useAppStatus()` outside the provider throwing.
+
 ## Spec Change Log
 
 ## Review Triage Log
+
+Review iteration 1 (2026-11-13): blind-hunter (BH), edge-case-hunter (ECH), verification-gap (VG). No intent_gap or bad_spec entries, so no loopback; patches sent to the implementation subagent.
+
+| # | Source | Finding | Verdict | Evidence | Route |
+|---|---|---|---|---|---|
+| 1 | VG | `retry()` guard outside `failed` is never tested on its own | low | VG (pre-verified): the button's `checking` guard stops repeat clicks first, so deleting the provider guard leaves the suite green; `retry` is the hook contract for Stories 1.15 and 2.4 | patch |
+| 2 | BH, ECH | `isStatusResponse` accepts `0`, negative and fractional limits | low | `isNumber` only checks finiteness; the backend declares the limits `PositiveInt` (`backend/app/config.py`) | patch |
+| 3 | BH, ECH | "No raw colour" CSS test can pass vacuously; misses `rgb()`/`hsl()` | low | `rules.indexOf("button,")` = -1 would make `slice(-1)` check one character; the pattern only matches `#hex` | patch |
+| 4 | ECH | Shared-status test covers only the first load, not a retry | low | The test asserts one `fetch` on load; the retry path with two consumers is untested | patch |
+| 5 | BH | Timers cleared, unmount while `retrying`, and `status` null until `ready` are each tested on one path only | low | Timer count is checked only after first-load success; unmount only while `starting`; `status` value never asserted in `failed`/`retrying` | patch |
+| 6 | VG, BH | The status fixture and allowed lists are hand-copied from the backend; nothing detects drift | medium | Today they match (verified against the live `TestClient` reply), but a backend change would leave all tests green and stick the app in S0x. Cross-stack test plumbing is outside this story; AR-13 mirrors by hand | defer |
+| 7 | ECH | `accepted_types: []` passes the shape check | low | Unreachable: `ACCEPTED_TYPES` is a fixed non-empty constant in `backend/app/contracts/options.py`; the spec's shape check requires a string array only | reject |
+| 8 | ECH | `Enter`/`Space` re-activation is not tested | false | Spec Design Notes: a native button maps `Enter`/`Space` to `click`, tests use `fireEvent.click`, keys are checked by hand; `@testing-library/user-event` may not be added | reject |
+| 9 | BH | No diagnostics for why S0x appeared | false | Browsers already log network and CORS failures, and the network panel shows the status code and body; the spec forbids showing the cause in the UI | reject |
+| 10 | BH | No "checking" text or `aria-busy` while retrying | false | EXPERIENCE.md: while the re-check runs the S0x message stays and the button is aria-disabled; new copy needs approval | reject |
+| 11 | BH | Spec status `in-review` vs sprint `in-progress`; no recorded check results | false | `in-review` is the bmad-build step-4 status; the story moves to `review` in step 5, as in Story 1.4; results are recorded at the end of the review | reject |
+| 12 | BH | Redundant `cleanup()` in `startup-check.test.tsx` | low | Harmless duplication of Testing Library's auto-cleanup; no named harm | reject |
+| 13 | BH | `.button-primary` repeats `font-family`, hover repeats `color` | low | Cosmetic duplication with no rendering effect | reject |
+| 14 | BH | `ErrorIcon` uses fixed `width`/`height` 20 instead of a token | false | DESIGN.md has no icon-size token; the logo uses the same pattern (30px) from Story 1.4 | reject |
 
 ## Design Notes
 
