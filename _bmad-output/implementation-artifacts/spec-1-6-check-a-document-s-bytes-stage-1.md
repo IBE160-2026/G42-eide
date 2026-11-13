@@ -2,7 +2,7 @@
 title: "Story 1.6: Check a document's bytes (stage 1)"
 type: 'feature'
 created: '2026-11-13'
-status: 'in-review'
+status: 'done'
 route: 'dispatch'
 baseline_commit: '0d492b5851679a1d033b960743fc40e517d1f354'
 review_loop_iteration: 0
