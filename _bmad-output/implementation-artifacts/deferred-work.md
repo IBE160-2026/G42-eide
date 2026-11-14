@@ -86,6 +86,7 @@ Findings deferred by the developer during reviews. Each entry names its source s
   evidence: Story 1.8 review C, 2026-11-13: `contracts/inputs.py` imports `app.contracts.options` and `contracts/connector.py` imports `app.contracts.inputs`; the file was outside Story 1.8's allowed files.
   risk: Low (documentation only).
   follow-up: Correct the docstring in a future maintenance change (for example "Contract modules import only other app.contracts modules (A9)."). No change without approval.
+  resolution: Fixed 2026-11-14 in Story 1.9 (approved decision D7), implementation commit 481b5a702ccfecb98ec81a7314134fc799917ae3: the docstring now reads "A contracts module imports from the app only other app.contracts modules (A9)." and is checked by `test_contracts_docstring_states_a9`. Independent implementation review: READY TO COMMIT. Story 1.9 CI is still to run on its pull request.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-8-build-the-source-constrained-prompt-stage-3.md`
   summary: 1.8-S1 (accepted residual risk): Unicode lookalike delimiters are not neutralised in stage 3, for example zero-width, soft-hyphen, combining, fullwidth or homoglyph forms such as `</document\u200b>` or `＜/document＞`.
