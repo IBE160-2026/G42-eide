@@ -26,6 +26,7 @@ from app.contracts.errors import (
     ErrorResponse,
     LimitKind,
 )
+from app.pipeline.failures import PassFailure
 
 LOGGER_NAME = "app.errors"
 logger = logging.getLogger(LOGGER_NAME)
@@ -104,6 +105,13 @@ async def _app_error_handler(request: Request, exc: Exception) -> Response:
     return build_error_response(request.scope, exc.code, limit=exc.limit)
 
 
+async def _pass_failure_handler(request: Request, exc: Exception) -> Response:
+    # A pipeline failure (Story 1.11, D3): the same envelope and one code-only log line.
+    if not isinstance(exc, PassFailure):
+        return build_error_response(request.scope, "internal_error")
+    return build_error_response(request.scope, exc.code, limit=exc.limit)
+
+
 async def _http_exception_handler(request: Request, exc: Exception) -> Response:
     if not isinstance(exc, StarletteHTTPException):
         return build_error_response(request.scope, "internal_error")
@@ -124,6 +132,7 @@ async def _validation_error_handler(request: Request, exc: Exception) -> Respons
 
 def register_error_handlers(application: FastAPI) -> None:
     application.add_exception_handler(AppError, _app_error_handler)
+    application.add_exception_handler(PassFailure, _pass_failure_handler)
     application.add_exception_handler(StarletteHTTPException, _http_exception_handler)
     application.add_exception_handler(RequestValidationError, _validation_error_handler)
 

@@ -9,12 +9,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.errors import CatchAllMiddleware, configure_logging, register_error_handlers
 from app.api.status import router as status_router
 from app.config import Settings, SettingsRefused, load_settings
+from app.pipeline.pass_guard import PassGuard
 
 
 def create_app(settings: Settings) -> FastAPI:
     configure_logging()
     application = FastAPI(title="AI Study Buddy", redirect_slashes=False)
     application.state.settings = settings
+    # One pass lock per app instance, shared by every route's PassRunner (AD-16, D6).
+    application.state.pass_guard = PassGuard()
     register_error_handlers(application)
     # The last-added middleware is outermost: CORS → catch-all → exception handlers → router.
     application.add_middleware(CatchAllMiddleware)
