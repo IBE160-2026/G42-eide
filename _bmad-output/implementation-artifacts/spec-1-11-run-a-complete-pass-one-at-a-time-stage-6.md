@@ -2,7 +2,7 @@
 title: 'Story 1.11: Run a complete pass, one at a time (run_pass, stage 6)'
 type: 'feature'
 created: '2026-11-14'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -421,6 +421,10 @@ None. The three open questions in the first draft were answered by the developer
   - **The decision:** the spec is frozen and set to `ready-for-dev`.
   - **What it fixes:** the requirements, D1–D10, Q1–Q2, the review decisions, the integration duties, the 34-row acceptance matrix and the seven-file implementation scope.
   - **What changed at approval:** the B1 wording, this status change, the approval comment and these log entries only.
+- **2026-11-14 — Closeout: Story 1.11 done.**
+  - **Merge:** PR #30 merged as `7098f3d309a266db824c85ab9068bf3c136138cf`.
+  - **CI:** GitHub Actions run 43606035941 on `60f4e10`: Backend (pytest, 959 passed) and Frontend (Vitest, 97 passed), both successful.
+  - **What changed:** the status went from `ready-for-dev` to `done`; the frozen block, including the requirements and the 34-row acceptance matrix, is unchanged.
 
 ## Design Notes
 
