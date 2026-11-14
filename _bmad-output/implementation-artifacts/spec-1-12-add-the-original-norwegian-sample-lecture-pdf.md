@@ -2,7 +2,7 @@
 title: 'Story 1.12: Add the original Norwegian sample lecture PDF'
 type: 'feature'
 created: '2026-11-14'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -346,6 +346,10 @@ None of OQ1–OQ8 remains open; the developer's answers (2026-11-14) are recorde
   - **The decision:** the spec is frozen and set to `ready-for-dev`; gate G0 is met.
   - **What it fixes:** the requirements, D1–D15, the page plan, the diagram's meaning, the transcription and source-format rules (including the two-column table), the PDF generation rules, the provenance contents, the approval gates G0–G5, the 33-row acceptance matrix and the seven-file implementation scope.
   - **What changed at approval:** this status change, the approval comment, the frozen-block markers and these log entries only.
+- **2026-11-14 — Closeout: Story 1.12 done.**
+  - **Merge:** PR #32 merged as `cbe96671cfc379b9929bb73db72345fb9c1e8981`.
+  - **CI:** GitHub Actions run 43640295566 on `8c2b8ab`: Backend (pytest, 1014 passed) and Frontend (Vitest, 97 passed), both successful. The Linux backend job reproduced the approved PDF with SHA-256 `2e831fac413529b552fe97dae13b58f41947d2e99f41b306a3e3cd8686f45e63`.
+  - **What changed:** the status changed from `ready-for-dev` to `done`; the frozen block remains unchanged.
 
 ## Design Notes
 

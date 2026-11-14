@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-10-2026 11:36
-last_updated: 11-14-2026 16:00
+last_updated: 11-14-2026 22:10
 project: G42-eide
 project_key: NOKEY
 tracking_system: file-system
@@ -47,7 +47,7 @@ development_status:
   1-9-connector-interface-ai-output-models-and-test-fakes: done
   1-10-validate-ai-output-with-three-gates-stage-5: done
   1-11-run-a-complete-pass-one-at-a-time-run_pass-stage-6: done
-  1-12-add-the-original-norwegian-sample-lecture-pdf: backlog
+  1-12-add-the-original-norwegian-sample-lecture-pdf: done
   1-13-temporary-fixture-demo-connector-and-post-api-demo: backlog
   1-14-serve-the-sample-pdf-for-demo-page-links: backlog
   1-15-demo-start-screen-and-vis-eksempel: backlog
