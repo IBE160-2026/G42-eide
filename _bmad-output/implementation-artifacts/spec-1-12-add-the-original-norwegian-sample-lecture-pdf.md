@@ -309,6 +309,12 @@ None of OQ1–OQ8 remains open; the developer's answers (2026-11-14) are recorde
   - **K3 (substantive, approved):** remove only "– utkast til Story 1.12" from the subtitle (input line 3); the rest of the subtitle is kept.
   - **No other change** to the approved wording is authorized; the G2 word-level comparison may differ from the input only by the K2 and K3 words.
 - **G1 — satisfied (developer, Checkpoint 7, 2026-11-14):** P1 and P2 are supplied. The developer reviewed and approved the generated diagram, which shows Leverandør, Innkjøp, Lager, Butikk and Kunde, includes the reverse information flow, and explains that purchasing is a coordination and decision-making function, not a physical location goods pass through. The independent reviewer found its meaning acceptable.
+- **G2 — approved (developer, 2026-11-14):** the transcription `samples/innkjop-og-lager.md` (183 lines, 8,648 bytes, SHA-256 `c4d3f690e08a7050bbc603ce9485551f17af1ed98bd60493c2c0ed348c5da64f`) is accepted.
+  - **Changes applied:** only K1 (six `---` separators removed, plus the six double blank lines they left collapsed to single blank lines, whitespace only), K2 (input lines 104–118 replaced by `![](vareflyt.jpg)`) and K3 (only "– utkast til Story 1.12" and its preceding space removed from the subtitle). The mechanical word-level comparison found no other difference; the 1,031 lecture words outside K2/K3 are identical.
+  - **Diagram copy:** `samples/vareflyt.jpg` is a byte-for-byte copy, SHA-256 `65e77aa4471a18230e095ce06815385c2fb21ae6b2e21cff104ba69e4856e63b`.
+  - **Original inputs:** both files in the external input folder are unchanged; their SHA-256 hashes still match the values recorded at Checkpoint 5.
+- **G3 — approved (developer, 2026-11-14):** the six-page `samples/innkjop-og-lager.pdf` passed the developer's visual review with no layout changes requested. Approved PDF: 471,258 bytes, SHA-256 `2e831fac413529b552fe97dae13b58f41947d2e99f41b306a3e3cd8686f45e63`, built by `samples/build_sample_pdf.py` from the G2-approved source and the approved JPEG. This SHA-256 is pinned in `backend/tests/test_sample_pdf.py` (Checkpoint 13).
+- **G4 — approved (developer, 2026-11-14):** `samples/PROVENANCE.md` (Checkpoint 14) approved; its approval history now records G4. It is checked by `test_sample_provenance`, which completes the 33-row matrix.
 
 ## Spec Change Log
 
