@@ -2,7 +2,7 @@
 title: 'Story 1.10: Validate AI output with three gates (stage 5)'
 type: 'feature'
 created: '2026-11-14'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -345,6 +345,10 @@ None. The three open questions in the first draft were answered by the developer
   - **The decision:** the spec is frozen and set to `ready-for-dev`.
   - **What it fixes:** the requirements, D1–D9 with the answered open questions, the privacy safeguards, the 42-row acceptance matrix and the three-file implementation scope.
   - **What changed at approval:** this status change, the approval comment and this log entry only; no design changes.
+- **2026-11-14 — Closeout: Story 1.10 done.**
+  - **Merge:** PR #28 merged as `7aa985fe073f59c2ce03b15ac88ad3736f131b0b`.
+  - **CI:** GitHub Actions run 43573453859 on `60d5edd`: Backend (pytest, 885 passed) and Frontend (Vitest, 97 passed), both successful.
+  - **What changed:** the status went from `ready-for-dev` to `done`; the frozen block is unchanged.
 
 ## Design Notes
 
