@@ -2,7 +2,7 @@
 title: 'Story 1.9: Connector interface, AI output models and test fakes'
 type: 'feature'
 created: '2026-11-14'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
