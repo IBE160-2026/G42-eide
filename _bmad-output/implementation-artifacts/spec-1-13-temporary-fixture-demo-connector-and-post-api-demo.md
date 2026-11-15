@@ -2,7 +2,7 @@
 title: 'Story 1.13: Temporary fixture, demo connector and POST /api/demo'
 type: 'feature'
 created: '2026-11-15'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -344,6 +344,10 @@ None. OQ1–OQ4 and the review decisions were answered by the developer on 2026-
   - **The decision:** the spec is frozen and set to `ready-for-dev`; gate G0 is met. The approval covers the specification design only; implementation starts at a later checkpoint.
   - **What it fixes:** the requirements, D1–D15 and C1, the fixture rules, the route and body-check design, the demo connector, installation faults, the frontend mirror, compatibility correction C1, the provenance section and its protections, the approval gates G0–G5, the 51-row acceptance matrix and the Code Map scope.
   - **What changed at approval:** this status change, the approval comment, the frozen-block markers and these log entries only.
+- **2026-11-15 — Closeout: Story 1.13 done.**
+  - **Merge:** PR #34 merged as `9118e2e987f793a3eda63b1301477c7e3dee01d0` (approved head `9eeb173a39d58763aa7447b04f376bb05a9e181e`).
+  - **CI:** GitHub Actions run 43725349793 on `9eeb173a39d58763aa7447b04f376bb05a9e181e`: Backend (pytest, 1,079 passed) and Frontend (Vitest, 214 passed), both successful.
+  - **What changed:** the status changed from `ready-for-dev` to `done`; the frozen block remains unchanged.
 
 ## Design Notes
 
