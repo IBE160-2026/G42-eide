@@ -42,7 +42,8 @@ from app.pipeline.stage1_validate import validate_bytes
 from app.pipeline.stage2_extract import ExtractedDocument, extract_document
 from app.pipeline.stage3_prompt import read_generation_inputs
 from app.pipeline.stage5_gates import validate_output
-from app.samples import DEMO_FIXTURE, SAMPLE_PDF, SAMPLES_DIR
+from app.samples import DEMO_FIXTURE, DEMO_RESPONSE, SAMPLE_PDF, SAMPLES_DIR
+from scripts import write_fixtures
 from tests._fakes import FAKE_KEY
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -838,3 +839,126 @@ def test_connectors_docstring() -> None:
     assert "(demo, test fakes, real)" not in doc
     assert "demo connector" in doc
     assert "backend/tests/" in doc
+
+
+# --- recorded envelopes (D8, D10): written only by scripts/write_fixtures.py main() ---------
+
+DEMO_RESPONSE_PATH = SAMPLES_DIR / DEMO_RESPONSE
+STATUS_RESPONSE_PATH = REPO_ROOT / "frontend" / "__tests__" / "status-response.json"
+
+
+def _committed(path: Path) -> Any:
+    return json.loads(path.read_bytes().replace(b"\r\n", b"\n").decode("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def rendered() -> dict[Path, bytes]:
+    return write_fixtures.render_fixtures()
+
+
+def test_render_paths(rendered: dict[Path, bytes]) -> None:
+    assert set(rendered) == {DEMO_RESPONSE_PATH, STATUS_RESPONSE_PATH}
+    assert write_fixtures.DEMO_RESPONSE_PATH == DEMO_RESPONSE_PATH
+    assert write_fixtures.STATUS_RESPONSE_PATH == STATUS_RESPONSE_PATH
+
+
+@pytest.mark.parametrize("which", ["demo", "status"])
+def test_render_byte_format(rendered: dict[Path, bytes], which: str) -> None:
+    data = rendered[DEMO_RESPONSE_PATH if which == "demo" else STATUS_RESPONSE_PATH]
+    assert not data.startswith(b"\xef\xbb\xbf")
+    assert b"\r" not in data
+    assert data.endswith(b"}\n") and not data.endswith(b"\n\n")
+    value = json.loads(data.decode("utf-8"))
+    assert data == (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    if which == "demo":
+        assert "ø".encode() in data and b"\\u00f8" not in data  # letters as characters, not escapes
+
+
+def test_render_is_deterministic(rendered: dict[Path, bytes]) -> None:
+    assert write_fixtures.render_fixtures() == rendered
+
+
+def test_response_fixture(rendered: dict[Path, bytes], client: TestClient) -> None:
+    committed = _committed(DEMO_RESPONSE_PATH)
+    assert committed == json.loads(rendered[DEMO_RESPONSE_PATH])
+    response = client.post("/api/demo")
+    assert response.status_code == 200
+    assert committed == response.json()
+    # The committed bytes (LF-normalised) are exactly what the command writes.
+    assert DEMO_RESPONSE_PATH.read_bytes().replace(b"\r\n", b"\n") == rendered[DEMO_RESPONSE_PATH]
+
+
+def test_response_fixture_shape() -> None:
+    body = _committed(DEMO_RESPONSE_PATH)
+    assert set(body) == {"mode", "results", "skipped_pages"}
+    assert body["mode"] == "demo"
+    assert body["skipped_pages"] == [4]
+    results = body["results"]
+    assert set(results) == {"summary", "flashcards", "quiz", "key_concepts"}
+    assert isinstance(results["summary"]["pages"], list)
+    for kind in ("flashcards", "quiz", "key_concepts"):
+        assert isinstance(results[kind], list) and len(results[kind]) == 5
+        assert all(isinstance(item["pages"], list) for item in results[kind])
+    # The recorded envelope carries exactly the approved fixture's texts and citations.
+    data = fixture_data()
+    assert results["summary"] == data["summary"]
+    for kind in ("flashcards", "quiz", "key_concepts"):
+        assert results[kind] == data[kind]
+
+
+def test_status_fixture(rendered: dict[Path, bytes], make_settings: Callable[..., Settings]) -> None:
+    committed = _committed(STATUS_RESPONSE_PATH)
+    assert committed == json.loads(rendered[STATUS_RESPONSE_PATH])
+    with TestClient(create_app(make_settings())) as test_client:
+        response = test_client.get("/api/status")
+    assert response.status_code == 200
+    assert committed == response.json()
+    assert committed["mode"] == "demo"
+    assert STATUS_RESPONSE_PATH.read_bytes().replace(b"\r\n", b"\n") == rendered[STATUS_RESPONSE_PATH]
+
+
+def test_regeneration_isolation(rendered: dict[Path, bytes], monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # ``ai_mode`` and ``AI_MODE`` are distinct variables only on case-sensitive systems such
+    # as Linux CI; on Windows they are the same variable.
+    monkeypatch.setenv("AI_MODE", "real")
+    monkeypatch.setenv("ai_mode", "real")
+    monkeypatch.setenv("MAX_PDF_PAGES", "5")
+    monkeypatch.setenv("ALLOWED_ORIGIN", "not a valid origin")
+    env_file = tmp_path / "probe.env"
+    env_file.write_text("AI_MODE=real\nMAX_PDF_PAGES=3\n", encoding="utf-8")
+    monkeypatch.setitem(Settings.model_config, "env_file", env_file)
+    assert write_fixtures.render_fixtures() == rendered
+
+
+def test_rendering_never_writes(rendered: dict[Path, bytes], monkeypatch: pytest.MonkeyPatch) -> None:
+    import builtins
+
+    attempts: list[str] = []
+
+    def is_write(mode: Any) -> bool:
+        return isinstance(mode, str) and any(flag in mode for flag in "wax+")
+
+    def refuse(what: str) -> None:
+        attempts.append(what)
+        raise AssertionError(f"render_fixtures attempted a write: {what}")
+
+    real_open = builtins.open
+    real_path_open = Path.open
+
+    def guarded_open(file: Any, mode: str = "r", *args: Any, **kwargs: Any) -> Any:
+        if is_write(mode):
+            refuse(f"open({file!r}, {mode!r})")
+        return real_open(file, mode, *args, **kwargs)
+
+    def guarded_path_open(self: Path, mode: str = "r", *args: Any, **kwargs: Any) -> Any:
+        if is_write(mode):
+            refuse(f"Path.open({self!r}, {mode!r})")
+        return real_path_open(self, mode, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "open", guarded_open)
+    monkeypatch.setattr(Path, "open", guarded_path_open)
+    monkeypatch.setattr(Path, "write_bytes", lambda self, data: refuse(f"write_bytes({self!r})"))
+    monkeypatch.setattr(Path, "write_text", lambda self, *a, **k: refuse(f"write_text({self!r})"))
+    result = write_fixtures.render_fixtures()
+    assert attempts == []
+    assert result == rendered

@@ -1,0 +1,29 @@
+{
+  "mode": "demo",
+  "limits": {
+    "max_upload_bytes": 10485760,
+    "max_pdf_pages": 80,
+    "max_text_chars": 200000
+  },
+  "options": {
+    "detail_level": {
+      "values": [
+        "brief",
+        "standard",
+        "detailed"
+      ],
+      "default": "standard"
+    },
+    "output_language": {
+      "values": [
+        "nb",
+        "en"
+      ],
+      "default": "nb"
+    }
+  },
+  "accepted_types": [
+    "application/pdf",
+    "text/plain"
+  ]
+}

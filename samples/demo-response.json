@@ -1,0 +1,131 @@
+{
+  "mode": "demo",
+  "results": {
+    "summary": {
+      "text": "Forelesningen viser at innkjøp er en strategisk funksjon som påvirker hele virksomhetens drift og konkurranseevne, og at innkjøp er nært knyttet til lagerstyring. Ved leverandørvalg bør virksomheten vurdere de samlede kostnadene og ikke bare innkjøpsprisen; i eksempelet med to leverandører har leverandør B høyere pris per enhet, men stabile og forutsigbare leveranser, og selv om prisen er høyere, kan de totale kostnadene bli lavere. God lagerstyring balanserer varetilgjengelighet, kapitalbinding og lagerkostnader, og et enkelt bestillingspunkt beregnes som gjennomsnittlig daglig etterspørsel × ledetid + sikkerhetslager. Sesonginnkjøp, som i julehandelen, krever grundig planlegging og kan knyttes til de seks riktige: riktig kvalitet, mengde, pris, sted, tid og leverandør. Et praktisk eksempel viser at bestillingspunktet (30 × 5) + 50 = 200 enheter angir når butikken bør bestille, men ikke hvor mange enheter den skal bestille.",
+      "pages": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    "flashcards": [
+      {
+        "front": "Hvorfor bør ikke innkjøpsprisen være det eneste kriteriet ved valg av leverandør?",
+        "back": "Andre forhold må også vurderes, som produktkvalitet, leveringspålitelighet, leveringstid, kapasitet og evnen til å håndtere avvik. En leverandør med lav pris kan bli kostbar dersom leveransene ofte er forsinket.",
+        "pages": [
+          2
+        ]
+      },
+      {
+        "front": "Hva gir et sikkerhetslager?",
+        "back": "En buffer mot uventet høy etterspørsel eller forsinkelser.",
+        "pages": [
+          3
+        ]
+      },
+      {
+        "front": "Hvilke utfordringer kan for høy lagerbeholdning skape?",
+        "back": "Bundet kapital, lagerholdskostnader, reduserte marginer, ukurante varer og redusert fleksibilitet.",
+        "pages": [
+          3
+        ]
+      },
+      {
+        "front": "Hva omfatter lagerposisjonen?",
+        "back": "Varer på lager pluss varer som allerede er bestilt, minus eventuelle restordrer.",
+        "pages": [
+          6
+        ]
+      },
+      {
+        "front": "Hvorfor krever julehandelen grundig innkjøpsplanlegging?",
+        "back": "Etterspørselen etter mange sesongprodukter øker kraftig før jul, men kan falle betydelig etter 24. desember. Butikken må sikre god varetilgjengelighet i høysesongen uten å sitte igjen med store mengder usolgte varer etterpå.",
+        "pages": [
+          5
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "question": "Hvordan beregnes et enkelt bestillingspunkt?",
+        "answer": "Bestillingspunkt = gjennomsnittlig daglig etterspørsel × ledetid + sikkerhetslager.",
+        "pages": [
+          3,
+          6
+        ]
+      },
+      {
+        "question": "En butikk selger i gjennomsnitt 30 enheter per dag, leverandørens ledetid er 5 dager og sikkerhetslageret er 50 enheter. Hva er bestillingspunktet?",
+        "answer": "(30 × 5) + 50 = 200 enheter. Butikken bør legge inn en ny bestilling når lagerposisjonen når 200 enheter.",
+        "pages": [
+          6
+        ]
+      },
+      {
+        "question": "Hvorfor velger butikken leverandør B i eksempelet med to leverandører?",
+        "answer": "Fordi pålitelig levering kan redusere risikoen for utsolgte varer og tapt salg. Forutsigbare leveranser kan også redusere behovet for sikkerhetslager.",
+        "pages": [
+          2
+        ]
+      },
+      {
+        "question": "Hva angir beregningen av bestillingspunktet, og hva angir den ikke?",
+        "answer": "Den angir når butikken bør bestille, men ikke hvor mange enheter den skal bestille. Bestillingsmengden må vurderes separat.",
+        "pages": [
+          6
+        ]
+      },
+      {
+        "question": "Hva kan skje dersom innkjøpsavdelingen bestiller for store eller for små mengder?",
+        "answer": "Bestilles det for store mengder, kan lagerkostnadene øke. Bestilles det for lite, kan butikken gå tom for varer.",
+        "pages": [
+          1
+        ]
+      }
+    ],
+    "key_concepts": [
+      {
+        "term": "Innkjøpsfunksjonen",
+        "explanation": "En strategisk funksjon i verdikjeden. Innkjøp handler ikke bare om å bestille produkter, men også om å koordinere aktiviteter som påvirker lager, logistikk, økonomi og kundetilfredshet.",
+        "pages": [
+          1
+        ]
+      },
+      {
+        "term": "Leveringspålitelighet",
+        "explanation": "Et av forholdene som må vurderes ved valg av leverandør, sammen med blant annet produktkvalitet, leveringstid, kapasitet og evnen til å håndtere avvik. Leveringspålitelighet kan være viktigere enn laveste innkjøpspris når virksomheten skal sikre effektiv drift og god kundeservice.",
+        "pages": [
+          2
+        ]
+      },
+      {
+        "term": "Bestillingspunkt",
+        "explanation": "Viser når det er nødvendig å legge inn en ny bestilling. Et enkelt bestillingspunkt beregnes som gjennomsnittlig daglig etterspørsel × ledetid + sikkerhetslager. I regneeksempelet med 30 enheter i daglig salg, 5 dagers ledetid og 50 enheter i sikkerhetslager blir bestillingspunktet (30 × 5) + 50 = 200 enheter, og butikken bør legge inn en ny bestilling når lagerposisjonen når 200 enheter.",
+        "pages": [
+          3,
+          6
+        ]
+      },
+      {
+        "term": "De seks riktige",
+        "explanation": "Seks sentrale innkjøpshensyn: riktig kvalitet, riktig mengde, riktig pris, riktig sted, riktig tid og riktig leverandør.",
+        "pages": [
+          5
+        ]
+      },
+      {
+        "term": "Total kostnad",
+        "explanation": "De samlede kostnadene ved innkjøpet. De kan omfatte innkjøpspris, transport, lagerhold, håndtering av avvik og konsekvensene av manglende varetilgjengelighet.",
+        "pages": [
+          2
+        ]
+      }
+    ]
+  },
+  "skipped_pages": [
+    4
+  ]
+}
