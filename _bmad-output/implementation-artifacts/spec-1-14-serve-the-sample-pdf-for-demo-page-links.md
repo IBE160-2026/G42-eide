@@ -2,7 +2,7 @@
 title: 'Story 1.14: Serve the sample PDF for demo page links'
 type: 'feature'
 created: '2026-11-15'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -251,6 +251,10 @@ All resolved by the developer at Checkpoint 63 (2026-11-15):
   - **The decision:** the spec is frozen and set to `ready-for-dev`; gate G0 is met. The approval covers the specification only; implementation starts at a later checkpoint.
   - **What it fixes:** the requirements, D1–D16, the route, the decoded-path behaviour, the error and header rules, the approval gates and the 28-row matrix (24 rows in the new test file; R3, I4, E1, E2 covered by existing tests).
   - **What changed at approval:** the status, the approval comment, the frozen-block markers, the "Approval and freeze boundary" wording and these log entries only.
+- **2026-11-15 — Closeout: Story 1.14 done.**
+  - **Merge:** PR #36 merged as `2f368b2eeea978c77b84b01d05ac611d82debd4b` (approved head `ed2694cbea31bcfc4ae063ffcf0255409e91c229`).
+  - **CI:** GitHub Actions run 43744397133 on `ed2694cbea31bcfc4ae063ffcf0255409e91c229`: Backend (pytest, 1,132 passed) and Frontend (Vitest, 214 passed), both successful.
+  - **What changed:** the status changed from `ready-for-dev` to `done`; the frozen block remains unchanged.
 
 ## Verification
 
