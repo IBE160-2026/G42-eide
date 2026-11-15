@@ -68,7 +68,17 @@ All approvals are by the developer, before the files were committed (AR-20):
 
 ## Demo fixture: `demo-ai-output.json` (TEMPORARY)
 
-**TEMPORARY:** `demo-ai-output.json` is a temporary development and test fixture. It is a human-reviewed fixture that was drafted by Claude Code and then reviewed, corrected and approved by the developer; it is **not recorded from a real AI run**.
+### Origin and temporary status
+
+**TEMPORARY:** The demo fixture was drafted with assistance from Claude Code (Anthropic), using the approved sample document as its source.
+
+The content was subsequently manually reviewed, corrected and approved by the project developer, including verification of the cited pages.
+
+Although an AI assistant helped prepare this fixture, it was **not recorded from a real AI run through AI Study Buddy's AI-provider connector**.
+
+This fixture is intended solely for development, testing and temporary demonstration.
+
+Before final submission, it must be replaced with output recorded from an approved real AI run, accompanied by its own provenance documentation and manual citation review.
 
 ### Files
 
@@ -81,7 +91,7 @@ All approvals are by the developer, before the files were committed (AR-20):
 ### What it is
 
 - **Content:** one summary, five flashcards, five quiz items and five key concepts in Norwegian Bokmål, in the AD-9 output format, with page citations.
-- **How it was made:** drafted by Claude Code (Anthropic) from the approved sample's text in `innkjop-og-lager.md`, without any real AI-provider call, then reviewed, corrected and approved by the developer. It is **not recorded from a real AI run**.
+- **Source text:** the approved sample's text in `innkjop-og-lager.md` (see "Origin and temporary status" above for how the fixture was made).
 - **Inputs it represents:** detail level `standard`, output language `nb`.
 - **Citations:** only the sample's text pages 1, 2, 3, 5 and 6; page 4 is image-only and is never cited.
 - **Derived file:** `demo-response.json`, the exact demo success reply, is generated from this fixture by `backend/scripts/write_fixtures.py` and must be regenerated whenever this fixture or the sample changes.
@@ -122,7 +132,7 @@ One row per cited page of every entry, in fixture order. For each row the develo
 ### Approval
 
 - **2026-11-15, G1:** the developer (project developer) reviewed and approved the content of all 16 entries and all 22 entry/page citations, after one wording correction (quiz[5] now refers to "innkjøpsavdelingen", as the source does). The approval covers this temporary fixture only; it does not approve a real AI-generated result and does not remove the replacement duty above.
-- **G4:** the wording of this section: pending developer approval.
+- **2026-11-15, G4:** the project developer approved the wording of this section and of the README note on the temporary demo results.
 
 ### Course AI-use rules (U-1): OPEN
 

@@ -804,8 +804,11 @@ def test_provenance() -> None:
     assert hashlib.sha256(story_112.encode("utf-8")).hexdigest() == STORY_112_SECTION_SHA256
     section = _section(lines, FIXTURE_HEADING)
     normalised = " ".join(section.replace("*", "").split())
-    first_sentence = section.split("\n\n")[1]
-    assert "TEMPORARY" in FIXTURE_HEADING and "TEMPORARY" in first_sentence
+    # The first paragraph of the section, skipping sub-headings such as "### Origin ...".
+    paragraphs = [p for p in section.split("\n\n")[1:] if not p.startswith("#")]
+    first_sentence = paragraphs[0]
+    assert "TEMPORARY" in FIXTURE_HEADING and first_sentence.startswith("**TEMPORARY:**")
+    assert "Claude Code" in first_sentence
     for statement in (
         "not recorded from a real AI run",
         "must be replaced by a fixture recorded from one approved real AI run",
@@ -832,6 +835,35 @@ def test_provenance_citation_table() -> None:
         assert row[2] == "yes" and row[3] == "yes"
         assert row[4]
         assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", row[5])
+
+
+def _readme_text() -> str:
+    """README.md with line endings, emphasis and code markers removed, whitespace collapsed."""
+    raw = (REPO_ROOT / "README.md").read_bytes().decode("utf-8")
+    return " ".join(raw.replace("*", "").replace("`", "").split())
+
+
+def test_readme() -> None:
+    # The matrix's "README" row (D13, C-2): the temporary-fixture note and no real-run claim.
+    text = _readme_text()
+    # The temporary fixture is disclosed, with its file.
+    assert "MIDLERTIDIG testfixture" in text
+    assert "samples/demo-ai-output.json" in text
+    # Claude Code drafting is distinguished from a real run through the app's AI integration.
+    assert "KI-assistenten Claude Code" in text
+    assert "ikke hentet fra en faktisk KI-kjøring gjennom AI Study Buddys KI-integrasjon" in text
+    # Replacement before final submission.
+    assert "skal erstattes med resultater fra en godkjent, faktisk KI-kjøring før endelig innlevering" in text
+    assert "samples/PROVENANCE.md" in text
+    # The backend demo endpoint exists; the frontend demo screen does not yet.
+    assert "demo-endepunkt (POST /api/demo)" in text
+    assert "Demoskjermen i frontend, opplasting og generering av egne resultater kommer i senere stories" in text
+    assert "appen har ingen funksjoner ennå" not in text  # the outdated sentence is gone
+    # No claim of a real AI run: every sentence about a real KI run negates it or states the
+    # replacement duty.
+    for sentence in text.split(". "):
+        if "faktisk KI-kjøring" in sentence or "ekte KI-kjøring" in sentence:
+            assert "ikke" in sentence or "erstattes" in sentence, sentence
 
 
 def test_connectors_docstring() -> None:
