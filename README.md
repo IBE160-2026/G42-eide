@@ -10,7 +10,17 @@ Repoet inneholder gruppens applikasjon og dokumentasjon av utvikling, testing og
 
 ## Kjøre prosjektet lokalt
 
-AI Study Buddy består av en backend (FastAPI, i `backend/`) og en frontend (Next.js, i `frontend/`). Foreløpig er dette bare prosjektoppsettet: appen har ingen funksjoner ennå. Demomodus, opplasting og resultater kommer i senere stories. Ingen API-nøkkel trengs for å starte prosjektet eller kjøre testene.
+AI Study Buddy består av en backend (FastAPI, i `backend/`) og en frontend (Next.js, i `frontend/`). Backend har nå et demo-endepunkt (`POST /api/demo`) som behandler den medfølgende eksempel-PDF-en og returnerer forhåndslagde studieresultater. Demoskjermen i frontend, opplasting og generering av egne resultater kommer i senere stories. Ingen API-nøkkel er nødvendig for å kjøre demomodusen eller testene.
+
+### Demoresultater (midlertidige)
+
+Demoresultatene er basert på en **MIDLERTIDIG testfixture** (`samples/demo-ai-output.json`) som er utarbeidet med hjelp fra KI-assistenten Claude Code og deretter gjennomgått, korrigert og godkjent av prosjektutvikleren.
+
+Resultatene er **ikke hentet fra en faktisk KI-kjøring gjennom AI Study Buddys KI-integrasjon**.
+
+Testfixturen brukes foreløpig til utvikling, testing og demonstrasjon. Den skal erstattes med resultater fra en godkjent, faktisk KI-kjøring før endelig innlevering.
+
+Se `samples/PROVENANCE.md` for dokumentasjon av opprinnelse, gjennomgang og kildehenvisninger.
 
 ### Krav
 

@@ -255,7 +255,7 @@ def sample_pdf() -> bytes:
 
 @pytest.fixture(scope="module")
 def sample_source() -> str:
-    return SAMPLE_SOURCE.read_bytes().decode("utf-8")
+    return SAMPLE_SOURCE.read_bytes().decode("utf-8").replace("\r\n", "\n")
 
 
 @pytest.fixture(scope="module")

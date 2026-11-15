@@ -6,10 +6,14 @@ Tests import from here; only ``app.main`` builds the app from the real environme
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.demo import router as demo_router
 from app.api.errors import CatchAllMiddleware, configure_logging, register_error_handlers
 from app.api.status import router as status_router
 from app.config import Settings, SettingsRefused, load_settings
+from app.connectors.demo import DemoConnector
 from app.pipeline.pass_guard import PassGuard
+from app.pipeline.pass_runner import PassRunner
+from app.samples import DEMO_FIXTURE, SAMPLE_PDF, SAMPLES_DIR
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -18,6 +22,18 @@ def create_app(settings: Settings) -> FastAPI:
     application.state.settings = settings
     # One pass lock per app instance, shared by every route's PassRunner (AD-16, D6).
     application.state.pass_guard = PassGuard()
+    # Demo mode: one demo runner on the shared guard (Story 1.13, D1). Real mode builds no
+    # connector of any kind; ``POST /api/demo`` then refuses with ``demo_not_enabled``.
+    if settings.ai_mode == "demo":
+        application.state.demo_runner = PassRunner(
+            connector=DemoConnector(SAMPLES_DIR / DEMO_FIXTURE),
+            settings=settings,
+            guard=application.state.pass_guard,
+        )
+        application.state.demo_sample_pdf = SAMPLES_DIR / SAMPLE_PDF
+    else:
+        application.state.demo_runner = None
+        application.state.demo_sample_pdf = None
     register_error_handlers(application)
     # The last-added middleware is outermost: CORS → catch-all → exception handlers → router.
     application.add_middleware(CatchAllMiddleware)
@@ -29,6 +45,7 @@ def create_app(settings: Settings) -> FastAPI:
         allow_credentials=False,
     )
     application.include_router(status_router)
+    application.include_router(demo_router)
     return application
 
 

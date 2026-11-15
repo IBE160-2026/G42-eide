@@ -65,3 +65,75 @@ All approvals are by the developer, before the files were committed (AR-20):
 - **2026-11-14, G2:** the transcription `innkjop-og-lager.md` approved.
 - **2026-11-14, G3:** the rendered `innkjop-og-lager.pdf` approved after visual review, with no layout changes.
 - **2026-11-14, G4:** this provenance note approved.
+
+## Demo fixture: `demo-ai-output.json` (TEMPORARY)
+
+### Origin and temporary status
+
+**TEMPORARY:** The demo fixture was drafted with assistance from Claude Code (Anthropic), using the approved sample document as its source.
+
+The content was subsequently manually reviewed, corrected and approved by the project developer, including verification of the cited pages.
+
+Although an AI assistant helped prepare this fixture, it was **not recorded from a real AI run through AI Study Buddy's AI-provider connector**.
+
+This fixture is intended solely for development, testing and temporary demonstration.
+
+Before final submission, it must be replaced with output recorded from an approved real AI run, accompanied by its own provenance documentation and manual citation review.
+
+### Files
+
+| File | Role | SHA-256 |
+|---|---|---|
+| `demo-ai-output.json` | the TEMPORARY AI-output fixture returned by the demo connector (SHA-256 of its LF-normalised bytes) | `cc18e9f290a3f2ef6d6df74cda0ca921c551e81b397af524f28c8779a4a5ce60` |
+| `innkjop-og-lager.pdf` | the approved sample lecture the fixture is based on (pinned in `backend/tests/test_sample_pdf.py`) | `2e831fac413529b552fe97dae13b58f41947d2e99f41b306a3e3cd8686f45e63` |
+| `innkjop-og-lager.md` | the approved source text of the sample's text pages (LF-normalised) | `c4d3f690e08a7050bbc603ce9485551f17af1ed98bd60493c2c0ed348c5da64f` |
+
+### What it is
+
+- **Content:** one summary, five flashcards, five quiz items and five key concepts in Norwegian Bokmål, in the AD-9 output format, with page citations.
+- **Source text:** the approved sample's text in `innkjop-og-lager.md` (see "Origin and temporary status" above for how the fixture was made).
+- **Inputs it represents:** detail level `standard`, output language `nb`.
+- **Citations:** only the sample's text pages 1, 2, 3, 5 and 6; page 4 is image-only and is never cited.
+- **Derived file:** `demo-response.json`, the exact demo success reply, is generated from this fixture by `backend/scripts/write_fixtures.py` and must be regenerated whenever this fixture or the sample changes.
+
+### Replacement duty
+
+This TEMPORARY fixture must be replaced by a fixture recorded from one approved real AI run, manually reviewed and committed with its own provenance note (date, model ID, inputs, reviewed), before final demo acceptance and submission (C-2, AD-13; Stories 3.1–3.3, recorded in Story 3.2). Until then, nothing may claim that the demo results come from a real AI run.
+
+### Citation review
+
+One row per cited page of every entry, in fixture order. For each row the developer checked that the cited page supports the entry and that the entry's content matches the sample.
+
+| Entry | Page | Page supports entry | Content matches sample | Reviewer | Date |
+|---|---|---|---|---|---|
+| summary | 1 | yes | yes | project developer | 2026-11-15 |
+| summary | 2 | yes | yes | project developer | 2026-11-15 |
+| summary | 3 | yes | yes | project developer | 2026-11-15 |
+| summary | 5 | yes | yes | project developer | 2026-11-15 |
+| summary | 6 | yes | yes | project developer | 2026-11-15 |
+| flashcards[1] | 2 | yes | yes | project developer | 2026-11-15 |
+| flashcards[2] | 3 | yes | yes | project developer | 2026-11-15 |
+| flashcards[3] | 3 | yes | yes | project developer | 2026-11-15 |
+| flashcards[4] | 6 | yes | yes | project developer | 2026-11-15 |
+| flashcards[5] | 5 | yes | yes | project developer | 2026-11-15 |
+| quiz[1] | 3 | yes | yes | project developer | 2026-11-15 |
+| quiz[1] | 6 | yes | yes | project developer | 2026-11-15 |
+| quiz[2] | 6 | yes | yes | project developer | 2026-11-15 |
+| quiz[3] | 2 | yes | yes | project developer | 2026-11-15 |
+| quiz[4] | 6 | yes | yes | project developer | 2026-11-15 |
+| quiz[5] | 1 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[1] | 1 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[2] | 2 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[3] | 3 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[3] | 6 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[4] | 5 | yes | yes | project developer | 2026-11-15 |
+| key_concepts[5] | 2 | yes | yes | project developer | 2026-11-15 |
+
+### Approval
+
+- **2026-11-15, G1:** the developer (project developer) reviewed and approved the content of all 16 entries and all 22 entry/page citations, after one wording correction (quiz[5] now refers to "innkjøpsavdelingen", as the source does). The approval covers this temporary fixture only; it does not approve a real AI-generated result and does not remove the replacement duty above.
+- **2026-11-15, G4:** the project developer approved the wording of this section and of the README note on the temporary demo results.
+
+### Course AI-use rules (U-1): OPEN
+
+The course's rules on AI-assisted content have not been checked yet (open item U-1). This fixture is AI-drafted, so it is for development and testing only and is not yet approved for submission.
