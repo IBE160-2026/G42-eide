@@ -440,7 +440,9 @@ None. OQ1–OQ7 were decided by the developer at Checkpoint 113 and are recorded
 
 ## Implementation Notes
 
-(none yet)
+- **2026-11-17 — implementation commit `626f7654c1847c04be14f036633a422fef44eda0`** (`feat(story-1.16): implement results shell, notices and accessible tabs`): exactly the 15 Code Map files (4 modified, 11 new), built in five stages A–E, each independently reviewed (all PASS), plus a whole-story review (PASS, Checkpoint 127). C2 was applied within the OQ6 scope (C2a in Stage C, C2b in Stage D). Session log: [975-2026-11-17-21-38-22-story-1-16-results-shell.md](../../.logs/amma-kwaasi-eide/975-2026-11-17-21-38-22-story-1-16-results-shell.md).
+- **`focusOrder` test helper:** kept as a local copy in `result-tabs.test.tsx` and `results-shell.test.tsx` rather than added to `demo-fixtures.ts`, because the Code Map lists that module's helpers explicitly.
+- **Test hardening after the whole-story review (Checkpoint 128):** the class names `result-tabs`, `result-tab` and `result-panel` and the absence of `aria-orientation` are asserted on the rendered page; the K10 status-region watcher stops in `try/finally`.
 
 ## Spec Change Log
 
@@ -465,4 +467,7 @@ None. OQ1–OQ7 were decided by the developer at Checkpoint 113 and are recorded
 
 ## Verification
 
-(none yet)
+- **G1 (Checkpoint 128, on the code committed as `626f765`):** frontend 465 tests passed in 15 files (103 new for Story 1.16; all 72 matrix rows mapped to tests); `tsc --noEmit` pass; ESLint pass; `next build` pass; backend 1,132 tests passed (unchanged).
+- **G2 (Checkpoint 128), partly complete:** 22 scripted checks passed in Chrome 156 (headless; trusted keyboard and mouse input, throttling, viewport emulation) covering M-1, M-2 (S3 and S4), M-3 (320 CSS px and a 200% zoom emulation) and M-4 (hover, selected underline, focus rings, click focus in Chrome); the developer reported real browser zoom as readable.
+- **Deferred, NOT TESTED (accepted by the developer for the implementation commit only):** M-2 S5 unlocking with the backend actually unavailable (automated row L9 only); M-4 click focus in Safari or Firefox on macOS (automated row K11 only). The G2 gate is not complete; tracked in `.logs/amma-kwaasi-eide/issues.md`.
+- **G3:** the implementation commit contains exactly the 15 approved files.
