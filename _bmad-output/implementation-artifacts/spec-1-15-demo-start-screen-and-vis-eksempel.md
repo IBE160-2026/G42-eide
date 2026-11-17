@@ -2,7 +2,7 @@
 title: 'Story 1.15: Demo start screen and "Vis eksempel"'
 type: 'feature'
 created: '2026-11-16'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 0
 context:
@@ -362,6 +362,11 @@ None. CF-1, CF-2 and OQ3–OQ6 were decided by the developer at Checkpoint 84 (r
   - **What it fixes:** the requirements, D1–D19 (with D6a), CF-1 and CF-2, the error and retry matrix and the 55-row I/O matrix.
   - **Open findings:** none from Checkpoints 87 and 88.
   - **What changed at approval:** the status, the approval comment, the frozen-block markers, the "Approval and freeze boundary" wording and these log entries only.
+- **2026-11-17 — Closeout: Story 1.15 done.**
+  - **Merge:** PR #38 merged as `92e2a9cfb3052fc80fdb989a90c55cc5da886e8d` (approved head `0b94c7c8f6d29a6b0e48fab22f46e324521a8431`).
+  - **CI:** GitHub Actions run 44023493755 on `0b94c7c8f6d29a6b0e48fab22f46e324521a8431`: Backend (pytest, 1,132 passed) and Frontend (Vitest, 362 passed), both successful.
+  - **Follow-ups:** already recorded in `.logs/amma-kwaasi-eide/issues.md` (the stuck-`loading` limitation before a second route, CF-2 reconciliation, the S3 visual locked bar, the accessibility spot checks, G-2's real-mode part for Story 2.4, G-4's binding checks).
+  - **What changed:** the status changed from `ready-for-dev` to `done`; the frozen block remains unchanged.
 
 ## Verification
 
