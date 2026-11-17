@@ -782,22 +782,23 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     await advance(0);
     expect(region().textContent).toBe("Henter eksempel …");
 
-    // B14: the behavioural S3 lock.
+    // B14: the S3 lock, shown as the locked bar (Story 1.16).
     const upload = within(uploadSection()).getByRole("button", { name: "Last opp" });
-    const language = screen.getByRole("combobox", { name: "Språk på resultatene" }) as HTMLSelectElement;
-    const detail = screen.getByRole("combobox", { name: "Detaljnivå" }) as HTMLSelectElement;
+    expect(within(uploadSection()).queryByRole("combobox")).toBeNull();
+    expect(uploadSection().firstElementChild?.classList.contains("upload-bar-locked")).toBe(true);
     expect(upload.hasAttribute("disabled")).toBe(true);
-    expect(language.disabled).toBe(true);
-    expect(detail.disabled).toBe(true);
-    expect(detail.value).toBe("standard");
-    expect(detail.options).toHaveLength(1);
+    const pairs = Array.from(uploadSection().querySelectorAll("dl > div")).map((group) => [
+      group.querySelector("dt")?.textContent,
+      group.querySelector("dd")?.textContent,
+    ]);
+    expect(pairs).toEqual([
+      ["Språk på resultatene", "Norsk bokmål"],
+      ["Detaljnivå", "Standard"],
+    ]);
     // C5: the banner stays in S3.
     expect(main().firstElementChild?.textContent).toBe(BANNER);
-    // A change event on the disabled select changes nothing (no handler, one fixed option).
-    // (Writing a new value into the DOM first would be a jsdom artefact a user cannot do.)
-    fireEvent.change(language);
-    expect(language.value).toBe("nb");
-    expect(language.options).toHaveLength(1);
+    // The lock state is stated in text.
+    expect(uploadSection().querySelector(".upload-bar__lock")?.textContent).toBe("Låst");
     expect(demoRequests()).toHaveLength(1);
     expect(document.activeElement).toBe(button);
   });
@@ -811,7 +812,7 @@ describe("demo S3 and S4 on the page (B, C)", () => {
 
     const heading = within(resultsSection()).getByRole("heading", { level: 2, name: RESULTS_HEADING });
     expect(heading.classList.contains("demo-results-heading")).toBe(true);
-    const notice = within(resultsSection()).getByRole("note");
+    const notice = within(resultsSection()).getAllByRole("note")[0];
     expect(notice.classList.contains("notice-warning")).toBe(true);
     expect(notice.textContent).toBe(VERIFICATION);
     expect(notice.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
@@ -825,10 +826,10 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     fireEvent.click(button);
     expect(demoRequests()).toHaveLength(1);
 
-    // C4: nothing of the response's content is rendered (Stories 1.16–1.20).
+    // C4: no summary content is rendered; the tabs come from Story 1.16 (their content is Stories 1.17–1.20).
     const recorded = JSON.parse(RECORDED_TEXT);
     expect(document.body.textContent).not.toContain(recorded.results.summary.text.slice(0, 30));
-    expect(screen.queryByRole("tablist")).toBeNull();
+    expect(screen.getByRole("tablist")).toBeTruthy();
     expect(resultsSection().querySelector("a")).toBeNull();
 
     // C5: the banner and the fixed-settings note stay.

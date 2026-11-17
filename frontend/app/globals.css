@@ -468,3 +468,123 @@ textarea {
   line-height: var(--font-small-line-height);
   overflow-wrap: anywhere;
 }
+
+/* --- Story 1.16: results shell, notices, tabs and the locked upload bar (D15, D16) --- */
+
+/* Skipped-pages notice (DESIGN.md notice-info): as the Verification Notice, info tint. */
+.notice-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--padding-notice);
+  background: var(--color-notice-info-bg);
+  color: var(--color-notice-info-fg);
+  border-left: var(--border-emphasis) solid var(--color-notice-info-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+.notice-info__icon {
+  flex: none;
+}
+
+.notice-info p {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Locked upload bar (DESIGN.md upload-bar-locked): paper fill, dashed border (S3, S4). */
+.upload-bar.upload-bar-locked {
+  background: var(--color-background);
+  border-style: dashed;
+}
+
+/* Lock state in text, on its own line at the start of the bar (D2, D8). */
+.upload-bar__lock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  flex-basis: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--font-caption-size);
+  font-weight: var(--font-caption-weight);
+  line-height: var(--font-caption-line-height);
+}
+
+.upload-bar__lock-icon {
+  flex: none;
+}
+
+/* Locked settings as read-only label/value pairs, without input chrome (D8). */
+.locked-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin: 0;
+}
+
+.locked-settings > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.locked-settings dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-caption-size);
+  font-weight: var(--font-caption-weight);
+  line-height: var(--font-caption-line-height);
+}
+
+.locked-settings dd {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: var(--control-min-height);
+  color: var(--color-text);
+  font-size: var(--font-settings-value-size);
+  font-weight: var(--font-settings-value-weight);
+  line-height: var(--font-settings-value-line-height);
+  overflow-wrap: anywhere;
+}
+
+/* Result tabs (DESIGN.md result-tab): underlined tabs on a subtle baseline; the list wraps. */
+.result-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+  border-bottom: var(--border-hairline) solid var(--color-border-subtle);
+}
+
+.result-tab {
+  min-height: var(--control-min-height);
+  padding: 0 var(--space-3);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 0;
+  border-bottom: var(--border-emphasis) solid transparent;
+  font-size: var(--font-ui-size);
+  font-weight: var(--font-ui-weight);
+  line-height: var(--font-ui-line-height);
+}
+
+/* Hover changes only the background, so the selected indicator stays. */
+.result-tab:hover {
+  background: var(--color-hover-tint);
+}
+
+.result-tab[aria-selected="true"] {
+  color: var(--color-primary);
+  font-weight: var(--font-subheading-weight);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Tab panel: padding gives the focus ring a visible box; no display rule, so hidden panels stay hidden. */
+.result-panel {
+  padding: var(--space-4);
+}
