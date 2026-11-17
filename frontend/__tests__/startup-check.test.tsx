@@ -105,7 +105,7 @@ describe("S0 Starter …", () => {
 
   test("first-load success: Starter … gone, Resultater empty, focus not moved", async () => {
     render(<Home />);
-    await settle(0, fakeResponse(200, validStatus()));
+    await settle(0, fakeResponse(200, { ...validStatus(), mode: "real" }));
     expect(results().textContent).toBe("");
     expect(results().children).toHaveLength(0);
     expect(document.activeElement).toBe(document.body);
@@ -252,7 +252,7 @@ describe("Prøv igjen", () => {
     const button = retryButton();
     button.focus();
     fireEvent.click(button);
-    await settle(1, fakeResponse(200, validStatus()));
+    await settle(1, fakeResponse(200, { ...validStatus(), mode: "real" }));
 
     expect(results().textContent).toBe("");
     expect(title().id).toBe("app-title");
@@ -449,7 +449,7 @@ test("strict mode: the first request is aborted by cleanup without showing S0x",
   await act(async () => {});
   expect(results().textContent).toBe("Starter …");
   expect(requests[1].signal.aborted).toBe(false);
-  await settle(1, fakeResponse(200, validStatus()));
+  await settle(1, fakeResponse(200, { ...validStatus(), mode: "real" }));
   expect(results().textContent).toBe("");
   expect(document.activeElement).toBe(document.body);
 });

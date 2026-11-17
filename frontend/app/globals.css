@@ -281,3 +281,190 @@ textarea {
   font-weight: var(--font-body-weight);
   line-height: var(--font-body-line-height);
 }
+
+/* --- Story 1.15: demo start screen (D1–D9, D15, D17, D19; DESIGN.md components) --- */
+
+/* DEMO banner (DESIGN.md demo-banner): demo tint, 3px left rule, icon + text. */
+.demo-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: var(--padding-notice);
+  background: var(--color-demo-bg);
+  color: var(--color-demo-fg);
+  border-left: var(--border-emphasis) solid var(--color-demo-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-ui-weight);
+  line-height: var(--font-small-line-height);
+}
+
+.demo-banner__icon,
+.notice-warning__icon {
+  flex: none;
+}
+
+.demo-banner p,
+.notice-warning p,
+.demo-loading p {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Verification Notice (DESIGN.md notice-warning). */
+.notice-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--padding-notice);
+  background: var(--color-notice-warning-bg);
+  color: var(--color-notice-warning-fg);
+  border-left: var(--border-emphasis) solid var(--color-notice-warning-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+/* Upload bar (DESIGN.md upload-bar); wraps instead of scrolling (UX-DR-38, D15). */
+.upload-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-hairline) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Settings field (DESIGN.md settings-field): caption label above the control. */
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.settings-field label {
+  color: var(--color-text-muted);
+  font-size: var(--font-caption-size);
+  font-weight: var(--font-caption-weight);
+  line-height: var(--font-caption-line-height);
+}
+
+.settings-field select {
+  max-width: 100%;
+  min-height: var(--control-min-height);
+  padding: 0 var(--space-3);
+  font-size: var(--font-settings-value-size);
+  font-weight: var(--font-settings-value-weight);
+  line-height: var(--font-settings-value-line-height);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-hairline) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Disabled demo selects stay readable: no browser fading (D19, L-E). */
+.settings-field select:disabled {
+  color: var(--color-disabled-fg);
+  background: var(--color-disabled-bg);
+  border: var(--border-hairline) solid var(--color-disabled-border);
+  opacity: 1;
+  -webkit-text-fill-color: var(--color-disabled-fg);
+}
+
+/* Fixed-settings note: plain muted small text below the settings (D17). */
+.settings-note {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+/* A natively disabled primary button (Last opp in demo) never looks enabled on hover:
+ * same specificity as the existing hover rule and later in the file (D19, M-NEW). */
+.button-primary:disabled,
+.button-primary:disabled:hover {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-fg);
+  border: var(--border-hairline) dashed var(--color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* S1 guidance: plain body text in the muted colour, only in S1 (D17). */
+.demo-guidance {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
+
+/* S3 loading (DESIGN.md loading-indicator): teal arc on the subtle track beside the text. */
+.demo-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  color: var(--color-text);
+}
+
+.loading-indicator {
+  flex: none;
+}
+
+.loading-indicator__track {
+  color: var(--color-border-subtle);
+}
+
+.loading-indicator__arc {
+  color: var(--color-primary);
+  transform-origin: 14px 14px;
+  animation: loading-indicator-turn 1.6s linear infinite;
+}
+
+@keyframes loading-indicator-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Static under reduced motion (UX-DR-19, AF-13). */
+@media (prefers-reduced-motion: reduce) {
+  .loading-indicator__arc {
+    animation: none;
+  }
+}
+
+/* S4 demo results heading (DESIGN.md demo results heading, h2). */
+.demo-results-heading {
+  margin: var(--space-4) 0 0;
+  color: var(--color-text);
+  font-size: var(--font-demo-heading-size);
+  font-weight: var(--font-demo-heading-weight);
+  line-height: var(--font-demo-heading-line-height);
+}
+
+/* Long words in the error headline, action and detail wrap at narrow widths (D15, UX-DR-38);
+ * appended, so the existing .error-state__content rule stays unchanged. */
+.error-state__content {
+  overflow-wrap: anywhere;
+}
+
+/* Error state detail line: the backend message, smaller and muted (DESIGN.md error-state). */
+.error-state__detail {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+  overflow-wrap: anywhere;
+}
