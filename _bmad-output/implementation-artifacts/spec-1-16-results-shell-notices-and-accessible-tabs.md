@@ -2,7 +2,7 @@
 title: 'Story 1.16: Results shell, notices and accessible tabs'
 type: 'feature'
 created: '2026-11-17'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 2
 context:
@@ -434,7 +434,7 @@ None. OQ1–OQ7 were decided by the developer at Checkpoint 113 and are recorded
 
 ## Approval and freeze boundary
 
-- **G0 done:** the developer approved revision 3a at Checkpoint 118 on 2026-11-17, including D3–D17 [FOR-G0], the "Låst" own-line layout and the binding C2 scope. Revisions 1–3a before approval are recorded in the Spec Change Log. `status` is `ready-for-dev`; implementation is not yet authorized.
+- **G0 done:** the developer approved revision 3a at Checkpoint 118 on 2026-11-17, including D3–D17 [FOR-G0], the "Låst" own-line layout and the binding C2 scope. Revisions 1–3a before approval are recorded in the Spec Change Log. Implementation was authorized afterwards (Checkpoint 120 onwards); PR #40 was merged as `a18813bcd1452108af800e2d1f94eac5a1c04f88`. `status` is now `done`: the story is administratively closed with two accepted manual-verification exceptions — M-2 and M-4 remain NOT TESTED manually and the G2 gate was not fully completed (see the Review Triage Log and Verification).
 - The sections from "Intent" to the end of "I/O & Edge-Case Matrix" (including "Strings", "Requirements traceability", "Decisions" and "Conflicts and source findings") are wrapped in `<frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">…</frozen-after-approval>`, preceded by the `<!-- APPROVED … -->` comment. Only the developer can change the frozen block.
 - Code Map, C2, gates, Tasks, Dependencies, Open questions, Assumptions, the checklist, Implementation Notes, Spec Change Log, Review Triage Log and Verification stay outside the frozen block.
 
@@ -464,6 +464,13 @@ None. OQ1–OQ7 were decided by the developer at Checkpoint 113 and are recorded
 - **2026-11-17 — Checkpoint 115:** the developer authorized editorial revision 3 only (F-1 to F-9, two nits); applied. G0, the freeze and implementation are not authorized.
 - **2026-11-17 — Checkpoint 116, independent verification of revision 3 (no historical diff available; checked against the Checkpoint 114 findings and the sources):** PASS WITH CHANGES; F-1 to F-9 and both nits confirmed; 72 rows confirmed; one Minor finding (R-1, C2 comment scope) and nits R-2 to R-4.
 - **2026-11-17 — Checkpoint 117:** R-1, R-2 and R-3 applied (revision 3a); R-4 (row order in the notices tables) left as cosmetic. G0, the freeze and implementation are not authorized.
+- **2026-11-17 — Closeout: Story 1.16 done, with two accepted manual-verification exceptions.**
+  - **Merge:** PR #40 merged as `a18813bcd1452108af800e2d1f94eac5a1c04f88` (approved head `2217c00e730b64e1d60589ec03812a437d1e26ed`; parents `056f66c` and `2217c00`).
+  - **CI:** GitHub Actions run 44172204593 on `2217c00e730b64e1d60589ec03812a437d1e26ed`: Backend (pytest, 1,132 passed) and Frontend (Vitest, 465 passed), both successful.
+  - **Reviews:** the independent reviews of Stages A–E and of the whole story (Checkpoint 127) all passed.
+  - **Exceptions:** M-2 (S5 unlocking with the backend actually unavailable) and M-4 (click focus in Safari or Firefox on macOS) remain **NOT TESTED manually** (automated rows L9 and K11 only). The developer explicitly accepted both as tracked exceptions for the merge (Checkpoint 133). The **G2 manual gate was not fully completed**; the outstanding checks are tracked in `.logs/amma-kwaasi-eide/issues.md`.
+  - **Meaning of `done`:** the implementation is merged and the story is administratively closed with these accepted exceptions; it does **not** mean that all manual checks passed.
+  - **What changed:** the status changed from `ready-for-dev` to `done`; the frozen block remains unchanged.
 
 ## Verification
 
