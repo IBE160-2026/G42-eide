@@ -82,3 +82,41 @@ export interface GenerationResponse {
   results: ValidatedResults;
   skipped_pages: number[];
 }
+
+/*
+ * The AD-11 error contract (Story 1.15, D18): `ErrorCode` and `LimitKind` mirror the
+ * `Literal` types in `backend/app/contracts/errors.py`, in the same order; the TS union
+ * changes together with the backend enum. `ErrorEnvelope` is the body of every non-2xx
+ * reply; `error_code` is a plain string at runtime so that an unknown code still passes
+ * the shape check and falls back to the generic texts.
+ */
+
+export type ErrorCode =
+  | "unsupported_file_type"
+  | "bad_text_encoding"
+  | "unreadable_file"
+  | "no_extractable_text"
+  | "invalid_request"
+  | "demo_mode_no_uploads"
+  | "demo_not_enabled"
+  | "not_found"
+  | "method_not_allowed"
+  | "generation_in_progress"
+  | "file_too_large"
+  | "insufficient_content"
+  | "ai_rate_limited"
+  | "internal_error"
+  | "ai_unavailable"
+  | "ai_output_invalid"
+  | "ai_credits_exhausted"
+  | "session_call_limit_reached";
+
+export type LimitKind = "bytes" | "pages" | "characters" | "tokens";
+
+/** Body of every non-2xx reply: `{error_code, message, limit?, reference_id?}` (AD-11). */
+export interface ErrorEnvelope {
+  error_code: string;
+  message: string;
+  limit?: LimitKind;
+  reference_id?: string;
+}

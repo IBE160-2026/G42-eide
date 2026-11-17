@@ -1,4 +1,8 @@
 import { AppStatusProvider } from "../components/AppStatusProvider";
+import DemoBanner from "../components/DemoBanner";
+import DemoControls from "../components/DemoControls";
+import DemoOutcome from "../components/DemoOutcome";
+import { DemoProvider } from "../components/DemoProvider";
 import Logo from "../components/Logo";
 import StartupCheck from "../components/StartupCheck";
 import StatusRegion from "../components/StatusRegion";
@@ -15,12 +19,18 @@ export default function Home() {
         </div>
       </header>
       <AppStatusProvider>
-        <main className="page">
-          <section aria-label="Opplasting og innstillinger" />
-          <section aria-label="Resultater">
-            <StartupCheck />
-          </section>
-        </main>
+        <DemoProvider>
+          <main className="page">
+            <DemoBanner />
+            <section aria-label="Opplasting og innstillinger">
+              <DemoControls />
+            </section>
+            <section aria-label="Resultater">
+              <StartupCheck />
+              <DemoOutcome />
+            </section>
+          </main>
+        </DemoProvider>
       </AppStatusProvider>
       <StatusRegion />
     </>
