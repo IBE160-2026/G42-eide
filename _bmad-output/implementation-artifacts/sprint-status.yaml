@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-10-2026 11:36
-last_updated: 11-17-2026 21:52
+last_updated: 11-19-2026 21:30
 project: G42-eide
 project_key: NOKEY
 tracking_system: file-system
@@ -52,7 +52,7 @@ development_status:
   1-14-serve-the-sample-pdf-for-demo-page-links: done
   1-15-demo-start-screen-and-vis-eksempel: done
   1-16-results-shell-notices-and-accessible-tabs: done
-  1-17-summary-rendering-and-pdf-page-links: backlog
+  1-17-summary-rendering-and-pdf-page-links: done
   1-18-nøkkelbegreper-panel: backlog
   1-19-flashkort: backlog
   1-20-quiz: backlog
