@@ -92,7 +92,7 @@ function renderTabs(results: ValidatedResults = makeResults(5, 5, 5)) {
   return render(
     <section aria-label="Resultater">
       <h2 id="results-heading">Eksempelresultater (ikke generert nå)</h2>
-      <ResultTabs results={results} labelledBy="results-heading" />
+      <ResultTabs results={results} labelledBy="results-heading" pdfSource={null} />
     </section>,
   );
 }
@@ -463,11 +463,16 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
     expect(PAGE_TABS.map(({ key }) => pagePanel(key).hidden)).toEqual([false, true, true, true]);
   });
 
-  test("each panel holds exactly one visually hidden h3 with the tab name, no count (P3)", async () => {
+  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary (P3)", async () => {
     await showResults();
     for (const { key, name } of PAGE_TABS) {
       const panel = pagePanel(key);
-      expect(panel.children).toHaveLength(1);
+      const children = Array.from(panel.children).map((child) => `${child.tagName}.${child.className}`);
+      expect(children).toEqual(
+        key === "summary"
+          ? ["H3.sr-only", "P.summary-text", "DIV.page-links"]
+          : ["H3.sr-only"],
+      );
       const heading = panel.children[0];
       expect(heading.tagName).toBe("H3");
       expect(heading.classList.contains("sr-only")).toBe(true);
@@ -488,12 +493,15 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
 describe("demo S4 on the page: focus order and side effects (K7, K8, K10)", () => {
   setupDemoTest();
 
-  test("Vis eksempel, then the selected tab, then the visible panel (K7)", async () => {
+  test("Vis eksempel, then the selected tab, then the visible panel and its page links (K7)", async () => {
     const button = await showResults();
+    const summaryLinks = Array.from(pagePanel("summary").querySelectorAll<HTMLElement>("a.page-link"));
+    expect(summaryLinks).toHaveLength(5);
     expect(focusOrder(main())).toEqual([
       button,
       screen.getByRole("tab", { name: "Sammendrag" }),
       pagePanel("summary"),
+      ...summaryLinks,
     ]);
   });
 

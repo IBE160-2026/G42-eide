@@ -588,3 +588,57 @@ textarea {
 .result-panel {
   padding: var(--space-4);
 }
+
+/* --- Story 1.17: summary text and PDF page links (D5, D9, D10) --- */
+
+/* Summary text: plain text with its line breaks preserved (UX-DR-23). */
+.summary-text {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
+
+/* The page-link row: a block after the text, in normal inline flow (no flex, no gap). */
+.page-links {
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+/* One page link (DESIGN.md page-link): at least 24px tall, underlined with a 3px offset. */
+.page-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding: 0 var(--space-1);
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+/* Keep the normal space before the decorative arrow inside the inline-flex link (D9). */
+.page-link > [aria-hidden="true"] {
+  white-space: pre;
+}
+
+/* A separator travels with the following link: they wrap as one box (D10). */
+.page-links__item {
+  display: inline-block;
+}
+
+/* The separator keeps both of its spaces, giving the spacing between links (D10). */
+.page-links__separator {
+  white-space: pre;
+  color: var(--color-text-muted);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}

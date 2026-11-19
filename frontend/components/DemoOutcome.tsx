@@ -6,6 +6,7 @@ import { useDemoFlow } from "./DemoProvider";
 import ErrorIcon from "./ErrorIcon";
 import ResultNotices from "./ResultNotices";
 import ResultTabs from "./ResultTabs";
+import { demoPdfSource } from "../lib/pdf-source";
 
 /*
  * The demo results area (Story 1.15, D6, D8, D9, D17), inside the `Resultater` section;
@@ -17,8 +18,9 @@ import ResultTabs from "./ResultTabs";
  * - S4 (Story 1.16, D3): as direct children of the section, the demo results heading
  *   (`id="results-heading"`, which names the tab list), the notices (`ResultNotices`: the
  *   Verification Notice, then the skipped-pages notice when there are skipped pages) and
- *   the tabs with their four panels (`ResultTabs`). Only the counts and `skipped_pages` are
- *   used; the panel content is Stories 1.17–1.20.
+ *   the tabs with their four panels (`ResultTabs`). The Sammendrag panel shows the summary
+ *   and its page links to the bundled sample PDF (`demoPdfSource()`, Story 1.17); the other
+ *   panels' content is Stories 1.18–1.20.
  * - S5: the error state; the backend message is plain text. Focus moves to the headline
  *   on every error outcome, keyed by `errorId`, so a repeated identical error moves focus
  *   again; errors are never announced and never use role="alert".
@@ -84,7 +86,11 @@ export default function DemoOutcome() {
             {RESULTS_HEADING}
           </h2>
           <ResultNotices skippedPages={state.response.skipped_pages} />
-          <ResultTabs results={state.response.results} labelledBy={RESULTS_HEADING_ID} />
+          <ResultTabs
+            results={state.response.results}
+            labelledBy={RESULTS_HEADING_ID}
+            pdfSource={demoPdfSource()}
+          />
         </>
       );
     case "error":
