@@ -313,7 +313,11 @@ Decided at G0:
 
 ## Implementation Notes
 
-(none yet)
+- **2026-11-19 — implementation commit `12dee31095fc0c590698f56f73a7ed79535b7f97`** (`feat(story-1.17): render summary and PDF page links`): exactly the 12 Code Map files (6 modified: `globals.css`, `ResultTabs.tsx`, `DemoOutcome.tsx`, `demo-start.test.tsx`, `results-shell.test.tsx`, `result-tabs.test.tsx`; 6 new: `lib/pdf-source.ts`, `PageLinks.tsx`, `SummaryContent.tsx`, `page-links.test.tsx`, `summary.test.tsx`, `summary-css.test.ts`), built in three stages A–C, each independently reviewed (A PASS, B PASS, C PASS WITH MINOR CHANGES), plus a whole-story review (PASS, Checkpoint 156). C3 was applied within D7 items 1–5. Session log: [973-2026-11-19-20-58-34-story-1-17-summary-page-links.md](../../.logs/amma-kwaasi-eide/973-2026-11-19-20-58-34-story-1-17-summary-page-links.md).
+- **Rendering:** the summary is one plain React text node in `p.summary-text` (no HTML or Markdown interpretation; line breaks by `white-space: pre-line`); the page links follow as a sibling `div.page-links` built by `PageLinks`, which holds no URL and receives its source as an input. Demo mode passes `demoPdfSource()` (`<API base URL>/api/demo/sample.pdf`); each link opens `…#page=N` in a new tab with `rel="noopener"`.
+- **Other panels:** Nøkkelbegreper, Flashkort and Quiz still hold only their visually hidden `h3`; their content is Stories 1.18–1.20 (CF-3, row SC2).
+- **OQ7:** option (a) as approved at G0: the approved UX-DR-27 markup, the `inline-flex` links and the global `.sr-only` are kept; Chrome's computed name `PDF-side N , åpnes i ny fane` is a known discrepancy (D6).
+- **Test hardening:** after the Stage A review, m1–m3 (PL9 `#page=` literal, PL3 every separator `aria-hidden`, PL1 direct children and the exposed sr-only span); after the Stage C review (Checkpoint 155), M1 (the CSS section must be flat: no at-rule, grouped or multi-line selector) and M2 (exact property sets and values, no duplicate property).
 
 ## Spec Change Log
 
@@ -333,4 +337,12 @@ Decided at G0:
 
 ## Verification
 
-(none yet)
+- **G1 (Checkpoint 157A, on the code committed as `12dee31`):** frontend 505 tests passed in 18 files (40 new for Story 1.17; all 35 matrix rows mapped to tests); `tsc --noEmit` pass; ESLint pass; `next build` pass; backend 1,132 tests passed (unchanged); 1,637 in total.
+- **G2 (manual checks by the developer, 2026-11-19): PASS, with one observation.**
+  - 1.17-M1 PASS: in Chrome, links for pages 1, 2, 3, 5 and 6; `PDF-side 3` opened the sample PDF at page 3 in a new tab; a visible space before ↗.
+  - 1.17-M2 at 320 CSS px PASS with observation: no horizontal scroll (Console `scrollWidth > innerWidth` false); that no separator ends a line is supported by visual observation and the layout structure, not measured line by line.
+  - 1.17-M2 at 200% zoom PASS: in Chrome, no horizontal scroll; same-line link gaps `[null, 11, 11, null, 11]`, all 11px (at least 8px).
+  - 1.17-M3 PASS: visible focus ring; Tab order through the links 1, 2, 3, 5, 6.
+  - 1.17-M4 PASS: Windows Narrator in Chrome announced all five links with the page number and "åpnes i ny fane"; it sounded natural, with no unusual pause before the comma. Chrome's computed name `PDF-side N , åpnes i ny fane` has one extra space before the comma and does not exactly match the approved name; the difference was not audible. OQ7 option (a) is unchanged.
+- **G3:** the implementation commit `12dee31` contains exactly the 12 approved files. Not pushed; no pull request yet.
+- Story 1.16's M-2 and M-4 remain NOT TESTED and its G2 gate incomplete; not affected by this story.
