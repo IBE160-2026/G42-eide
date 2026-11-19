@@ -2,7 +2,7 @@
 title: 'Story 1.17: Summary rendering and PDF page links'
 type: 'feature'
 created: '2026-11-18'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 3
 context:
@@ -307,7 +307,7 @@ Decided at G0:
 
 ## Approval and freeze boundary
 
-- **G0 done:** the developer approved revision 4 at Checkpoint 148 on 2026-11-18, including D1–D10, the binding C3 scope in D7, OQ1–OQ6 as provisionally resolved (OQ6: the v4 wrapper layout), OQ7 option (a), the documented Chrome computed-name discrepancy, the conditional 1.17-M4 deferral rule and the freeze boundary. `status` is `ready-for-dev`; implementation starts at a later checkpoint.
+- **G0 done:** the developer approved revision 4 at Checkpoint 148 on 2026-11-18, including D1–D10, the binding C3 scope in D7, OQ1–OQ6 as provisionally resolved (OQ6: the v4 wrapper layout), OQ7 option (a), the documented Chrome computed-name discrepancy, the conditional 1.17-M4 deferral rule and the freeze boundary. Implementation was authorized afterwards (Checkpoint 149 onwards) and completed; PR #42 was merged into `main` as `92d2b463ef266241dd366f2950e03d3d2183c529`. `status` is now `done`: the story is administratively closed.
 - The sections from "Intent" to the end of "I/O & Edge-Case Matrix" — including Strings, traceability, the Decisions with the binding C3 scope (D7), and the conflicts — are wrapped in `<frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">…</frozen-after-approval>`, preceded by the `<!-- APPROVED … -->` comment. Only the developer can change the frozen block.
 - The C3 detail table, the Code Map, gates and the later sections stay outside the frozen block.
 
@@ -344,5 +344,5 @@ Decided at G0:
   - 1.17-M2 at 200% zoom PASS: in Chrome, no horizontal scroll; same-line link gaps `[null, 11, 11, null, 11]`, all 11px (at least 8px).
   - 1.17-M3 PASS: visible focus ring; Tab order through the links 1, 2, 3, 5, 6.
   - 1.17-M4 PASS: Windows Narrator in Chrome announced all five links with the page number and "åpnes i ny fane"; it sounded natural, with no unusual pause before the comma. Chrome's computed name `PDF-side N , åpnes i ny fane` has one extra space before the comma and does not exactly match the approved name; the difference was not audible. OQ7 option (a) is unchanged.
-- **G3:** the implementation commit `12dee31` contains exactly the 12 approved files. Not pushed; no pull request yet.
+- **G3:** the implementation commit `12dee31` contains exactly the 12 approved files. Pushed and merged via PR #42 (merge commit 92d2b463ef266241dd366f2950e03d3d2183c529) after GitHub CI run 44604831280 passed.
 - Story 1.16's M-2 and M-4 remain NOT TESTED and its G2 gate incomplete; not affected by this story.
