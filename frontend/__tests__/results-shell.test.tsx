@@ -177,15 +177,17 @@ describe("the results shell (S1–S4)", () => {
     noShell(); // S5
   });
 
-  test("no response content is rendered; no links (S3)", async () => {
+  test("only the summary and its page links are rendered (S3)", async () => {
     await showResults();
     const recorded = JSON.parse(RECORDED_TEXT);
     const text = document.body.textContent ?? "";
-    expect(text).not.toContain(recorded.results.summary.text.slice(0, 30));
+    expect(document.getElementById("result-panel-summary")?.textContent).toContain(recorded.results.summary.text);
     for (const concept of recorded.results.key_concepts) expect(text).not.toContain(concept.term);
     for (const card of recorded.results.flashcards) expect(text).not.toContain(card.front);
     for (const item of recorded.results.quiz) expect(text).not.toContain(item.question);
-    expect(resultsSection().querySelector("a")).toBeNull();
+    expect(
+      Array.from(resultsSection().querySelectorAll("a")).every((link) => link.closest("#result-panel-summary") !== null),
+    ).toBe(true);
   });
 
   test("real mode: no tabs, notices or locked bar (S4)", async () => {

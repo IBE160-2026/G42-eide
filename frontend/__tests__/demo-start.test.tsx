@@ -803,7 +803,7 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     expect(document.activeElement).toBe(button);
   });
 
-  test("success: heading, notice, guidance gone, focus kept, announced, no repeat, no content (C1–C5)", async () => {
+  test("success: heading, notice, guidance gone, focus kept, announced, no repeat, summary only (C1–C5)", async () => {
     await renderHome();
     const button = showExample();
     button.focus();
@@ -826,11 +826,13 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     fireEvent.click(button);
     expect(demoRequests()).toHaveLength(1);
 
-    // C4: no summary content is rendered; the tabs come from Story 1.16 (their content is Stories 1.17–1.20).
+    // C4: only the summary and its page links are rendered, in the Sammendrag panel (Story 1.17); the tabs come from Story 1.16.
     const recorded = JSON.parse(RECORDED_TEXT);
-    expect(document.body.textContent).not.toContain(recorded.results.summary.text.slice(0, 30));
+    expect(document.getElementById("result-panel-summary")?.textContent).toContain(recorded.results.summary.text);
     expect(screen.getByRole("tablist")).toBeTruthy();
-    expect(resultsSection().querySelector("a")).toBeNull();
+    expect(
+      Array.from(resultsSection().querySelectorAll("a")).every((link) => link.closest("#result-panel-summary") !== null),
+    ).toBe(true);
 
     // C5: the banner and the fixed-settings note stay.
     expect(screen.getByText(BANNER)).toBeTruthy();

@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import type { ValidatedResults } from "../lib/contracts";
 import { nextTabIndex } from "../lib/tabs";
+import SummaryContent from "./SummaryContent";
 
 /*
  * The result tabs (Story 1.16, D10–D13; UX-DR-22, AF-3: WAI-ARIA APG tabs with automatic
@@ -21,7 +22,10 @@ import { nextTabIndex } from "../lib/tabs";
  * - Click selects the tab and focuses it (Safari, Firefox on macOS and jsdom do not focus a
  *   button on click), so focus never falls to <body> when a focused panel becomes hidden.
  * - All four panels stay mounted; inactive ones get `hidden`. Each panel is focusable and
- *   holds only a visually hidden h3 with the tab name; their content is Stories 1.17–1.20.
+ *   starts with a visually hidden h3 with the tab name. The Sammendrag panel then shows the
+ *   summary and its page links (`SummaryContent`, Story 1.17), using the PDF source passed
+ *   in (`pdfSource`; `null` means no links). The other three panels hold only their h3;
+ *   their content is Stories 1.18–1.20.
  *
  * Returns a Fragment, so the tab list and the panels are direct children of the results
  * section (D3).
@@ -48,9 +52,12 @@ function tabDefinitions(results: ValidatedResults): TabDefinition[] {
 export default function ResultTabs({
   results,
   labelledBy,
+  pdfSource,
 }: {
   results: ValidatedResults;
   labelledBy: string;
+  /** The PDF the page links open; `null` renders no links (Story 1.17, D3). */
+  pdfSource: string | null;
 }) {
   const [selected, setSelected] = useState(0);
   const tabs = tabDefinitions(results);
@@ -104,6 +111,7 @@ export default function ResultTabs({
           hidden={index !== selected}
         >
           <h3 className="sr-only">{tab.name}</h3>
+          {tab.key === "summary" && <SummaryContent summary={results.summary} pdfSource={pdfSource} />}
         </div>
       ))}
     </>
