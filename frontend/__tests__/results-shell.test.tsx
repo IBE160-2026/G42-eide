@@ -177,16 +177,21 @@ describe("the results shell (S1–S4)", () => {
     noShell(); // S5
   });
 
-  test("only the summary and its page links are rendered (S3)", async () => {
+  test("only the summary, the key concepts and their page links are rendered (S3)", async () => {
     await showResults();
     const recorded = JSON.parse(RECORDED_TEXT);
     const text = document.body.textContent ?? "";
     expect(document.getElementById("result-panel-summary")?.textContent).toContain(recorded.results.summary.text);
-    for (const concept of recorded.results.key_concepts) expect(text).not.toContain(concept.term);
+    for (const concept of recorded.results.key_concepts) {
+      expect(document.getElementById("result-panel-key-concepts")?.textContent).toContain(concept.term);
+      expect(document.getElementById("result-panel-summary")?.textContent).not.toContain(concept.term);
+    }
     for (const card of recorded.results.flashcards) expect(text).not.toContain(card.front);
     for (const item of recorded.results.quiz) expect(text).not.toContain(item.question);
     expect(
-      Array.from(resultsSection().querySelectorAll("a")).every((link) => link.closest("#result-panel-summary") !== null),
+      Array.from(resultsSection().querySelectorAll("a")).every(
+        (link) => link.closest("#result-panel-summary") !== null || link.closest("#result-panel-key-concepts") !== null,
+      ),
     ).toBe(true);
   });
 

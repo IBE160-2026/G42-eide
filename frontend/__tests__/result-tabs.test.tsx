@@ -463,7 +463,7 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
     expect(PAGE_TABS.map(({ key }) => pagePanel(key).hidden)).toEqual([false, true, true, true]);
   });
 
-  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary (P3)", async () => {
+  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary, Nøkkelbegreper the key concepts (P3)", async () => {
     await showResults();
     for (const { key, name } of PAGE_TABS) {
       const panel = pagePanel(key);
@@ -471,7 +471,9 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
       expect(children).toEqual(
         key === "summary"
           ? ["H3.sr-only", "P.summary-text", "DIV.page-links"]
-          : ["H3.sr-only"],
+          : key === "key-concepts"
+            ? ["H3.sr-only", "UL.key-concepts"]
+            : ["H3.sr-only"],
       );
       const heading = panel.children[0];
       expect(heading.tagName).toBe("H3");
@@ -505,15 +507,18 @@ describe("demo S4 on the page: focus order and side effects (K7, K8, K10)", () =
     ]);
   });
 
-  test("after ArrowRight the new tab and its panel are in the order (K8)", async () => {
+  test("after ArrowRight the new tab and its panel are in the order, and its page links (K8)", async () => {
     const button = await showResults();
     const summary = screen.getByRole("tab", { name: "Sammendrag" });
     summary.focus();
     fireEvent.keyDown(summary, { key: "ArrowRight" });
+    const conceptLinks = Array.from(pagePanel("key-concepts").querySelectorAll<HTMLElement>("a.page-link"));
+    expect(conceptLinks).toHaveLength(6);
     expect(focusOrder(main())).toEqual([
       button,
       screen.getByRole("tab", { name: "Nøkkelbegreper" }),
       pagePanel("key-concepts"),
+      ...conceptLinks,
     ]);
   });
 

@@ -93,11 +93,12 @@ describe("ResultTabs with a summary and a source (D2, D3)", () => {
     expect(row.querySelector("a")?.getAttribute("href")).toBe("https://example.test/doc.pdf#page=1");
   });
 
-  test("the other three panels still hold only their h3 (SC2)", () => {
+  test("Flashkort and Quiz still hold only their h3; Nøkkelbegreper holds its h3 and the key concepts (SC2)", () => {
     renderTabs();
-    for (const key of ["key-concepts", "flashcards", "quiz"]) {
+    for (const key of ["flashcards", "quiz"]) {
       expect(shape(panel(key)), key).toEqual(["H3.sr-only"]);
     }
+    expect(shape(panel("key-concepts"))).toEqual(["H3.sr-only", "UL.key-concepts"]);
   });
 });
 
@@ -142,13 +143,22 @@ describe("demo S4 on the page: the summary and its page links", () => {
     }
   });
 
-  test("no link outside the Sammendrag panel; no other panel content (PS3)", async () => {
+  test("links only in the Sammendrag and Nøkkelbegreper panels; no flashcard or quiz content (PS3)", async () => {
     await showResults();
     const links = Array.from(resultsSection().querySelectorAll("a"));
-    expect(links).toHaveLength(SUMMARY_PAGES.length);
-    expect(links.every((link) => link.closest("#result-panel-summary") !== null)).toBe(true);
+    expect(panel("summary").querySelectorAll("a")).toHaveLength(SUMMARY_PAGES.length);
+    expect(panel("key-concepts").querySelectorAll("a")).toHaveLength(6);
+    expect(links).toHaveLength(SUMMARY_PAGES.length + 6);
+    expect(
+      links.every(
+        (link) => link.closest("#result-panel-summary") !== null || link.closest("#result-panel-key-concepts") !== null,
+      ),
+    ).toBe(true);
     const text = document.body.textContent ?? "";
-    for (const concept of RECORDED.results.key_concepts) expect(text).not.toContain(concept.term);
+    for (const concept of RECORDED.results.key_concepts) {
+      expect(panel("key-concepts").textContent).toContain(concept.term);
+      expect(panel("summary").textContent).not.toContain(concept.term);
+    }
     for (const card of RECORDED.results.flashcards) expect(text).not.toContain(card.front);
     for (const item of RECORDED.results.quiz) expect(text).not.toContain(item.question);
   });

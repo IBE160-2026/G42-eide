@@ -10,7 +10,8 @@ import { describe, expect, test } from "vitest";
  *
  * - Comments are removed before anything is matched, so a selector named only in a comment
  *   never satisfies a check.
- * - The Story 1.17 section runs from its first rule `.summary-text {` to the end of the file.
+ * - The Story 1.17 section runs from its first rule `.summary-text {` to the first rule of
+ *   the Story 1.18 section, `.key-concepts {` (Story 1.18 CC-18 item 7).
  *   It must be flat: no at-rule (`@media`, `@supports`, …) and no grouped or multi-line
  *   selector, so the simple parser below cannot hide a wrapper or an extra selector (M1).
  * - Each rule is found by its exact, whole selector and must occur once; its declarations
@@ -42,6 +43,8 @@ function stripComments(text: string): string {
 const css = readFileSync(resolve(__dirname, "../app/globals.css"), "utf8").split(CRLF).join(LF);
 const rules = stripComments(css);
 const SECTION_ANCHOR = ".summary-text {";
+/** The first rule of the Story 1.18 section, which ends the Story 1.17 section. */
+const NEXT_SECTION_ANCHOR = ".key-concepts {";
 
 interface Rule {
   /** Everything before the rule's `{`, trimmed (several lines if anything else precedes it). */
@@ -79,7 +82,9 @@ function declarations(body: string): Array<[string, string]> {
 function section(): string {
   const start = rules.indexOf(SECTION_ANCHOR);
   expect(start, "the Story 1.17 section starts with .summary-text {").toBeGreaterThan(0);
-  return rules.slice(start);
+  const end = rules.indexOf(NEXT_SECTION_ANCHOR);
+  expect(end, "the Story 1.18 section starts after the Story 1.17 section").toBeGreaterThan(start);
+  return rules.slice(start, end);
 }
 
 /** The section's rules, after checking it is flat (M1). */
@@ -127,6 +132,9 @@ describe("the Story 1.17 section boundary", () => {
     expect(rules.split(SECTION_ANCHOR)).toHaveLength(2);
     expect(rules.indexOf(".notice-info {")).toBeGreaterThan(-1);
     expect(rules.indexOf(".notice-info {")).toBeLessThan(rules.indexOf(SECTION_ANCHOR));
+    // The Story 1.18 section starts exactly once, after the last Story 1.17 rule.
+    expect(rules.split(NEXT_SECTION_ANCHOR)).toHaveLength(2);
+    expect(rules.indexOf(NEXT_SECTION_ANCHOR)).toBeGreaterThan(rules.indexOf(".page-links__separator {"));
   });
 });
 

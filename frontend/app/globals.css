@@ -642,3 +642,39 @@ textarea {
   font-weight: var(--font-small-weight);
   line-height: var(--font-small-line-height);
 }
+
+/* --- Story 1.18: the Nøkkelbegreper panel (D2; D-10, UX-DR-24) --- */
+
+/* The key concepts: a plain list with no bullets and no indent (D1, D2). */
+.key-concepts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Spacing between concepts, not a border or a separator line (D2). */
+.key-concept + .key-concept {
+  margin-top: var(--space-6);
+}
+
+/* The term: body type at weight 600, line breaks kept, long words wrap (D2, D3). */
+.key-concept__term {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-subheading-weight);
+  line-height: var(--font-body-line-height);
+}
+
+/* The explanation: body type, line breaks kept, long words wrap (D2, D3). */
+.key-concept__explanation {
+  margin: var(--space-1) 0 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
