@@ -279,7 +279,10 @@ All six were **resolved by the developer at G0 (Checkpoint 176, 2026-11-20)**, e
 
 ## Implementation Notes
 
-(none yet)
+- **2026-11-20 — implementation commit `0864ce3d261736d14fc0f7cbde6e9d4b2b87f5ed`** (`feat(story-1.18): render key concepts with PDF page links`): exactly the ten Code Map files (7 modified: `ResultTabs.tsx`, `globals.css`, `result-tabs.test.tsx`, `summary.test.tsx`, `results-shell.test.tsx`, `demo-start.test.tsx`, `summary-css.test.ts`; 3 new: `KeyConceptsContent.tsx`, `key-concepts.test.tsx`, `key-concepts-css.test.ts`), built in three stages A–C, each independently reviewed (A PASS WITH FINDINGS, B PASS WITH FINDINGS, C PASS), plus a whole-story review (PASS WITH FINDINGS, Checkpoint 184). CC-18 was applied within D7 items 1–7. `DemoOutcome.tsx` was left untouched (D4, J9). Session log: [971-2026-11-20-22-33-48-story-1-18-key-concepts-panel.md](../../.logs/amma-kwaasi-eide/971-2026-11-20-22-33-48-story-1-18-key-concepts-panel.md).
+- **Rendering:** `KeyConceptsContent` renders the concepts in response order as `ul.key-concepts` > `li.key-concept` (index key) with `p.key-concept__term`, `p.key-concept__explanation` (plain text nodes) and the unchanged `PageLinks` as a sibling block; `null` for an empty list. `ResultTabs` passes `results.key_concepts` and the existing `pdfSource` to the Nøkkelbegreper panel only.
+- **CSS:** the Story 1.18 section is appended after the Story 1.17 section with exactly the four D2 rules and existing tokens only (OQ5).
+- **Test hardening from the reviews:** L1–L3 and a D3 whitespace test (Stage A); M1, KP3 checks the link order within each concept (Stage B review, fixed in Stage C); P1, KC9 also checks the terms, and P2, KC11's index-key source check accepts any attribute order and whitespace on the one `<li>` tag (whole-story review).
 
 ## Spec Change Log
 
@@ -317,4 +320,11 @@ All six were **resolved by the developer at G0 (Checkpoint 176, 2026-11-20)**, e
 
 ## Verification
 
-(none yet)
+- **G1 (Checkpoint 185, on the code committed as `0864ce3`): PASS.** Frontend 537 tests passed in 20 files (32 new for Story 1.18; all 31 matrix rows mapped to tests); `tsc --noEmit` pass; ESLint pass; `next build` pass; backend 1,132 tests passed (unchanged); 1,669 in total.
+- **G2 (manual checks by the developer, 2026-11-20, Google Chrome on Windows; Chrome version, Windows build and Narrator version NOT RECORDED): PASS.**
+  - 1.18-M1 PASS: the five concepts in fixture order; terms visibly heavier than explanations; no bullets; link rows 1; 2; 3, 6; 5; 2; `PDF-side 6` under *Bestillingspunkt* opened the PDF at page 6 in a new tab.
+  - 1.18-M2 PASS: 320 CSS px and 200% zoom with `scrollWidth > innerWidth` false, wrapping without clipping, no separator stranded at a line end, the two *Bestillingspunkt* links 11px apart at 200%; a temporary text-spacing override (line-height 1.5, letter-spacing 0.12em, word-spacing 0.16em, paragraph margin-bottom 2em) showed no clipping or overlap.
+  - 1.18-M3 PASS: after selecting the tab by click, Tab reached the panel and then the six links in the order 1, 2, 3, 6, 5, 2 with visible focus outlines; no focus in hidden Flashkort or Quiz content; Left/Right switched tabs.
+  - 1.18-M4 PASS: Windows Narrator in Chrome announced a list of five items, read the term as ordinary text (not a heading) and its explanation, and announced the `PDF-side 1` link with its accessible name.
+- **G3:** the independent scope check (Checkpoint 187) passed with findings about the G2 evidence draft only, resolved at Checkpoint 188; the implementation commit `0864ce3` contains exactly the ten approved files. Not pushed; no pull request yet.
+- Story 1.16's M-2 and M-4 remain NOT TESTED and its G2 gate incomplete; not affected by this story.
