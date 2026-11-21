@@ -678,3 +678,111 @@ textarea {
   font-weight: var(--font-body-weight);
   line-height: var(--font-body-line-height);
 }
+
+/* --- Story 1.19: the Flashkort panel and the secondary button (D3, D4, D9; UX-DR-25) --- */
+
+/* Secondary button (DESIGN.md button-secondary / -hover / -disabled), reusable (D4).
+ * The unavailable state is aria-disabled, never native disabled (UX-DR-18). */
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: var(--border-hairline) solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--font-ui-size);
+  font-weight: var(--font-ui-weight);
+  line-height: var(--font-ui-line-height);
+  cursor: pointer;
+}
+
+.button-secondary:hover:not([aria-disabled="true"]) {
+  background: var(--color-hover-tint);
+}
+
+.button-secondary[aria-disabled="true"] {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-fg);
+  border: var(--border-hairline) dashed var(--color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* The deck: the counter above the card, the card, then the Forrige / Neste row (D8). */
+.flashcard-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* One card; the padding is the Story 1.4 D-9 token (D3). */
+.flashcard {
+  align-self: stretch;
+  padding: var(--padding-flashcard);
+  background: var(--color-surface);
+  border: var(--border-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+/* The counter, above the card, in muted small text (D7, D8). */
+.flashcard__counter {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-small-size);
+  font-weight: var(--font-small-weight);
+  line-height: var(--font-small-line-height);
+}
+
+/* The term: centred, line breaks kept, long words wrap (D9). */
+.flashcard__term {
+  margin: 0 0 var(--space-5);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-flashcard-term-size);
+  font-weight: var(--font-flashcard-term-weight);
+  line-height: var(--font-flashcard-term-line-height);
+}
+
+/* The answer below a divider, left-aligned, at most 65ch in the answer font. No display:
+ * the hidden attribute must keep hiding it (D9). */
+.flashcard__answer {
+  max-width: var(--measure-answer);
+  margin: var(--space-5) auto 0;
+  padding-top: var(--space-5);
+  border-top: var(--border-hairline) solid var(--color-border-subtle);
+  text-align: left;
+  font-size: var(--font-answer-size);
+  font-weight: var(--font-answer-weight);
+  line-height: var(--font-answer-line-height);
+}
+
+/* The answer text inherits the answer font; line breaks kept, long words wrap (D9). */
+.flashcard__answer-text {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+
+/* Forrige / Neste, centred below the card; the row wraps (D9; DESIGN.md:359). */
+.flashcard-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+/* Narrow viewports (480 CSS px or less): only the card padding narrows, to 32px / 16px;
+ * --padding-flashcard and the base .flashcard rule are unchanged above 480px (D3a). */
+@media (max-width: 480px) {
+  .flashcard {
+    padding: var(--space-7) var(--space-4);
+  }
+}

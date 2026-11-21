@@ -370,10 +370,10 @@ describe("ResultTabs with key concepts (D4)", () => {
     expect(panel("key-concepts").children[0].textContent).toBe("Nøkkelbegreper");
   });
 
-  test("Sammendrag keeps its summary and links; Flashkort and Quiz hold only their h3 (RT2)", () => {
+  test("Sammendrag keeps its summary and links; Flashkort holds the deck; Quiz holds only its h3 (RT2)", () => {
     renderTabs();
     expect(shape(panel("summary"))).toEqual(["H3.sr-only", "P.summary-text", "DIV.page-links"]);
-    expect(shape(panel("flashcards"))).toEqual(["H3.sr-only"]);
+    expect(shape(panel("flashcards"))).toEqual(["H3.sr-only", "DIV.flashcard-deck"]);
     expect(shape(panel("quiz"))).toEqual(["H3.sr-only"]);
   });
 

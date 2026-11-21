@@ -10,9 +10,10 @@ import { describe, expect, test } from "vitest";
  *
  * - Comments are removed before anything is matched, so a selector named only in a comment
  *   never satisfies a check.
- * - The Story 1.18 section runs from its first rule `.key-concepts {` to the end of the file.
- *   It must be flat: no at-rule and no grouped or multi-line selector. A later story that
- *   appends its own section moves this end boundary (D2, OQ5).
+ * - The Story 1.18 section runs from its first rule `.key-concepts {` to the first rule of the
+ *   Story 1.19 section, `.button-secondary {` (Story 1.19 CC-19 item 7; the end boundary moved
+ *   as recorded in Story 1.18 D2, OQ5). It must be flat: no at-rule and no grouped or
+ *   multi-line selector.
  * - Each rule is found by its exact, whole selector and must occur once; its declarations
  *   must be exactly the approved set with exact values.
  *
@@ -41,6 +42,8 @@ function stripComments(text: string): string {
 const css = readFileSync(resolve(__dirname, "../app/globals.css"), "utf8").split(CRLF).join(LF);
 const rules = stripComments(css);
 const SECTION_ANCHOR = ".key-concepts {";
+/** The first rule of the Story 1.19 section, which ends the Story 1.18 section. */
+const NEXT_SECTION_ANCHOR = ".button-secondary {";
 const CLASS_NAMES = [".key-concepts", ".key-concept", ".key-concept__term", ".key-concept__explanation"];
 
 interface Rule {
@@ -79,7 +82,9 @@ function declarations(body: string): Array<[string, string]> {
 function section(): string {
   const start = rules.indexOf(SECTION_ANCHOR);
   expect(start, "the Story 1.18 section starts with .key-concepts {").toBeGreaterThan(0);
-  return rules.slice(start);
+  const end = rules.indexOf(NEXT_SECTION_ANCHOR);
+  expect(end, "the Story 1.19 section starts after the Story 1.18 section").toBeGreaterThan(start);
+  return rules.slice(start, end);
 }
 
 /** The section's rules, after checking it is flat. */
@@ -186,5 +191,8 @@ describe("the Nøkkelbegreper panel CSS (KR1–KR6)", () => {
     for (const name of CLASS_NAMES) {
       expect(before.includes(name), `${name} before the Story 1.18 section`).toBe(false);
     }
+    // The Story 1.19 section starts exactly once, after the last Story 1.18 rule.
+    expect(rules.split(NEXT_SECTION_ANCHOR)).toHaveLength(2);
+    expect(rules.indexOf(NEXT_SECTION_ANCHOR)).toBeGreaterThan(rules.indexOf(".key-concept__explanation {"));
   });
 });

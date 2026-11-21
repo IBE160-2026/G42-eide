@@ -93,11 +93,10 @@ describe("ResultTabs with a summary and a source (D2, D3)", () => {
     expect(row.querySelector("a")?.getAttribute("href")).toBe("https://example.test/doc.pdf#page=1");
   });
 
-  test("Flashkort and Quiz still hold only their h3; Nøkkelbegreper holds its h3 and the key concepts (SC2)", () => {
+  test("Quiz still holds only its h3; Nøkkelbegreper holds the key concepts and Flashkort the deck (SC2)", () => {
     renderTabs();
-    for (const key of ["flashcards", "quiz"]) {
-      expect(shape(panel(key)), key).toEqual(["H3.sr-only"]);
-    }
+    expect(shape(panel("quiz"))).toEqual(["H3.sr-only"]);
+    expect(shape(panel("flashcards"))).toEqual(["H3.sr-only", "DIV.flashcard-deck"]);
     expect(shape(panel("key-concepts"))).toEqual(["H3.sr-only", "UL.key-concepts"]);
   });
 });
@@ -143,15 +142,20 @@ describe("demo S4 on the page: the summary and its page links", () => {
     }
   });
 
-  test("links only in the Sammendrag and Nøkkelbegreper panels; no flashcard or quiz content (PS3)", async () => {
+  test("links only in the Sammendrag, Nøkkelbegreper and Flashkort panels; only the current flashcard; no quiz content (PS3)", async () => {
     await showResults();
     const links = Array.from(resultsSection().querySelectorAll("a"));
     expect(panel("summary").querySelectorAll("a")).toHaveLength(SUMMARY_PAGES.length);
     expect(panel("key-concepts").querySelectorAll("a")).toHaveLength(6);
-    expect(links).toHaveLength(SUMMARY_PAGES.length + 6);
+    // Card 1's hidden answer holds one link (page 2).
+    expect(panel("flashcards").querySelectorAll("a")).toHaveLength(1);
+    expect(links).toHaveLength(SUMMARY_PAGES.length + 6 + 1);
     expect(
       links.every(
-        (link) => link.closest("#result-panel-summary") !== null || link.closest("#result-panel-key-concepts") !== null,
+        (link) =>
+          link.closest("#result-panel-summary") !== null ||
+          link.closest("#result-panel-key-concepts") !== null ||
+          link.closest("#result-panel-flashcards") !== null,
       ),
     ).toBe(true);
     const text = document.body.textContent ?? "";
@@ -159,7 +163,12 @@ describe("demo S4 on the page: the summary and its page links", () => {
       expect(panel("key-concepts").textContent).toContain(concept.term);
       expect(panel("summary").textContent).not.toContain(concept.term);
     }
-    for (const card of RECORDED.results.flashcards) expect(text).not.toContain(card.front);
+    const [first, ...others] = RECORDED.results.flashcards;
+    expect(panel("flashcards").textContent).toContain(first.front);
+    for (const key of ["summary", "key-concepts", "quiz"]) {
+      expect(panel(key).textContent, key).not.toContain(first.front);
+    }
+    for (const card of others) expect(text).not.toContain(card.front);
     for (const item of RECORDED.results.quiz) expect(text).not.toContain(item.question);
   });
 
