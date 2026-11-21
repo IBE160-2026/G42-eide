@@ -2,7 +2,7 @@
 title: 'Story 1.18: Nøkkelbegreper panel'
 type: 'feature'
 created: '2026-11-20'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 1
 context:
@@ -273,7 +273,7 @@ All six were **resolved by the developer at G0 (Checkpoint 176, 2026-11-20)**, e
 
 ## Approval and freeze boundary
 
-- **G0 done:** the developer approved revision 2a at Checkpoint 176 on 2026-11-20: D1–D8 (including the seven CC-18 items in D7), the CF-4 supersession for the Nøkkelbegreper panel only (the earlier frozen specs are not edited), and the answers to OQ1–OQ6 recorded under "Open questions". `status` is `ready-for-dev`; implementation starts at a later checkpoint.
+- **G0 done:** the developer approved revision 2a at Checkpoint 176 on 2026-11-20: D1–D8 (including the seven CC-18 items in D7), the CF-4 supersession for the Nøkkelbegreper panel only (the earlier frozen specs are not edited), and the answers to OQ1–OQ6 recorded under "Open questions". Implementation was authorized afterwards (Checkpoint 177 onwards) and completed; G1, G2 and G3 were completed, and PR #44 was merged into `main` as `d294dc20a8f10b9084109369e96efa31874602d7` after GitHub CI passed (537 frontend and 1,132 backend tests). `status` is now `done`: the story is complete and administratively closed.
 - The sections from "Intent" to the end of "I/O & Edge-Case Matrix" (including Boundaries, Strings, traceability, the Decisions with the binding CC-18 scope (D7), and the conflicts with the CF-4 supersession) are wrapped in `<frozen-after-approval …>…</frozen-after-approval>`, preceded by the `<!-- APPROVED … -->` comment. Only the developer can change the frozen block.
 - The Code Map, the gates, the stages, the dependencies, the open questions and the later sections stay outside the frozen block.
 
@@ -326,5 +326,5 @@ All six were **resolved by the developer at G0 (Checkpoint 176, 2026-11-20)**, e
   - 1.18-M2 PASS: 320 CSS px and 200% zoom with `scrollWidth > innerWidth` false, wrapping without clipping, no separator stranded at a line end, the two *Bestillingspunkt* links 11px apart at 200%; a temporary text-spacing override (line-height 1.5, letter-spacing 0.12em, word-spacing 0.16em, paragraph margin-bottom 2em) showed no clipping or overlap.
   - 1.18-M3 PASS: after selecting the tab by click, Tab reached the panel and then the six links in the order 1, 2, 3, 6, 5, 2 with visible focus outlines; no focus in hidden Flashkort or Quiz content; Left/Right switched tabs.
   - 1.18-M4 PASS: Windows Narrator in Chrome announced a list of five items, read the term as ordinary text (not a heading) and its explanation, and announced the `PDF-side 1` link with its accessible name.
-- **G3:** the independent scope check (Checkpoint 187) passed with findings about the G2 evidence draft only, resolved at Checkpoint 188; the implementation commit `0864ce3` contains exactly the ten approved files. Not pushed; no pull request yet.
+- **G3:** the independent scope check (Checkpoint 187) passed with findings about the G2 evidence draft only, resolved at Checkpoint 188; the implementation commit `0864ce3` contains exactly the ten approved files. Pushed and merged via PR #44 (merge commit d294dc20a8f10b9084109369e96efa31874602d7) after GitHub CI run 44823419524 passed (Backend 1,132 and Frontend 537 tests).
 - Story 1.16's M-2 and M-4 remain NOT TESTED and its G2 gate incomplete; not affected by this story.
