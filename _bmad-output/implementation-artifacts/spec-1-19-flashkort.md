@@ -2,7 +2,7 @@
 title: 'Story 1.19: Flashkort'
 type: 'feature'
 created: '2026-11-21'
-status: 'ready-for-dev'
+status: 'done'
 route: 'dispatch'
 review_loop_iteration: 1
 context:
@@ -351,6 +351,7 @@ OQ1, OQ2 and OQ4–OQ6 were **resolved by the developer at G0 (Checkpoint 209, 2
 - **2026-11-21 — Checkpoint 223: AMENDED with developer approval (D3a)** and frozen again. Inside the block: In scope and Out of scope name D3a; the Boundaries' card-padding and no-breakpoint lines, the CSS-limits line (the `max-width` media condition), the placement line and Ask First allow exactly the D3a rule; the traceability rows for UX-DR-2, Story 1.4 D-9 and UX-DR-38 add D3a and FR13; the Decisions intro, D3 (the 94px figure marked "without D3a"; the closing sentence), the new D3a, D9 (`.flashcard` note; the media block last), CF-1 (the Checkpoint 221 observation, about 158px / 213px, mid-word breaks still expected); FR11 amended (ten flat rules followed by exactly the one D3a block) and the new row FR13. Outside the block: the new AMENDED comment, the Code Map entries for `globals.css` and `flashcards-css.test.ts` (still eleven files), the G0 amendment gate, 1.19-M2 (320, 375, 480, 481, 768 CSS px and desktop; 200% zoom; text spacing; the 480/481 transition), the Stage C amendment, the DESIGN/EXPERIENCE follow-up under Dependencies, OQ3, the checklist and the Approval and freeze boundary. Matrix 41 rows (FC1–15, RT1–4, FP1–9, FR1–13). No other decision, row, string, CC-19 item, file or scope changed; the Checkpoint 209 approval record is kept unchanged.
 - **2026-11-21 — Checkpoint 225 (text only, outside the frozen block):** applies the Checkpoint 224 review: the tag legend explains D3a's [BINDING] tag as a developer-approved amendment (R224-04); 1.19-M2 adds how to set and confirm each width with the DevTools device toolbar and three recorded console expressions with the expected `16px` / `48px` results (R224-02), and the text-spacing check names its widths (320 and 768 CSS px), what is recorded at both, and when a wrapped button label is acceptable (R224-03). The frozen block (hash `6f78cc7d…1862`), the matrix (41 rows) and the approval records are unchanged.
 - **2026-11-21 — Checkpoint 238 (documentation step, text only, outside the frozen block):** Implementation Notes and Verification filled in (implementation commit `a490efe`, the G1 results, the developer-confirmed G2 evidence, the CSS-test limits and the frozen-block hash method); the Review Triage Log completed for Checkpoints 211–235. The frozen block, the matrix (41 rows), the approval records and `status` are unchanged.
+- **2026-11-21 — Checkpoint 244 (closeout, administrative only):** PR [#46](https://github.com/IBE160-2026/G42-eide/pull/46) merged into `main` as merge commit `54ede34b6be8f7021066f81b08ca34c7d669c953` (parents `1b979b4` and the approved head `a193dfe`), with both CI checks on `a193dfe` passing (Frontend (Vitest), Backend (pytest); workflow run 44923055449). `status` `ready-for-dev` → `done`. The frozen block, the matrix (41 rows), the decisions, the verification evidence and the follow-ups are unchanged; the G0 bullet under "Approval and freeze boundary" keeps its historical wording.
 
 ## Review Triage Log
 
