@@ -803,7 +803,7 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     expect(document.activeElement).toBe(button);
   });
 
-  test("success: heading, notice, guidance gone, focus kept, announced, no repeat, summary and key concepts (C1–C5)", async () => {
+  test("success: heading, notice, guidance gone, focus kept, announced, no repeat, summary and key concepts and the first flashcard (C1–C5)", async () => {
     await renderHome();
     const button = showExample();
     button.focus();
@@ -826,13 +826,16 @@ describe("demo S3 and S4 on the page (B, C)", () => {
     fireEvent.click(button);
     expect(demoRequests()).toHaveLength(1);
 
-    // C4: only the summary and the key concepts with their page links are rendered, in the Sammendrag (Story 1.17) and Nøkkelbegreper (Story 1.18) panels; the tabs come from Story 1.16.
+    // C4: only the summary, the key concepts and the current flashcard with their page links are rendered, in the Sammendrag (Story 1.17), Nøkkelbegreper (Story 1.18) and Flashkort (Story 1.19) panels; the tabs come from Story 1.16.
     const recorded = JSON.parse(RECORDED_TEXT);
     expect(document.getElementById("result-panel-summary")?.textContent).toContain(recorded.results.summary.text);
     expect(screen.getByRole("tablist")).toBeTruthy();
     expect(
       Array.from(resultsSection().querySelectorAll("a")).every(
-        (link) => link.closest("#result-panel-summary") !== null || link.closest("#result-panel-key-concepts") !== null,
+        (link) =>
+          link.closest("#result-panel-summary") !== null ||
+          link.closest("#result-panel-key-concepts") !== null ||
+          link.closest("#result-panel-flashcards") !== null,
       ),
     ).toBe(true);
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import type { ValidatedResults } from "../lib/contracts";
 import { nextTabIndex } from "../lib/tabs";
+import FlashcardDeck from "./FlashcardDeck";
 import KeyConceptsContent from "./KeyConceptsContent";
 import SummaryContent from "./SummaryContent";
 
@@ -27,7 +28,10 @@ import SummaryContent from "./SummaryContent";
  *   summary and its page links (`SummaryContent`, Story 1.17), using the PDF source passed
  *   in (`pdfSource`; `null` means no links). The Nøkkelbegreper panel shows the key
  *   concepts with their page links (`KeyConceptsContent`, Story 1.18), using the same
- *   source. Flashkort and Quiz hold only their h3; their content is Stories 1.19–1.20.
+ *   source. The Flashkort panel shows one flashcard at a time (`FlashcardDeck`, Story 1.19);
+ *   its current card and revealed answers survive tab switches because the panel stays
+ *   mounted, and reset when a new results session mounts ResultTabs again. Quiz holds only
+ *   its h3; its content is Story 1.20.
  *
  * Returns a Fragment, so the tab list and the panels are direct children of the results
  * section (D3).
@@ -115,6 +119,7 @@ export default function ResultTabs({
           <h3 className="sr-only">{tab.name}</h3>
           {tab.key === "summary" && <SummaryContent summary={results.summary} pdfSource={pdfSource} />}
           {tab.key === "key-concepts" && <KeyConceptsContent concepts={results.key_concepts} pdfSource={pdfSource} />}
+          {tab.key === "flashcards" && <FlashcardDeck cards={results.flashcards} pdfSource={pdfSource} />}
         </div>
       ))}
     </>

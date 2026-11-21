@@ -463,7 +463,7 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
     expect(PAGE_TABS.map(({ key }) => pagePanel(key).hidden)).toEqual([false, true, true, true]);
   });
 
-  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary, Nøkkelbegreper the key concepts (P3)", async () => {
+  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary, Nøkkelbegreper the key concepts, Flashkort the deck (P3)", async () => {
     await showResults();
     for (const { key, name } of PAGE_TABS) {
       const panel = pagePanel(key);
@@ -473,7 +473,9 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
           ? ["H3.sr-only", "P.summary-text", "DIV.page-links"]
           : key === "key-concepts"
             ? ["H3.sr-only", "UL.key-concepts"]
-            : ["H3.sr-only"],
+            : key === "flashcards"
+              ? ["H3.sr-only", "DIV.flashcard-deck"]
+              : ["H3.sr-only"],
       );
       const heading = panel.children[0];
       expect(heading.tagName).toBe("H3");

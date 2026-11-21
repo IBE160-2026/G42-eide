@@ -177,7 +177,7 @@ describe("the results shell (S1–S4)", () => {
     noShell(); // S5
   });
 
-  test("only the summary, the key concepts and their page links are rendered (S3)", async () => {
+  test("only the summary, the key concepts, the first flashcard and their page links are rendered (S3)", async () => {
     await showResults();
     const recorded = JSON.parse(RECORDED_TEXT);
     const text = document.body.textContent ?? "";
@@ -186,11 +186,19 @@ describe("the results shell (S1–S4)", () => {
       expect(document.getElementById("result-panel-key-concepts")?.textContent).toContain(concept.term);
       expect(document.getElementById("result-panel-summary")?.textContent).not.toContain(concept.term);
     }
-    for (const card of recorded.results.flashcards) expect(text).not.toContain(card.front);
+    const [first, ...others] = recorded.results.flashcards;
+    expect(document.getElementById("result-panel-flashcards")?.textContent).toContain(first.front);
+    for (const id of ["result-panel-summary", "result-panel-key-concepts", "result-panel-quiz"]) {
+      expect(document.getElementById(id)?.textContent, id).not.toContain(first.front);
+    }
+    for (const card of others) expect(text).not.toContain(card.front);
     for (const item of recorded.results.quiz) expect(text).not.toContain(item.question);
     expect(
       Array.from(resultsSection().querySelectorAll("a")).every(
-        (link) => link.closest("#result-panel-summary") !== null || link.closest("#result-panel-key-concepts") !== null,
+        (link) =>
+          link.closest("#result-panel-summary") !== null ||
+          link.closest("#result-panel-key-concepts") !== null ||
+          link.closest("#result-panel-flashcards") !== null,
       ),
     ).toBe(true);
   });
