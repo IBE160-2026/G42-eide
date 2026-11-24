@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import ResultTabs from "../components/ResultTabs";
 import type { ValidatedResults } from "../lib/contracts";
@@ -93,9 +93,9 @@ describe("ResultTabs with a summary and a source (D2, D3)", () => {
     expect(row.querySelector("a")?.getAttribute("href")).toBe("https://example.test/doc.pdf#page=1");
   });
 
-  test("Quiz still holds only its h3; Nøkkelbegreper holds the key concepts and Flashkort the deck (SC2)", () => {
+  test("Quiz holds the list; Nøkkelbegreper holds the key concepts and Flashkort the deck (SC2)", () => {
     renderTabs();
-    expect(shape(panel("quiz"))).toEqual(["H3.sr-only"]);
+    expect(shape(panel("quiz"))).toEqual(["H3.sr-only", "OL.quiz-list"]);
     expect(shape(panel("flashcards"))).toEqual(["H3.sr-only", "DIV.flashcard-deck"]);
     expect(shape(panel("key-concepts"))).toEqual(["H3.sr-only", "UL.key-concepts"]);
   });
@@ -127,7 +127,7 @@ describe("demo S4 on the page: the summary and its page links", () => {
     expect(panel("summary").textContent).toContain(RECORDED.results.summary.text);
     expect(summaryLinks().map((link) => leadingText(link))).toEqual(SUMMARY_PAGES.map((page) => `PDF-side ${page}`));
     for (const page of SUMMARY_PAGES) {
-      expect(screen.getByRole("link", { name: `PDF-side ${page}, åpnes i ny fane` })).toBeTruthy();
+      expect(within(panel("summary")).getByRole("link", { name: `PDF-side ${page}, åpnes i ny fane` })).toBeTruthy();
     }
   });
 
@@ -142,20 +142,26 @@ describe("demo S4 on the page: the summary and its page links", () => {
     }
   });
 
-  test("links only in the Sammendrag, Nøkkelbegreper and Flashkort panels; only the current flashcard; no quiz content (PS3)", async () => {
+  test("links in the four panels; only the current flashcard; quiz questions only in the Quiz panel (PS3)", async () => {
     await showResults();
     const links = Array.from(resultsSection().querySelectorAll("a"));
     expect(panel("summary").querySelectorAll("a")).toHaveLength(SUMMARY_PAGES.length);
     expect(panel("key-concepts").querySelectorAll("a")).toHaveLength(6);
     // Card 1's hidden answer holds one link (page 2).
     expect(panel("flashcards").querySelectorAll("a")).toHaveLength(1);
-    expect(links).toHaveLength(SUMMARY_PAGES.length + 6 + 1);
+    // Story 1.20 (CC-20 item 4): the quiz answers hold six links (pages [3, 6], [6], [2], [6], [1]),
+    // each inside its hidden answer.
+    const quizLinks = Array.from(panel("quiz").querySelectorAll("a"));
+    expect(quizLinks).toHaveLength(6);
+    for (const link of quizLinks) expect(link.closest(".quiz-item__answer")).not.toBeNull();
+    expect(links).toHaveLength(SUMMARY_PAGES.length + 6 + 1 + 6);
     expect(
       links.every(
         (link) =>
           link.closest("#result-panel-summary") !== null ||
           link.closest("#result-panel-key-concepts") !== null ||
-          link.closest("#result-panel-flashcards") !== null,
+          link.closest("#result-panel-flashcards") !== null ||
+          link.closest("#result-panel-quiz") !== null,
       ),
     ).toBe(true);
     const text = document.body.textContent ?? "";
@@ -169,7 +175,12 @@ describe("demo S4 on the page: the summary and its page links", () => {
       expect(panel(key).textContent, key).not.toContain(first.front);
     }
     for (const card of others) expect(text).not.toContain(card.front);
-    for (const item of RECORDED.results.quiz) expect(text).not.toContain(item.question);
+    for (const item of RECORDED.results.quiz) {
+      expect(panel("quiz").textContent).toContain(item.question);
+      for (const key of ["summary", "key-concepts", "flashcards"]) {
+        expect(panel(key).textContent, key).not.toContain(item.question);
+      }
+    }
   });
 
   test("focus order: Vis eksempel, the Sammendrag tab, the panel, then its links in page order (PS4)", async () => {

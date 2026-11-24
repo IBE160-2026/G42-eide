@@ -463,7 +463,7 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
     expect(PAGE_TABS.map(({ key }) => pagePanel(key).hidden)).toEqual([false, true, true, true]);
   });
 
-  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary, Nøkkelbegreper the key concepts, Flashkort the deck (P3)", async () => {
+  test("each panel starts with a visually hidden h3 with the tab name, no count; Sammendrag also holds the summary, Nøkkelbegreper the key concepts, Flashkort the deck, Quiz the list (P3)", async () => {
     await showResults();
     for (const { key, name } of PAGE_TABS) {
       const panel = pagePanel(key);
@@ -475,7 +475,7 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
             ? ["H3.sr-only", "UL.key-concepts"]
             : key === "flashcards"
               ? ["H3.sr-only", "DIV.flashcard-deck"]
-              : ["H3.sr-only"],
+              : ["H3.sr-only", "OL.quiz-list"],
       );
       const heading = panel.children[0];
       expect(heading.tagName).toBe("H3");
@@ -484,13 +484,20 @@ describe("demo S4 on the page: panels (P1–P4)", () => {
     }
   });
 
-  test("four h3 in the DOM, one exposed by role; no h4 (P4)", async () => {
+  test("four h3 in the DOM, one exposed by role; five h4, only in the hidden Quiz panel (P4)", async () => {
     await showResults();
     const all = Array.from(document.querySelectorAll("h3"));
     expect(all.map((h) => h.textContent)).toEqual(PAGE_TABS.map(({ name }) => name));
     const exposed = screen.getAllByRole("heading", { level: 3 });
     expect(exposed.map((h) => h.textContent)).toEqual(["Sammendrag"]);
-    expect(document.querySelector("h4")).toBeNull();
+    // Story 1.20 (CC-20 item 2): one h4 per quiz question, all in the Quiz panel, which is
+    // hidden while Sammendrag is selected, so none is exposed by role.
+    const questions = Array.from(document.querySelectorAll("h4"));
+    expect(questions).toHaveLength(5);
+    for (const h of questions) expect(h.closest("#result-panel-quiz")).not.toBeNull();
+    const recorded = JSON.parse(RECORDED_TEXT) as { results: ValidatedResults };
+    expect(questions.map((h) => h.textContent)).toEqual(recorded.results.quiz.map((item) => item.question));
+    expect(screen.queryAllByRole("heading", { level: 4 })).toHaveLength(0);
   });
 });
 

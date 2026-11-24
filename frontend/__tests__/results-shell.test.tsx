@@ -177,7 +177,7 @@ describe("the results shell (S1–S4)", () => {
     noShell(); // S5
   });
 
-  test("only the summary, the key concepts, the first flashcard and their page links are rendered (S3)", async () => {
+  test("only the summary, the key concepts, the first flashcard, the quiz and their page links are rendered (S3)", async () => {
     await showResults();
     const recorded = JSON.parse(RECORDED_TEXT);
     const text = document.body.textContent ?? "";
@@ -192,13 +192,20 @@ describe("the results shell (S1–S4)", () => {
       expect(document.getElementById(id)?.textContent, id).not.toContain(first.front);
     }
     for (const card of others) expect(text).not.toContain(card.front);
-    for (const item of recorded.results.quiz) expect(text).not.toContain(item.question);
+    // Story 1.20 (CC-20 item 5): each quiz question is in the Quiz panel and in no other panel.
+    for (const item of recorded.results.quiz) {
+      expect(document.getElementById("result-panel-quiz")?.textContent).toContain(item.question);
+      for (const id of ["result-panel-summary", "result-panel-key-concepts", "result-panel-flashcards"]) {
+        expect(document.getElementById(id)?.textContent, id).not.toContain(item.question);
+      }
+    }
     expect(
       Array.from(resultsSection().querySelectorAll("a")).every(
         (link) =>
           link.closest("#result-panel-summary") !== null ||
           link.closest("#result-panel-key-concepts") !== null ||
-          link.closest("#result-panel-flashcards") !== null,
+          link.closest("#result-panel-flashcards") !== null ||
+          link.closest("#result-panel-quiz") !== null,
       ),
     ).toBe(true);
   });

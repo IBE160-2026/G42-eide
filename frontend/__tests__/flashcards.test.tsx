@@ -467,11 +467,11 @@ describe("ResultTabs with the flashcard deck (D8)", () => {
     expect(panel("flashcards").children[0].textContent).toBe("Flashkort");
   });
 
-  test("Sammendrag and Nøkkelbegreper are unchanged; Quiz holds only its h3 (RT2)", () => {
+  test("Sammendrag and Nøkkelbegreper are unchanged; Quiz holds the list (RT2)", () => {
     renderTabs();
     expect(shape(panel("summary"))).toEqual(["H3.sr-only", "P.summary-text", "DIV.page-links"]);
     expect(shape(panel("key-concepts"))).toEqual(["H3.sr-only", "UL.key-concepts"]);
-    expect(shape(panel("quiz"))).toEqual(["H3.sr-only"]);
+    expect(shape(panel("quiz"))).toEqual(["H3.sr-only", "OL.quiz-list"]);
   });
 
   test("the flashcard link uses the same source as the summary links (RT3)", () => {

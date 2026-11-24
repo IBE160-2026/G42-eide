@@ -11,8 +11,8 @@ import { describe, expect, test } from "vitest";
  *
  * - Comments are removed before anything is matched, so a selector named only in a comment
  *   never satisfies a check.
- * - The Story 1.19 section runs from its first rule `.button-secondary {` to the end of the
- *   file. It is split at its first `@`: before it, the ten flat rules (no at-rule, no grouped
+ * - The Story 1.19 section runs from its first rule `.button-secondary {` up to the Story 1.20
+ *   section's first rule `.quiz-list {` (CC-20 item 9). It is split at its first `@`: before it, the ten flat rules (no at-rule, no grouped
  *   or multi-line selector; D9); from it, exactly the one D3a block
  *   `@media (max-width: 480px) { .flashcard { padding: var(--space-7) var(--space-4); } }`,
  *   matched on its own, so its nested `.flashcard` is never read as an eleventh flat rule
@@ -45,6 +45,8 @@ function stripComments(text: string): string {
 const css = readFileSync(resolve(__dirname, "../app/globals.css"), "utf8").split(CRLF).join(LF);
 const rules = stripComments(css);
 const SECTION_ANCHOR = ".button-secondary {";
+/** The first rule of the Story 1.20 section, which ends the Story 1.19 section. */
+const NEXT_SECTION_ANCHOR = ".quiz-list {";
 const CLASS_NAMES = [
   ".button-secondary",
   ".flashcard-deck",
@@ -106,7 +108,9 @@ function declarations(body: string): Array<[string, string]> {
 function section(): string {
   const start = rules.indexOf(SECTION_ANCHOR);
   expect(start, "the Story 1.19 section starts with .button-secondary {").toBeGreaterThan(0);
-  return rules.slice(start);
+  const end = rules.indexOf(NEXT_SECTION_ANCHOR);
+  expect(end, "the Story 1.20 section starts after the Story 1.19 section").toBeGreaterThan(start);
+  return rules.slice(start, end);
 }
 
 /** The section split at its first `@`: the flat rules before it, the D3a block from it. */
@@ -374,6 +378,9 @@ describe("the Flashkort panel and secondary button CSS (FR1–FR13)", () => {
     for (const name of CLASS_NAMES) {
       expect(before.includes(name), `${name} before the Story 1.19 section`).toBe(false);
     }
+    // CC-20 item 9: the Story 1.20 section starts once, after the D3a block.
+    expect(rules.split(NEXT_SECTION_ANCHOR)).toHaveLength(2);
+    expect(rules.indexOf(NEXT_SECTION_ANCHOR)).toBeGreaterThan(rules.indexOf(MEDIA_QUERY));
   });
 
   test("the D3a block: once, 480px, after .flashcard-nav, only .flashcard { padding: var(--space-7) var(--space-4) }; base padding and tokens unchanged (FR13)", () => {
