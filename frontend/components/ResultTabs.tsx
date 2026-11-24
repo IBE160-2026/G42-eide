@@ -6,6 +6,7 @@ import type { ValidatedResults } from "../lib/contracts";
 import { nextTabIndex } from "../lib/tabs";
 import FlashcardDeck from "./FlashcardDeck";
 import KeyConceptsContent from "./KeyConceptsContent";
+import QuizList from "./QuizList";
 import SummaryContent from "./SummaryContent";
 
 /*
@@ -30,8 +31,11 @@ import SummaryContent from "./SummaryContent";
  *   concepts with their page links (`KeyConceptsContent`, Story 1.18), using the same
  *   source. The Flashkort panel shows one flashcard at a time (`FlashcardDeck`, Story 1.19);
  *   its current card and revealed answers survive tab switches because the panel stays
- *   mounted, and reset when a new results session mounts ResultTabs again. Quiz holds only
- *   its h3; its content is Story 1.20.
+ *   mounted, and reset when a new results session mounts ResultTabs again. The Quiz panel
+ *   shows every quiz item as a numbered list with its own Vis svar / Skjul svar toggle and
+ *   the answer's page links (`QuizList`, Story 1.20), using the same source; its revealed
+ *   answers likewise survive tab switches and reset when ResultTabs mounts again. An empty
+ *   quiz leaves the panel with only its h3.
  *
  * Returns a Fragment, so the tab list and the panels are direct children of the results
  * section (D3).
@@ -120,6 +124,7 @@ export default function ResultTabs({
           {tab.key === "summary" && <SummaryContent summary={results.summary} pdfSource={pdfSource} />}
           {tab.key === "key-concepts" && <KeyConceptsContent concepts={results.key_concepts} pdfSource={pdfSource} />}
           {tab.key === "flashcards" && <FlashcardDeck cards={results.flashcards} pdfSource={pdfSource} />}
+          {tab.key === "quiz" && <QuizList items={results.quiz} pdfSource={pdfSource} />}
         </div>
       ))}
     </>

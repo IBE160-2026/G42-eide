@@ -786,3 +786,54 @@ textarea {
     padding: var(--space-7) var(--space-4);
   }
 }
+
+/* --- Story 1.20: the Quiz panel (D2, D3, D5, D6; UX-DR-26) --- */
+
+/* The questions as an ordered list; the native numbers sit in the 24px indent (D2). */
+.quiz-list {
+  margin: 0;
+  padding: 0 0 0 var(--space-6);
+}
+
+/* One card per item; the padding is the Story 1.4 D-9 token. */
+.quiz-item {
+  padding: var(--padding-quiz-item);
+  background: var(--color-surface);
+  border: var(--border-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* Spacing between cards. */
+.quiz-item + .quiz-item {
+  margin-top: var(--space-3);
+}
+
+/* The question heading in the subheading type; line breaks kept, long words wrap (D3). */
+.quiz-item__question {
+  margin: 0 0 var(--space-3);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-subheading-size);
+  font-weight: var(--font-subheading-weight);
+  line-height: var(--font-subheading-line-height);
+}
+
+/* The answer below its toggle. No display: the hidden attribute must keep hiding it. */
+.quiz-item__answer {
+  margin: var(--space-3) 0 0;
+}
+
+/* The answer text in the body type, at most 65ch, with a 3px primary rule (D3). */
+.quiz-item__answer-text {
+  max-width: var(--measure-answer);
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: var(--border-emphasis) solid var(--color-primary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+}
